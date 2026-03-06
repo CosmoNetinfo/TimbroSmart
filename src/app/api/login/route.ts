@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         // This makes the login MUCH more resilient to Firebase Auth config issues on Vercel
         const userUid = userId; // User Firestore ID as seed
         const sessionToken = Buffer.from(`${userUid}:${Date.now()}`).toString('base64');
+        const expiresIn = 60 * 60 * 24 * 5 * 1000;
         
         const response = NextResponse.json({ 
             id: userId, 
