@@ -428,7 +428,7 @@ tr:hover td {
 }
 
 /* Login Page Selectors - Premium Polish */
-.purple-login-container {
+.azure-login-container {
   width: 100%;
   max-width: 380px;
   /* Slightly tighter for mobile feel */
@@ -444,7 +444,7 @@ tr:hover td {
 }
 
 @media (min-width: 480px) {
-  .purple-login-container {
+  .azure-login-container {
     min-height: auto;
     border-radius: 46px;
     /* High curvature like iOS/Modern apps */
