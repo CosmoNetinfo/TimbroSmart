@@ -406,22 +406,23 @@ export default function Admin() {
                         <img src="/logo-timbrosmart.png" alt="Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
                         <div>
                             <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <p className="text-muted">Gestione completa dipendenti e buste paga</p>
-                            <span style={{ 
-                                background: companyPlan === 'FREE' ? '#e2e8f0' : companyPlan === 'PRO' ? '#dbeafe' : '#fef3c7',
-                                color: companyPlan === 'FREE' ? '#475569' : companyPlan === 'PRO' ? '#2563eb' : '#d97706',
-                                padding: '2px 10px',
-                                borderRadius: '20px',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
-                                border: '1px solid currentColor'
-                            }}>
-                                {companyPlan} PLAN
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <p className="text-muted">Gestione completa dipendenti e buste paga</p>
+                                <span style={{ 
+                                    background: companyPlan === 'FREE' ? '#e2e8f0' : companyPlan === 'PRO' ? '#dbeafe' : '#fef3c7',
+                                    color: companyPlan === 'FREE' ? '#475569' : companyPlan === 'PRO' ? '#2563eb' : '#d97706',
+                                    padding: '2px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700,
+                                    border: '1px solid currentColor'
+                                }}>
+                                    {companyPlan} PLAN
+                                </span>
+                            </div>
                         </div>
                     </div>
+
 
                     <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
                         <button 

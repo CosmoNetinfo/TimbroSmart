@@ -1,33 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
-  /* --- GLOBAL PURPLE THEME VARIABLES --- */
+  /* --- GLOBAL BLUE/AZURE THEME VARIABLES --- */
 
   /* Backgrounds */
-  --bg-main: #240046;
-  --bg-gradient: linear-gradient(135deg, #10002b 0%, #240046 100%);
+  --bg-main: #020617;
+  --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 100%);
 
   /* Mapped Standard Variables */
-  --background: #10002b;
-  --surface: rgba(60, 9, 108, 0.4);
+  --background: #020617;
+  --surface: rgba(30, 41, 59, 0.4);
   /* Glassy surface */
-  --surface-alt: rgba(36, 0, 70, 0.6);
-  --surface-hover: rgba(60, 9, 108, 0.6);
+  --surface-alt: rgba(15, 23, 42, 0.6);
+  --surface-hover: rgba(30, 41, 59, 0.6);
 
   /* Text Colors */
   --text-main: #ffffff;
-  --text-secondary: #e9d5ff;
-  /* Light lavender */
-  --text-muted: #c0a0e0;
+  --text-secondary: #e2e8f0;
+  /* Light slate */
+  --text-muted: #94a3b8;
   --text-inverse: #ffffff;
 
   /* Brand / Accent Colors */
-  --primary: #9d4edd;
-  --accent: #e0aaff;
-  --accent-dark: #7b2cbf;
-  --accent-gradient: linear-gradient(90deg, #9d4edd 0%, #e0aaff 100%);
+  --primary: #0ea5e9;
+  --accent: #38bdf8;
+  --accent-dark: #0284c7;
+  --accent-gradient: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);
 
-  /* Status Colors (Kept vivid for contrast on dark bg) */
+  /* Status Colors */
   --success: #4ade80;
   --success-dark: #22c55e;
   --success-bg: rgba(74, 222, 128, 0.1);
@@ -41,17 +41,17 @@
   --radius-sm: 12px;
   --radius-full: 9999px;
 
-  /* Shadows - Glowing Purple/Pink */
+  /* Shadows - Glowing Azure/Blue */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(157, 78, 221, 0.3);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.3);
   --shadow-red: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
   --shadow-green: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
 
   /* Specific Input Vars */
   --input-bg: rgba(255, 255, 255, 0.95);
-  --input-text: #240046;
-  --input-placeholder: #5a5a5a;
+  --input-text: #0f172a;
+  --input-placeholder: #64748b;
 }
 
 * {
@@ -62,7 +62,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--bg-gradient);
   background-attachment: fixed;
   /* Keep gradient fixed on scroll */
@@ -259,13 +259,21 @@ input[type="datetime-local"] {
 }
 
 .sphere-in {
-  background: radial-gradient(circle at 30% 30%, rgba(134, 239, 172, 0.4), rgba(34, 197, 94, 0.1) 60%);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(134, 239, 172, 0.4),
+    rgba(34, 197, 94, 0.1) 60%
+  );
   box-shadow: 0 0 50px rgba(34, 197, 94, 0.3);
   border-color: rgba(34, 197, 94, 0.3);
 }
 
 .sphere-out {
-  background: radial-gradient(circle at 30% 30%, rgba(252, 165, 165, 0.4), rgba(239, 68, 68, 0.1) 60%);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(252, 165, 165, 0.4),
+    rgba(239, 68, 68, 0.1) 60%
+  );
   box-shadow: 0 0 50px rgba(239, 68, 68, 0.3);
   border-color: rgba(239, 68, 68, 0.3);
 }
@@ -305,12 +313,20 @@ input[type="datetime-local"] {
 }
 
 .btn-red {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(185, 28, 28, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.8) 0%,
+    rgba(185, 28, 28, 0.9) 100%
+  );
   box-shadow: var(--shadow-red);
 }
 
 .btn-green {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.8) 0%, rgba(21, 128, 61, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.8) 0%,
+    rgba(21, 128, 61, 0.9) 100%
+  );
   box-shadow: var(--shadow-green);
 }
 
@@ -430,8 +446,9 @@ tr:hover td {
     min-height: auto;
     border-radius: 46px;
     /* High curvature like iOS/Modern apps */
-    background: rgba(60, 9, 108, 0.6);
-    /* Translucent purple */
+    background: rgba(30, 41, 59, 0.6);
+    /* Translucent slate blue */
+
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow:
@@ -466,15 +483,16 @@ tr:hover td {
 .icon-box {
   width: 85px;
   height: 85px;
-  background: linear-gradient(145deg, #d946ef 0%, #7c3aed 100%);
+  background: linear-gradient(145deg, #0ea5e9 0%, #38bdf8 100%);
   border-radius: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1.5rem;
   box-shadow:
-    0 15px 35px rgba(124, 58, 237, 0.4),
+    0 15px 35px rgba(14, 165, 233, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
+
   transform: rotate(-5deg);
   /* Playful tilt often seen in these designs */
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -502,7 +520,9 @@ tr:hover td {
   font-size: 1.05rem !important;
   font-weight: 500 !important;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
-  transition: transform 0.2s, box-shadow 0.2s !important;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s !important;
 }
 
 .custom-input::placeholder {
@@ -551,7 +571,8 @@ tr:hover td {
 .btn-glass-primary {
   width: 100%;
   height: 64px;
-  background: linear-gradient(90deg, #a855f7 0%, #d946ef 100%);
+  background: linear-gradient(90deg, #0284c7 0%, #0ea5e9 100%);
+
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   /* Top highlight */
@@ -566,17 +587,18 @@ tr:hover td {
   color: white;
   cursor: pointer;
   box-shadow:
-    0 10px 25px -5px rgba(168, 85, 247, 0.5),
+    0 10px 25px -5px rgba(14, 165, 233, 0.5),
     0 5px 10px -5px rgba(0, 0, 0, 0.5);
+
   /* Deep shadow */
   transition: all 0.2s;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-glass-primary:hover {
-  background: linear-gradient(90deg, #9333ea 0%, #c026d3 100%);
+  background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px -5px rgba(168, 85, 247, 0.6);
+  box-shadow: 0 15px 30px -5px rgba(14, 165, 233, 0.6);
 }
 
 .helper-text {

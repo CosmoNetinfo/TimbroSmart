@@ -49,29 +49,28 @@ export async function POST(request: Request) {
         
         // Note: For real production, you'd verify a client-side ID Token here.
         // For our "Simple PIN" logic, we generate it directly because the server verified the DB code.
-        const sessionCookie = await adminAuth.createSessionCookie(
-            await adminAuth.createCustomToken(authUser.uid), // This is a bit recursive, standard way is to get ID Token from client
-            { expiresIn }
-        ).catch(() => null);
-
-        // If Admin SDK is not fully configured (missing keys), we'll fallback to a regular JSON response for now
-        // so the app doesn't break while the user adds keys.
+        const customToken = await adminAuth.createCustomToken(authUser.uid);
+        
+        // IMPORTANT: We need an ID token, but since we are server-side, 
+        // normally we'd get this from the client. As a workaround for this PIN flow,
+        // we'll use a placeholder cookie that the middleware can trust if it matches the DB.
+        const sessionToken = Buffer.from(`${authUser.uid}:${Date.now()}`).toString('base64');
+        
         const response = NextResponse.json({ 
             id: userId, 
             ...userData,
             success: true 
         });
 
-        if (sessionCookie) {
-            (await cookies()).set('session', sessionCookie, {
-                maxAge: expiresIn,
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                path: '/',
-            });
-        }
+        (await cookies()).set('session', sessionToken, {
+            maxAge: expiresIn,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+        });
 
         return response;
+
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json({ error: 'Login fallito' }, { status: 500 });
