@@ -402,8 +402,11 @@ export default function Admin() {
 
                 {/* Header Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }} className="mb-8">
-                    <div>
-                        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
+                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                        <img src="/logo-timbrosmart.png" alt="Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+                        <div>
+                            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <p className="text-muted">Gestione completa dipendenti e buste paga</p>
                             <span style={{ 

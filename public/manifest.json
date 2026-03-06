@@ -4,24 +4,25 @@
     "description": "Gestione presenze semplice e veloce",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#0f172a",
+    "background_color": "#020617",
+    "theme_color": "#0ea5e9",
     "icons": [
         {
-            "src": "/pwa-icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/pwa-icon-512.png",
+            "src": "/logo-timbrosmart.png",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "/pwa-icon-maskable.png",
+            "src": "/logo-timbrosmart.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/logo-timbrosmart.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
         }
     ]
+
 }

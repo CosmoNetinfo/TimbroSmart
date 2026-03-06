@@ -18,13 +18,15 @@ export const metadata: Metadata = {
   description: "Gestione facile dei dipendenti",
   manifest: "/manifest.json",
   icons: {
-    icon: "/pwa-icon-192.png",
-    apple: "/pwa-icon-192.png",
+    icon: "/logo-timbrosmart.png",
+    apple: "/logo-timbrosmart.png",
   },
+
 };
 
 export const viewport = {
-  themeColor: "#0f172a",
+  themeColor: "#0ea5e9",
+
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
