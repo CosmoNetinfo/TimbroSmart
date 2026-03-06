@@ -34,8 +34,9 @@ export async function GET(req: NextRequest) {
             .where('userId', '==', userId)
             .get();
 
-        const payments = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        const payments = querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }))
             .sort((a: any, b: any) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
+
 
         return NextResponse.json({ payments });
     } catch (error) {

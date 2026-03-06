@@ -35,7 +35,7 @@ export async function GET(request: Request) {
         
         const userSnap = await adminDb.collection('users').doc(userId).get();
 
-        const entries = entriesSnap.docs.map(doc => {
+        const entries = entriesSnap.docs.map((doc: any) => {
             const data = doc.data();
             return {
                 id: doc.id,
@@ -43,6 +43,7 @@ export async function GET(request: Request) {
                 timestamp: data.timestamp
             };
         });
+
 
         const userData = userSnap.exists ? userSnap.data() : null;
 

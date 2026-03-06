@@ -44,13 +44,15 @@ export async function GET(request: Request) {
             .get();
         
         const usersMap = new Map();
-        usersSnapshot.forEach(doc => {
+        usersSnapshot.forEach((doc: any) => {
             const data = doc.data();
+
             usersMap.set(doc.id, { id: doc.id, name: data.name, code: data.code, hourlyWage: data.hourlyWage });
         });
 
-        const safeEntries = querySnapshot.docs.map(doc => {
+        const safeEntries = querySnapshot.docs.map((doc: any) => {
             const data = doc.data();
+
             return {
                 id: doc.id,
                 type: data.type,

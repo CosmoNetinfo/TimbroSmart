@@ -33,9 +33,10 @@ export async function GET(request: Request) {
         }
 
         const snapshot = await query.get();
-        const events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const events = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
 
         return NextResponse.json(events);
+
     } catch (error) {
         console.error('Calendar GET error:', error);
         return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
