@@ -65,11 +65,20 @@ export default function Home() {
   };
 
   return (
-    <main className="purple-login-container">
+    <main className="azure-login-container">
 
       {/* 1. Icon Header */}
       <div className="icon-box animate-fade-in" style={{ background: 'transparent' }}>
-        <img src="/logo-timbrosmart.png" alt="TimbroSmart Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="url(#grad1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+          <path d="M30 50L45 65L75 35" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0ea5e9" />
+              <stop offset="100%" stopColor="#2563eb" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
 
 

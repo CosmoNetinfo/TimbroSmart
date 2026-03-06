@@ -403,7 +403,16 @@ export default function Admin() {
                 {/* Header Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }} className="mb-8">
                     <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <img src="/logo-timbrosmart.png" alt="Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="50" cy="50" r="48" fill="url(#grad2)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+                          <path d="M30 50L45 65L75 35" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+                          <defs>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#0ea5e9" />
+                              <stop offset="100%" stopColor="#2563eb" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
                         <div>
                             <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
