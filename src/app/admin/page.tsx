@@ -599,6 +599,7 @@ export default function Admin() {
                         </ResponsiveContainer>
                     )}
                 </div>
+                </div>
 
                 {/* Filters & Table Section */}
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
