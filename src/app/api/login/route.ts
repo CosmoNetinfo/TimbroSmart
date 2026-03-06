@@ -24,37 +24,10 @@ export async function POST(request: Request) {
         const companyId = userData.companyId || 'TEST_COMPANY';
         const role = userData.role || 'USER';
 
-        // 2. Map to Firebase Auth User (using a virtual email)
-        const virtualEmail = `${userData.code}@timbrosmart.local`;
-        let authUser;
-
-        try {
-            authUser = await adminAuth.getUserByEmail(virtualEmail);
-        } catch (error: any) {
-            if (error.code === 'auth/user-not-found') {
-                authUser = await adminAuth.createUser({
-                    email: virtualEmail,
-                    displayName: userData.name,
-                });
-            } else {
-                throw error;
-            }
-        }
-
-        // 3. Set Custom Claims for Multi-Tenancy and Security
-        await adminAuth.setCustomUserClaims(authUser.uid, { companyId, role });
-
-        // 4. Create Session Cookie (expires in 5 days)
-        const expiresIn = 60 * 60 * 24 * 5 * 1000;
-        
-        // Note: For real production, you'd verify a client-side ID Token here.
-        // For our "Simple PIN" logic, we generate it directly because the server verified the DB code.
-        const customToken = await adminAuth.createCustomToken(authUser.uid);
-        
-        // IMPORTANT: We need an ID token, but since we are server-side, 
-        // normally we'd get this from the client. As a workaround for this PIN flow,
-        // we'll use a placeholder cookie that the middleware can trust if it matches the DB.
-        const sessionToken = Buffer.from(`${authUser.uid}:${Date.now()}`).toString('base64');
+        // 2. Simplified Session logic (don't block on adminAuth if DB is verified)
+        // This makes the login MUCH more resilient to Firebase Auth config issues on Vercel
+        const userUid = userId; // User Firestore ID as seed
+        const sessionToken = Buffer.from(`${userUid}:${Date.now()}`).toString('base64');
         
         const response = NextResponse.json({ 
             id: userId, 

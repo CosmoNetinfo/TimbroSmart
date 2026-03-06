@@ -114,7 +114,7 @@ export default function Home() {
         <div className="input-group">
           <input
             type="text"
-            placeholder={isRegister ? "Scegli il tuo codice segreto:" : "Codice accesso:"}
+            placeholder={isRegister ? "Scegli un codice (es. 1234):" : "Inserisci il tuo codice segreto:"}
             className="custom-input"
             value={code}
             onChange={(e) => setCode(e.target.value)}
