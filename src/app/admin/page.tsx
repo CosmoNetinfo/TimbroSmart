@@ -840,8 +840,9 @@ export default function Admin() {
                 <div className="text-center mt-10" style={{ marginTop: '4rem', opacity: 0.5, fontSize: '0.85rem' }}>
                     Easy Employee Management &copy; {new Date().getFullYear()}
                 </div>
-                </div>
             </div>
         </main>
+
+
     );
 }
