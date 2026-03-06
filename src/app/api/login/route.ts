@@ -62,10 +62,12 @@ export async function POST(request: Request) {
             success: true 
         });
 
-        (await cookies()).set('session', sessionToken, {
+        const cookieStore = await cookies();
+        cookieStore.set('session', sessionToken, {
             maxAge: expiresIn,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
             path: '/',
         });
 
