@@ -403,16 +403,20 @@ export default function Admin() {
                 {/* Header Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }} className="mb-8">
                     <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="50" cy="50" r="48" fill="url(#grad2)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-                          <path d="M30 50L45 65L75 35" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-                          <defs>
-                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%" stopColor="#0ea5e9" />
-                              <stop offset="100%" stopColor="#2563eb" />
-                            </linearGradient>
-                          </defs>
-                        </svg>
+                        <div style={{ width: '60px', height: '60px' }}>
+                          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+                            <path d="M20 40C20 23.4315 33.4315 10 50 10C66.5685 10 80 23.4315 80 40C80 56.5685 60 90 50 90C40 90 20 56.5685 20 40Z" fill="url(#azureGradAdmin)" />
+                            <circle cx="50" cy="40" r="18" stroke="white" strokeWidth="4" />
+                            <path d="M50 30V40L60 40" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M70 30C75 35 75 45 70 50" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" />
+                            <defs>
+                              <linearGradient id="azureGradAdmin" x1="50" y1="10" x2="50" y2="90" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="#0ea5e9" />
+                                <stop offset="1" stopColor="#2563eb" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                        </div>
                         <div>
                             <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

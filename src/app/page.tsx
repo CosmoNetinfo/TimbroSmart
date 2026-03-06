@@ -68,14 +68,19 @@ export default function Home() {
     <main className="azure-login-container">
 
       {/* 1. Icon Header */}
-      <div className="icon-box animate-fade-in" style={{ background: 'transparent' }}>
-        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="48" fill="url(#grad1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-          <path d="M30 50L45 65L75 35" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+      <div className="icon-box animate-fade-in" style={{ background: 'transparent', width: '80px', height: '80px' }}>
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+          {/* Base del Timbro / Goccia Tech */}
+          <path d="M20 40C20 23.4315 33.4315 10 50 10C66.5685 10 80 23.4315 80 40C80 56.5685 60 90 50 90C40 90 20 56.5685 20 40Z" fill="url(#azureGrad)" />
+          {/* Quadrante Orologio Smart */}
+          <circle cx="50" cy="40" r="18" stroke="white" strokeWidth="4" />
+          <path d="M50 30V40L60 40" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Effetto Vetro / Riflesso */}
+          <path d="M70 30C75 35 75 45 70 50" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" />
           <defs>
-            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#0ea5e9" />
-              <stop offset="100%" stopColor="#2563eb" />
+            <linearGradient id="azureGrad" x1="50" y1="10" x2="50" y2="90" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#0ea5e9" />
+              <stop offset="1" stopColor="#2563eb" />
             </linearGradient>
           </defs>
         </svg>
