@@ -62,8 +62,7 @@ export async function POST(request: Request) {
             success: true 
         });
 
-        const cookieStore = await cookies();
-        cookieStore.set('session', sessionToken, {
+        response.cookies.set('session', sessionToken, {
             maxAge: expiresIn,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -73,8 +72,10 @@ export async function POST(request: Request) {
 
         return response;
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Login error:', error);
-        return NextResponse.json({ error: 'Login fallito' }, { status: 500 });
+        return NextResponse.json({ 
+            error: `Login fallito: ${error.message || 'Errore interno'}` 
+        }, { status: 500 });
     }
 }

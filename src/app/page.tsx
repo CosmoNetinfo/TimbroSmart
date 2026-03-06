@@ -92,7 +92,7 @@ export default function Home() {
         {isRegister ? 'Registrati' : 'Login'}
       </h1>
       <p className="login-subtitle animate-fade-in" style={{ animationDelay: '0.2s' }}>
-        {isRegister ? 'Crea il tuo account dipendente' : 'Pocula d\'entervi timbro cartelino'}
+        {isRegister ? 'Crea il tuo account dipendente' : 'Accedi al sistema di timbratura digitale'}
       </p>
 
       {/* 3. Form */}
