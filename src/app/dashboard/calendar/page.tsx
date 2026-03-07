@@ -94,7 +94,7 @@ export default function CalendarPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <Link href="/dashboard" style={{ color: 'var(--text-primary)' }}><ArrowLeft /></Link>
                     <h2 style={{ margin: 0 }}>Calendario</h2>
-                        <Plus size={20} />
+                        <Plus size={20} onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }} />
                 </div>
 
                 {/* Month Picker */}
