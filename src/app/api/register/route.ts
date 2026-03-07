@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 
 export async function POST(request: Request) {
+    // SECURITY: Registration is disabled for the commercial version.
+    // Companies and Master Admins are pre-configured.
+    return NextResponse.json({ error: 'La registrazione è disabilitata in questa versione' }, { status: 403 });
+
     try {
         const body = await request.json();
         const { name, code, isNewCompany, companyName } = body;

@@ -140,16 +140,10 @@ export default function Home() {
 
       </form>
 
-      {/* 4. Footer & Toggle */}
-      <div className="helper-text animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '1.5rem', cursor: 'pointer' }} onClick={() => { setIsRegister(!isRegister); setError(''); }}>
-        {isRegister ? 'Hai già un account? Accedi' : 'Non hai un codice? Registrati'}
-      </div>
-
-      {!isRegister && (
-        <Link href="/help" className="helper-text animate-fade-in" style={{ animationDelay: '0.5s', marginTop: '0.5rem', display: 'block', fontSize: '0.8rem', opacity: 0.7 }}>
-          Hai bisogno di aiuto?
-        </Link>
-      )}
+      {/* 4. Footer & Helper */}
+      <Link href="/help" className="helper-text animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '1.5rem', display: 'block', fontSize: '0.8rem', opacity: 0.7 }}>
+        Hai bisogno di aiuto o hai dimenticato il codice?
+      </Link>
 
     </main>
   );
