@@ -14,26 +14,28 @@ export async function GET(request: Request) {
         const userId = searchParams.get('userId'); // Optional: filter by user
 
         const companyId = session.companyId;
+        // Fetch all events for the company and filter in memory to avoid "missing index" errors
+        // for composite queries (Equality + Range).
         let query = adminDb.collection('calendar_events')
             .where('companyId', '==', companyId);
 
-        if (month) {
-            // Firestore doesn't support partial string match easily with index, 
-            // but we can use >= and <= if we store dates as ISO strings.
-            const start = `${month}-01`;
-            const end = `${month}-31`; // Simplified
-            query = query.where('date', '>=', start).where('date', '<=', end);
-        }
-
-        if (userId && session.role === 'ADMIN') {
-            query = query.where('userId', '==', userId);
-        } else if (session.role !== 'ADMIN') {
-            // Workers only see their own events
-            query = query.where('userId', '==', session.uid);
-        }
-
         const snapshot = await query.get();
-        const events = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        let events = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+        // Month filter: date starts with "YYYY-MM"
+        if (month) {
+            events = events.filter((e: any) => e.date.startsWith(month));
+        }
+
+        // User filter
+        if (session.role === 'ADMIN') {
+            if (userId) {
+                events = events.filter((e: any) => e.userId === userId);
+            }
+        } else {
+            // Workers only see their own events
+            events = events.filter((e: any) => e.userId === session.uid);
+        }
 
         return NextResponse.json(events);
 

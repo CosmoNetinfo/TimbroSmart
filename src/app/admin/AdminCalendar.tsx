@@ -1,7 +1,4 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { it } from 'date-fns/locale';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 
 interface CalendarEvent {
@@ -24,11 +21,7 @@ export default function AdminCalendar({ users }: { users: User[] }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedUserId, setSelectedUserId] = useState('');
 
-    useEffect(() => {
-        fetchEvents();
-    }, [currentDate, selectedUserId]);
-
-    const fetchEvents = async () => {
+    const fetchEvents = useCallback(async () => {
         setLoading(true);
         try {
             const year = currentDate.getFullYear();
@@ -40,18 +33,22 @@ export default function AdminCalendar({ users }: { users: User[] }) {
             if (res.ok) {
                 const data = await res.json();
                 // Join with user names for display
-                const enriched = data.map((e: any) => {
+                const enriched = data.map((e: CalendarEvent) => {
                     const u = users.find(user => String(user.id) === String(e.userId));
                     return { ...e, userName: u ? u.name : 'Sconosciuto' };
                 });
                 setEvents(enriched);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error(error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentDate, selectedUserId, users]);
+
+    useEffect(() => {
+        fetchEvents();
+    }, [fetchEvents]);
 
     const handleDeleteEvent = async (id: string) => {
         if (!confirm('Eliminare questo evento?')) return;
@@ -66,6 +63,22 @@ export default function AdminCalendar({ users }: { users: User[] }) {
     const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
         "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
+    const handlePrevMonth = () => {
+        setCurrentDate(prev => {
+            const next = new Date(prev);
+            next.setMonth(prev.getMonth() - 1);
+            return next;
+        });
+    };
+
+    const handleNextMonth = () => {
+        setCurrentDate(prev => {
+            const next = new Date(prev);
+            next.setMonth(prev.getMonth() + 1);
+            return next;
+        });
+    };
+
     return (
         <div className="card mb-8 animate-slide-up">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
@@ -76,9 +89,9 @@ export default function AdminCalendar({ users }: { users: User[] }) {
                         {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                     </select>
                     <div style={{ background: 'var(--surface-alt)', padding: '5px 15px', borderRadius: '8px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
+                        <button onClick={handlePrevMonth} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
                         <span style={{ fontWeight: 600, minWidth: '120px', textAlign: 'center' }}>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
+                        <button onClick={handleNextMonth} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
                     </div>
                 </div>
             </div>

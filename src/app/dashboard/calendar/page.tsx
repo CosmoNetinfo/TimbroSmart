@@ -87,6 +87,22 @@ export default function CalendarPage() {
     const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
         "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
+    const handlePrevMonth = () => {
+        setCurrentDate(prev => {
+            const next = new Date(prev);
+            next.setMonth(prev.getMonth() - 1);
+            return next;
+        });
+    };
+
+    const handleNextMonth = () => {
+        setCurrentDate(prev => {
+            const next = new Date(prev);
+            next.setMonth(prev.getMonth() + 1);
+            return next;
+        });
+    };
+
     return (
         <main className="mobile-container">
             <div className="animate-slide-up" style={{ padding: '2rem 1rem', paddingBottom: '100px' }}>
@@ -99,9 +115,9 @@ export default function CalendarPage() {
 
                 {/* Month Picker */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', background: 'var(--surface)', padding: '10px', borderRadius: '12px' }}>
-                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
+                    <button onClick={handlePrevMonth} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
                     <span style={{ fontWeight: 'bold' }}>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
+                    <button onClick={handleNextMonth} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
                 </div>
 
                 {/* Grid */}
