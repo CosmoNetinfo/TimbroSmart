@@ -42,6 +42,15 @@ export default function Admin() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [showLicense, setShowLicense] = useState(false);
     const [companyPlan, setCompanyPlan] = useState<string>('FREE');
+    const [companyName, setCompanyName] = useState<string>('TimbroSmart');
+    const [newCompanyName, setNewCompanyName] = useState('');
+
+    // New User State
+    const [showAddUser, setShowAddUser] = useState(false);
+    const [newUserName, setNewUserName] = useState('');
+    const [newUserCode, setNewUserCode] = useState('');
+    const [newUserWage, setNewUserWage] = useState('7');
+    const [creatingUser, setCreatingUser] = useState(false);
 
 
 
@@ -65,7 +74,23 @@ export default function Admin() {
         fetchUsers();
         fetchEntries();
         fetchCompanyPlan();
+        fetchCompanyData();
     }, []);
+
+    const fetchCompanyData = async () => {
+        try {
+            const res = await fetch('/api/admin/company');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.name) {
+                    setCompanyName(data.name);
+                    setNewCompanyName(data.name);
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const fetchCompanyPlan = async () => {
         try {
@@ -168,6 +193,73 @@ export default function Admin() {
 
     const [newAdminCode, setNewAdminCode] = useState('');
     const [showSettings, setShowSettings] = useState(false);
+
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setCreatingUser(true);
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: newUserName, 
+                    code: newUserCode, 
+                    hourlyWage: newUserWage 
+                }),
+            });
+
+            if (res.ok) {
+                alert('Dipendente creato con successo!');
+                setNewUserName('');
+                setNewUserCode('');
+                setShowAddUser(false);
+                fetchUsers();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Errore creazione dipendente');
+            }
+        } catch (e) {
+            alert('Errore di connessione');
+        } finally {
+            setCreatingUser(false);
+        }
+    };
+
+    const handleDeleteUser = async (userId: string) => {
+        if (!confirm('Sei sicuro di voler eliminare questo dipendente?')) return;
+        try {
+            const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchUsers();
+            } else {
+                alert('Errore durante la rimozione');
+            }
+        } catch (e) {
+            alert('Errore di connessione');
+        }
+    };
+
+    const handleUpdateCompanyName = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newCompanyName) return;
+
+        try {
+            const res = await fetch('/api/admin/company', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ companyName: newCompanyName }),
+            });
+
+            if (res.ok) {
+                setCompanyName(newCompanyName);
+                alert('Nome azienda aggiornato con successo!');
+            } else {
+                alert('Errore durante l\'aggiornamento');
+            }
+        } catch (error) {
+            alert('Errore di connessione');
+        }
+    };
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -418,7 +510,7 @@ export default function Admin() {
                           </svg>
                         </div>
                         <div>
-                            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello di Controllo</h1>
+                            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Pannello: {companyName}</h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <p className="text-muted">Gestione completa dipendenti e buste paga</p>
                                 <span style={{ 
@@ -476,19 +568,37 @@ export default function Admin() {
                     <div className="mb-8 animate-slide-up">
                         <div className="card">
                             <h3 className="mb-4">⚙️ Impostazioni Admin</h3>
-                            <div style={{ maxWidth: '400px' }}>
-                                <label className="label">Cambia Password Admin</label>
-                                <form onSubmit={handleUpdatePassword} style={{ display: 'flex', gap: '1rem' }}>
-                                    <input
-                                        type="text"
-                                        placeholder="Nuovo Codice..."
-                                        value={newAdminCode}
-                                        onChange={(e) => setNewAdminCode(e.target.value)}
-                                    />
-                                    <button type="submit" className="btn btn-primary">
-                                        Salva
-                                    </button>
-                                </form>
+                            
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                                <div>
+                                    <label className="label">Nome Azienda</label>
+                                    <form onSubmit={handleUpdateCompanyName} style={{ display: 'flex', gap: '1rem' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Nome Azienda..."
+                                            value={newCompanyName}
+                                            onChange={(e) => setNewCompanyName(e.target.value)}
+                                        />
+                                        <button type="submit" className="btn btn-primary">
+                                            Aggiorna
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div>
+                                    <label className="label">Cambia Password Admin</label>
+                                    <form onSubmit={handleUpdatePassword} style={{ display: 'flex', gap: '1rem' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Nuovo Codice..."
+                                            value={newAdminCode}
+                                            onChange={(e) => setNewAdminCode(e.target.value)}
+                                        />
+                                        <button type="submit" className="btn btn-primary">
+                                            Salva
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -510,30 +620,71 @@ export default function Admin() {
                 )}
 
 
-                {/* Users Wage Section */}
+                {/* Users Management Section */}
                 {showUsers && (
                     <div className="mb-8 animate-slide-up">
-                        <h3 className="mb-4">💰 Gestione Paga Oraria</h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h3 style={{ margin: 0 }}>👥 Gestione Dipendenti & Matricole</h3>
+                            <button 
+                                onClick={() => setShowAddUser(!showAddUser)} 
+                                className="btn btn-primary"
+                                style={{ padding: '8px 20px' }}
+                            >
+                                {showAddUser ? 'Annulla' : '+ Aggiungi Dipendente'}
+                            </button>
+                        </div>
+
+                        {showAddUser && (
+                            <div className="card mb-6" style={{ background: 'var(--surface-alt)', border: '1px solid var(--accent)' }}>
+                                <form onSubmit={handleCreateUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+                                    <div>
+                                        <label className="label">Nome Completo</label>
+                                        <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Es: Mario Rossi" required />
+                                    </div>
+                                    <div>
+                                        <label className="label">Codice Matricola (Accesso)</label>
+                                        <input type="text" value={newUserCode} onChange={e => setNewUserCode(e.target.value.toUpperCase())} placeholder="Es: MR001" required />
+                                    </div>
+                                    <div>
+                                        <label className="label">Paga Oraria (€/h)</label>
+                                        <input type="number" value={newUserWage} onChange={e => setNewUserWage(e.target.value)} required />
+                                    </div>
+                                    <button type="submit" className="btn btn-primary" disabled={creatingUser}>
+                                        {creatingUser ? '...' : 'Salva Dipendente'}
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                             {users.map(u => (
-                                <div key={u.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem' }}>
+                                <div key={u.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', background: 'var(--surface)' }}>
                                     <div>
                                         <div className="font-bold" style={{ fontSize: '1.1rem' }}>{u.name}</div>
-                                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>Matricola: {u.code}</div>
+                                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>Matricola: <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>{u.code}</span></div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <label className="text-muted" style={{ fontSize: '0.9rem' }}>€/h</label>
-                                        <input
-                                            type="number"
-                                            defaultValue={u.hourlyWage || 7}
-                                            onBlur={(e) => {
-                                                const val = e.target.value;
-                                                if (parseFloat(val) !== u.hourlyWage) {
-                                                    handleUpdateWage(u.id, val);
-                                                }
-                                            }}
-                                            style={{ width: '80px', textAlign: 'right', fontWeight: 'bold' }}
-                                        />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                            <label className="text-muted" style={{ fontSize: '0.8rem' }}>€/h</label>
+                                            <input
+                                                type="number"
+                                                defaultValue={u.hourlyWage || 7}
+                                                onBlur={(e) => {
+                                                    const val = e.target.value;
+                                                    if (parseFloat(val) !== u.hourlyWage) {
+                                                        handleUpdateWage(u.id, val);
+                                                    }
+                                                }}
+                                                style={{ width: '60px', textAlign: 'right', fontWeight: 'bold', padding: '4px' }}
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={() => handleDeleteUser(u.id)}
+                                            style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
+                                            title="Elimina Dipendente"
+                                        >
+                                            🗑️
+                                        </button>
                                     </div>
                                 </div>
                             ))}
