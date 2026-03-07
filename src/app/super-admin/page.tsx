@@ -18,7 +18,7 @@ export default function SuperAdminPage() {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showNewForm, setShowNewForm] = useState(false);
-    const [newKey, setNewKey] = useState({ serialKey: '', plan: 'PRO', isActive: true });
+    const [newKey, setNewKey] = useState({ serialKey: '', adminCode: '', plan: 'PRO', isActive: true });
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
 
@@ -117,7 +117,7 @@ export default function SuperAdminPage() {
             });
             if (res.ok) {
                 setShowNewForm(false);
-                setNewKey({ serialKey: '', plan: 'PRO', isActive: true });
+                setNewKey({ serialKey: '', adminCode: '', plan: 'PRO', isActive: true });
                 fetchKeys();
             } else {
                 const errorData = await res.json();
@@ -294,11 +294,28 @@ export default function SuperAdminPage() {
                                     <button 
                                         type="button" 
                                         className="btn-ghost" 
-                                        onClick={() => setNewKey({...newKey, serialKey: `${newKey.plan}-${Math.random().toString(36).substring(2, 7).toUpperCase()}-TSMT`})}
-                                        title="Genera random"
+                                        onClick={() => setNewKey({
+                                            ...newKey, 
+                                            serialKey: `${newKey.plan}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-TSMT`,
+                                            adminCode: `ADM-${newKey.plan}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+                                        })}
+                                        title="Genera random (Seriale e Admin Code)"
                                     >
                                         <RefreshCw size={18} />
                                     </button>
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <label className="label">Admin Code</label>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <input 
+                                        type="text" 
+                                        className="custom-input" 
+                                        value={newKey.adminCode} 
+                                        onChange={e => setNewKey({...newKey, adminCode: e.target.value})} 
+                                        placeholder="ES. ADM-PRO-XYZ123" 
+                                        required 
+                                    />
                                 </div>
                             </div>
                             <div className="mb-4">

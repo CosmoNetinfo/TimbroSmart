@@ -53,7 +53,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { secret, serialKey, plan, isActive } = body;
+        const { secret, serialKey, adminCode, plan, isActive } = body;
 
         console.log(`[SuperAdmin POST] Richiesta per chiave: ${serialKey}, piano: ${plan}`);
 
@@ -62,8 +62,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Accesso negato' }, { status: 403 });
         }
 
-        if (!serialKey || !plan) {
-            return NextResponse.json({ error: 'Dati mancanti (serialKey e plan sono obbligatori)' }, { status: 400 });
+        if (!serialKey || !plan || !adminCode) {
+            return NextResponse.json({ error: 'Dati mancanti (serialKey, adminCode e plan sono obbligatori)' }, { status: 400 });
         }
 
         // Controlla se la chiave esiste già per preservare createdAt
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
 
         await adminDb.collection('master_keys').doc(serialKey).set({
             plan,
+            adminCode,
             isActive: isActive !== undefined ? isActive : true,
             updatedAt: new Date().toISOString(),
             createdAt: existingData?.createdAt || new Date().toISOString(),
