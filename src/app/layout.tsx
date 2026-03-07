@@ -18,8 +18,11 @@ export const metadata: Metadata = {
   description: "Gestione facile dei dipendenti",
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo-timbrosmart.png",
-    apple: "/logo-timbrosmart.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/app-icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/icons/app-icon-192.png",
   },
 
 };
