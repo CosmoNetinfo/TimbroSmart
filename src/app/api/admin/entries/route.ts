@@ -48,7 +48,7 @@ export async function GET(request: Request) {
 
         // Fetch all users for this company to simulate JOIN
         const usersSnapshot = await adminDb.collection('users')
-            .where('companyId', '==', companyId)
+            .where('companyId', '==', finalCompanyId)
             .get();
         
         const usersMap = new Map();
