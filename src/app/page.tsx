@@ -148,14 +148,14 @@ export default function Home() {
         <div style={{ marginBottom: '2rem', padding: '1.2rem', background: 'rgba(14, 165, 233, 0.1)', borderRadius: '20px', border: '1px dashed rgba(14, 165, 233, 0.3)' }}>
           <p style={{ fontSize: '0.85rem', marginBottom: '0.8rem', opacity: 0.9, fontWeight: 600 }}>Cerca il tuo codice azienda o</p>
           <a 
-            href="mailto:info@timbrosmart.it?subject=Richiesta%20Chiave%20Piano%20FREE%20-%20TimbroSmart&body=Salve,%20vorrei%20richiedere%20una%20chiave%20per%20il%20piano%20FREE%20di%20TimbroSmart.%0A%0ANome%20Azienda:%20"
+            href="mailto:cosmonetinfo85@gmail.com?subject=TIMBROSMART%20-%20Richiesta%20Chiave%20Piano%20FREE&body=Salve,%20vorrei%20richiedere%20una%20chiave%20per%20il%20piano%20FREE%20di%20TimbroSmart.%0A%0ANome%20Azienda:%20"
             className="btn-glass-secondary"
             style={{ textDecoration: 'none', height: '45px', fontSize: '0.85rem', width: 'auto', display: 'inline-flex', padding: '0 20px' }}
           >
             Richiedi Piano FREE Gratis
           </a>
           <p style={{ fontSize: '0.75rem', marginTop: '1rem', opacity: 0.6 }}>
-            Oppure scrivi a: <strong style={{ color: 'var(--primary)' }}>info@timbrosmart.it</strong>
+            Oppure scrivi a: <strong style={{ color: 'var(--primary)' }}>cosmonetinfo85@gmail.com</strong>
           </p>
         </div>
 
