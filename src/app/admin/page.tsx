@@ -10,15 +10,15 @@ import LicenseManagement from './LicenseManagement';
 
 
 interface AdminUser {
-    id: number;
+    id: string | number;
     name: string;
     code: string;
     hourlyWage?: number;
 }
 
 interface AdminEntry {
-    id: number;
-    userId: number;
+    id: string | number;
+    userId: string | number;
     type: 'IN' | 'OUT';
     timestamp: string;
     hasPhoto: boolean;
@@ -225,7 +225,7 @@ export default function Admin() {
         }
     };
 
-    const handleDeleteUser = async (userId: string) => {
+    const handleDeleteUser = async (userId: string | number) => {
         if (!confirm('Sei sicuro di voler eliminare questo dipendente?')) return;
         try {
             const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
