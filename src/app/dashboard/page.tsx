@@ -152,7 +152,8 @@ export default function Dashboard() {
                 localStorage.setItem('user_meta', JSON.stringify({
                     name: updatedUser.name,
                     role: (updatedUser as any).role,
-                    id: updatedUser.id
+                    id: updatedUser.id,
+                    profileImage: base64Image
                 })); // Persist updated meta
 
             } else {
