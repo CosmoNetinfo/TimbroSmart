@@ -29,13 +29,11 @@ export async function GET(request: Request) {
 
         const entriesSnap = await adminDb.collection('entries')
             .where('userId', '==', userId)
-            .orderBy('timestamp', 'desc')
-            .limit(100)
             .get();
         
         const userSnap = await adminDb.collection('users').doc(userId).get();
 
-        const entries = entriesSnap.docs.map((doc: any) => {
+        const allEntries = entriesSnap.docs.map((doc: any) => {
             const data = doc.data();
             return {
                 id: doc.id,
@@ -43,6 +41,11 @@ export async function GET(request: Request) {
                 timestamp: data.timestamp
             };
         });
+
+        // Sort in memory to avoid composite index requirement
+        const entries = allEntries
+            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+            .slice(0, 100);
 
 
         const userData = userSnap.exists ? userSnap.data() : null;

@@ -41,7 +41,7 @@ export default function HistoryPage() {
 
     const fetchHistory = async (userId: number) => {
         try {
-            const res = await fetch(`/api/history?userId=${userId}`);
+            const res = await fetch(`/api/history?userId=${userId}&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 // Support both old (array) and new ({ entries, hourlyWage }) response shapes
