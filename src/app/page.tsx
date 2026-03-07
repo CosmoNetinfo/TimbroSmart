@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, HelpCircle } from 'lucide-react';
+import { Mail, HelpCircle, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -238,7 +238,7 @@ export default function Home() {
               justifyContent: 'center'
             }}
           >
-            <Image src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal" width={24} height={15} />
+            <CreditCard size={20} />
             Attiva PRO
           </a>
         </div>
