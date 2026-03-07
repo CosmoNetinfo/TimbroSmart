@@ -126,16 +126,66 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'SerialKey mancante' }, { status: 400 });
         }
 
-        // Verifica che la chiave esista prima di eliminare
+        // 1. Dati della licenza pre-cancellazione
         const doc = await adminDb.collection('master_keys').doc(serialKey).get();
         if (!doc.exists) {
             return NextResponse.json({ error: `Chiave ${serialKey} non trovata` }, { status: 404 });
         }
+        
+        const keyData = doc.data();
+        const adminCode = keyData?.adminCode;
 
-        await adminDb.collection('master_keys').doc(serialKey).delete();
+        // Inizializza il batch per operazioni multiple
+        const batch = adminDb.batch();
 
-        console.log(`[SuperAdmin DELETE] Chiave ${serialKey} eliminata`);
-        return NextResponse.json({ success: true, message: `Licenza ${serialKey} eliminata` });
+        // Elimina subito la chiave master
+        batch.delete(adminDb.collection('master_keys').doc(serialKey));
+
+        if (adminCode) {
+            console.log(`[SuperAdmin CASCADE] Cerco Admin con code: ${adminCode}`);
+            // Trova l'utente Admin per recuperare il companyId
+            const adminUsers = await adminDb.collection('users').where('code', '==', adminCode).get();
+            
+            if (!adminUsers.empty) {
+                const companyId = adminUsers.docs[0].data().companyId;
+                console.log(`[SuperAdmin CASCADE] Trovato CompanyId: ${companyId}. Avvio pulizia a cascata...`);
+
+                // A. Trova ed elimina tutti gli UTENTI dell'azienda
+                const companyUsers = await adminDb.collection('users').where('companyId', '==', companyId).get();
+                const userIds: string[] = [];
+                
+                companyUsers.docs.forEach(uDoc => {
+                    batch.delete(uDoc.ref);
+                    userIds.push(uDoc.id);
+                });
+                console.log(`[SuperAdmin CASCADE] In coda eliminazione di ${userIds.length} utenti.`);
+
+                // B. Trova ed elimina tutti i TIMER RECORDS (timbrature) degli utenti
+                if (userIds.length > 0) {
+                    // Limite Firestore: gli array `in` supportano max 30 elementi per query. 
+                    // Li chucnko se necessario. Per semplicità, facciamo query singole se molti.
+                    for (const uId of userIds) {
+                        const records = await adminDb.collection('timer_records').where('userId', '==', uId).get();
+                        records.docs.forEach(rDoc => batch.delete(rDoc.ref));
+                    }
+                    console.log(`[SuperAdmin CASCADE] In coda eliminazione timbrature storiche.`);
+                }
+
+                // C. Elimina l'AZIENDA principale
+                if (companyId) {
+                    batch.delete(adminDb.collection('companies').doc(companyId));
+                    console.log(`[SuperAdmin CASCADE] In coda eliminazione azienda.`);
+                }
+            } else {
+                console.warn(`[SuperAdmin CASCADE] Nessun Admin trovato per adminCode ${adminCode}`);
+            }
+        }
+
+        // 2. Esegui la cancellazione distruttiva di massa
+        await batch.commit();
+
+        console.log(`[SuperAdmin DELETE] Chiave ${serialKey} ed eventuale ecosistema aziendale eliminati.`);
+        return NextResponse.json({ success: true, message: `Licenza ed ecosistema eliminato` });
     } catch (error: unknown) {
         const errMsg = error instanceof Error ? error.message : String(error);
         console.error('[SuperAdmin DELETE] Errore critico:', errMsg);
