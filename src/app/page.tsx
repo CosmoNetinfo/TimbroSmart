@@ -154,6 +154,9 @@ export default function Home() {
           >
             Richiedi Piano FREE Gratis
           </a>
+          <p style={{ fontSize: '0.75rem', marginTop: '1rem', opacity: 0.6 }}>
+            Oppure scrivi a: <strong style={{ color: 'var(--primary)' }}>info@timbrosmart.it</strong>
+          </p>
         </div>
 
         <Link href="/help" className="helper-text" style={{ fontSize: '0.8rem', opacity: 0.6, textDecoration: 'none' }}>
