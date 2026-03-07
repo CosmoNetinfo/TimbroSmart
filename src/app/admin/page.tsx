@@ -7,7 +7,7 @@ import autoTable from 'jspdf-autotable';
 import PaymentsManagement from './PaymentsManagement';
 import AdminCalendar from './AdminCalendar';
 import LicenseManagement from './LicenseManagement';
-import { Users, CreditCard, Calendar, Key, Settings, LogOut, Clock, DollarSign, BarChart3, Trash2, Camera, Plus, X } from 'lucide-react';
+import { Users, CreditCard, Calendar, Key, Settings, LogOut, Clock, DollarSign, BarChart3, Trash2 } from 'lucide-react';
 
 
 interface AdminUser {
@@ -77,7 +77,7 @@ export default function Admin() {
         fetchEntries();
         fetchCompanyPlan();
         fetchCompanyData();
-    }, []);
+    }, [fetchEntries, router]);
 
     const fetchCompanyData = async () => {
         try {
@@ -446,81 +446,100 @@ export default function Admin() {
 
         const doc = new jsPDF();
         
-        // Helper to draw a box with a label
+        // --- PREMIUM STYLING HELPERS ---
         const drawBox = (x: number, y: number, w: number, h: number, label: string, content?: string | number) => {
-            doc.setDrawColor(200);
+            doc.setDrawColor(220); // Softer border
             doc.rect(x, y, w, h);
-            doc.setFontSize(7);
-            doc.setTextColor(100);
+            
+            doc.setFontSize(6);
+            doc.setTextColor(140); // Lighter gray for labels
             doc.setFont("helvetica", "normal");
-            doc.text(label.toUpperCase(), x + 2, y + 4);
+            doc.text(label.toUpperCase(), x + 2, y + 3.5);
+            
             if (content !== undefined) {
                 doc.setFontSize(9);
-                doc.setTextColor(0);
+                doc.setTextColor(0); // Deep black for data
                 doc.setFont("helvetica", "bold");
-                doc.text(String(content), x + 2, y + 10);
+                // Avoid overflow - truncate if needed
+                const textWidth = doc.getTextWidth(String(content));
+                const maxW = w - 4;
+                let finalContent = String(content);
+                if (textWidth > maxW) {
+                    finalContent = doc.splitTextToSize(String(content), maxW)[0] + "...";
+                }
+                doc.text(finalContent, x + 2, y + 9);
             }
         };
 
         const monthYear = new Date().toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
 
-        // --- ROW 1: Header ---
-        // Logo (Brand Logo)
+        // --- TITLE ---
+        doc.setFontSize(14);
+        doc.setTextColor(40);
+        doc.setFont("helvetica", "bold");
+        doc.text("CEDOLINO PAGA", 10, 8);
+
+        // --- ROW 1: Company Header ---
+        const r1Y = 12;
+        drawBox(10, r1Y, 80, 15, "Nome Azienda", companyName);
+        drawBox(90, r1Y, 35, 7.5, "Posizione INPS Azienda", "1234567890");
+        drawBox(125, r1Y, 35, 15, "Mese di retribuzione", monthYear);
+        drawBox(90, r1Y + 7.5, 35, 7.5, "Posizione INAIL Azienda", "987654321");
+        
+        // Brand Logo Positioning (Fixed to avoid overlap)
         try {
-            doc.addImage('/icons/app-icon-nobg.png', 'PNG', 172, 8, 25, 25);
+            doc.addImage('/icons/app-icon-nobg.png', 'PNG', 165, 8, 30, 30);
         } catch (e) {
             console.warn("Logo not found, skipping", e);
         }
 
-        drawBox(10, 10, 80, 15, "Nome Azienda", companyName);
-        drawBox(90, 10, 35, 7.5, "Posizione INPS Azienda", "1234567890"); // Placeholder
-        drawBox(125, 10, 35, 15, "Mese di retribuzione", monthYear);
-        drawBox(90, 17.5, 35, 7.5, "Posizione INAIL Azienda", "987654321"); // Placeholder
-        
         doc.setFontSize(6);
-        doc.setTextColor(150);
-        doc.text("C.d.C.", 12, 32);
-        doc.text("--------------------", 12, 38);
+        doc.setTextColor(180);
+        doc.text("C.d.C. --------------------", 12, r1Y + 18);
 
-        // --- ROW 2: Employee Info ---
-        drawBox(10, 40, 25, 12, "Cod. Dip.", "---");
-        drawBox(35, 40, 30, 12, "Matricola", summary.userSummaries[0]?.userId.toString().slice(-6) || "---");
-        drawBox(65, 40, 100, 12, "Cognome Nome", summary.userSummaries[0]?.name || "Dipendente");
-        drawBox(165, 40, 35, 12, "Data assunzione", "01/01/2024");
+        // --- ROW 2: Employee Main Info ---
+        const r2Y = 32;
+        drawBox(10, r2Y, 25, 12, "Cod. Dip.", "---");
+        drawBox(35, r2Y, 50, 12, "Matricola", summary.userSummaries[0]?.userId.toString().slice(-8) || "---");
+        drawBox(85, r2Y, 80, 12, "Cognome Nome", summary.userSummaries[0]?.name || "Dipendente");
+        drawBox(165, r2Y, 35, 12, "Data assunzione", "01/01/2024");
 
-        // --- ROW 3: Secondary Info ---
-        drawBox(10, 52, 60, 12, "Indirizzo", "---");
-        drawBox(70, 52, 40, 6, "Codice Fiscale", "---");
-        drawBox(110, 52, 40, 6, "Codice Inps", "---");
-        drawBox(150, 52, 50, 6, "Sede di Lavoro", "Sede Principale");
-        drawBox(70, 58, 40, 6, "Contratto di Lavoro", "Commercio");
-        drawBox(110, 58, 40, 6, "Qualifica", "Impiegato");
-        drawBox(150, 58, 50, 6, "Livello", "4");
+        // --- ROW 3: Secondary Employee Info ---
+        const r3Y = 44;
+        drawBox(10, r3Y, 80, 12, "Indirizzo", "---");
+        drawBox(90, r3Y, 40, 6, "Codice Fiscale", "---");
+        drawBox(130, r3Y, 35, 6, "Codice Inps", "---");
+        drawBox(165, r3Y, 35, 6, "Sede di Lavoro", "Sede Principale");
+        
+        drawBox(90, r3Y + 6, 40, 6, "Contratto di Lavoro", "Commercio");
+        drawBox(130, r3Y + 6, 35, 6, "Qualifica", "Impiegato");
+        drawBox(165, r3Y + 6, 35, 6, "Livello", "4");
 
-        // --- ROW 4: Payment Methods ---
-        drawBox(10, 64, 80, 10, "Modalità di pagamento", "Bonifico Bancario");
-        drawBox(90, 64, 110, 10, "Riferimenti Bancari", "---");
+        // --- ROW 4: Payment & Sector ---
+        const r4Y = 58;
+        drawBox(10, r4Y, 80, 10, "Modalità di pagamento", "Bonifico Bancario");
+        drawBox(90, r4Y, 110, 10, "Riferimenti Bancari", "---");
 
         // --- ROW 5: Time Stats ---
-        drawBox(10, 74, 18, 10, "Sett. Retr.", "---");
-        drawBox(28, 74, 18, 10, "GG. Retr.", "26");
-        drawBox(46, 74, 25, 10, "GG. Lavorati", (summary.userSummaries[0]?.hours / 8).toFixed(0));
-        drawBox(71, 74, 25, 10, "Ore Lavorate", summary.userSummaries[0]?.hours.toFixed(2));
-        drawBox(96, 74, 25, 5, "Scatti Anzianità", "");
+        const r5Y = 70;
+        drawBox(10, r5Y, 20, 10, "Sett. Retr.", "---");
+        drawBox(30, r5Y, 20, 10, "GG. Retr.", "26");
+        drawBox(50, r5Y, 30, 10, "GG. Lavorati", (summary.userSummaries[0]?.hours / 8).toFixed(0));
+        drawBox(80, r5Y, 30, 10, "Ore Lavorate", summary.userSummaries[0]?.hours.toFixed(2));
+        drawBox(110, r5Y, 45, 10, "Scatti Anzianità", "");
         doc.setFontSize(6);
-        doc.text("n° --  Data --  Prossimo --", 98, 83);
-        drawBox(121, 74, 25, 10, "", "");
-        drawBox(146, 74, 25, 10, "", "");
-        drawBox(171, 74, 29, 10, "", "");
+        doc.text("n° --  Data --  Prossimo --", 112, r5Y + 8);
+        drawBox(155, r5Y, 45, 10, "", "");
 
-        // --- ROW 6: Wage Breakdown ---
-        drawBox(10, 84, 30, 10, "Paga base", `€ ${summary.userSummaries[0]?.wage.toFixed(2)}`);
-        drawBox(40, 84, 30, 10, "Ind. Contigenza", "---");
-        drawBox(70, 84, 20, 10, "E.D.R", "---");
-        drawBox(90, 84, 20, 10, "E.E.T", "---");
-        drawBox(110, 84, 40, 10, "Ind. Terr. Settore", "---");
+        // --- ROW 6: Wage Details ---
+        const r6Y = 82;
+        drawBox(10, r6Y, 30, 10, "Paga base", `€ ${summary.userSummaries[0]?.wage.toFixed(2)}`);
+        drawBox(40, r6Y, 30, 10, "Ind. Contigenza", "---");
+        drawBox(70, r6Y, 20, 10, "E.D.R", "---");
+        drawBox(90, r6Y, 20, 10, "E.E.T", "---");
+        drawBox(110, r6Y, 90, 10, "Ind. Terr. Settore", "---");
 
-        // --- SECTION: Variable Items Table ---
+        // --- SECTION: Variable Items table (Wages Activity) ---
         const tableHeader = [['Data', 'Voci Variabili', 'Quantità', 'Trattenute', 'Competenze', 'Riferimento']];
         const tableBody = entries.map(e => [
             new Date(e.timestamp).toLocaleDateString(),
@@ -536,22 +555,43 @@ export default function Admin() {
             head: tableHeader,
             body: tableBody,
             theme: 'grid',
-            headStyles: { fillColor: [240, 240, 240] as [number, number, number], textColor: [100, 100, 100] as [number, number, number], fontSize: 7, fontStyle: 'bold' },
-            bodyStyles: { fontSize: 8 },
+            headStyles: { 
+                fillColor: [248, 250, 252] as [number, number, number], 
+                textColor: [71, 85, 105] as [number, number, number], 
+                fontSize: 7, 
+                fontStyle: 'bold',
+                lineWidth: 0.1
+            },
+            bodyStyles: { 
+                fontSize: 8,
+                textColor: [30, 41, 59],
+                lineWidth: 0.1
+            },
             margin: { left: 10, right: 10 },
             tableWidth: 190,
         });
 
-        const finalY = (doc as any).lastAutoTable.finalY + 5;
+        const tableDoc = doc as any;
+        const finalY = tableDoc.lastAutoTable.finalY + 8;
 
-        // --- SECTION: Footer Summary ---
-        drawBox(10, finalY, 25, 10, "Comp. Tot.", `€ ${summary.userSummaries[0]?.salary.toFixed(2)}`);
-        drawBox(35, finalY, 25, 10, "Tratt. Tot.", "€ 0,00");
-        drawBox(60, finalY, 30, 10, "Arrotondamento", "0,00");
-        drawBox(150, finalY, 50, 10, "NETTO BUSTA", "");
+        // --- SECTION: Footer Final Totals ---
+        drawBox(10, finalY, 30, 15, "Comp. Tot.", `€ ${summary.userSummaries[0]?.salary.toFixed(2)}`);
+        drawBox(40, finalY, 30, 15, "Tratt. Tot.", "€ 0,00");
+        drawBox(70, finalY, 40, 15, "Arrotondamento", "0,00");
+        
+        // Net Busta: Highlighted Premium Box
+        doc.setDrawColor(59, 130, 246); // Primary blue
+        doc.setFillColor(248, 250, 252);
+        doc.rect(140, finalY, 60, 15, 'FD');
+        
+        doc.setFontSize(7);
+        doc.setTextColor(59, 130, 246);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text(`€ ${summary.userSummaries[0]?.salary.toFixed(2)}`, 160, finalY + 8);
+        doc.text("NETTO BUSTA", 145, finalY + 5);
+        
+        doc.setFontSize(14);
+        doc.setTextColor(30, 41, 59);
+        doc.text(`€ ${summary.userSummaries[0]?.salary.toFixed(2)}`, 145, finalY + 11);
 
         doc.save(`busta_paga_${summary.userSummaries[0]?.name.replace(/\s/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
     };
