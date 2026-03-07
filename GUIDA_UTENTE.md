@@ -24,7 +24,7 @@ Una volta dentro, per sbloccare tutte le funzioni:
 ## 3. Impostare il Nome Azienda 🏢
 Per rendere l'app tua al 100%:
 1.  Clicca su **⚙️ Impostazioni**.
-2.  Nel box "**Nome Azienda**", cancella il nome vecchio e scrivi il nome della tua azienda.
+2.  Nel box "**Nome Azienda**", inserisci da zero il nome della tua azienda.
 3.  Clicca su **"Aggiorna"**. Ora il tuo nome apparirà ovunque!
 
 ---
