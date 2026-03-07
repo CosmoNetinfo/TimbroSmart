@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Home, Calendar, Wallet, User, History, ChevronLeft } from 'lucide-react';
 
 interface HistoryEntry {
     type: 'IN' | 'OUT';
@@ -157,7 +158,7 @@ export default function HistoryPage() {
             <div className="glass card animate-fade-in" style={{ textAlign: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
                     <Link href="/dashboard" className="btn" style={{ width: 'auto', padding: '0.5rem 1rem', marginRight: '1rem', background: 'var(--surface)' }}>
-                        ← Indietro
+                        <History className="inline-block mr-2" /> Lo Storico
                     </Link>
                     <h2 style={{ margin: 0, flexGrow: 1 }}>Storico Settimanale</h2>
                 </div>
@@ -230,6 +231,7 @@ export default function HistoryPage() {
                                             }}>
                                                 <div>
                                                     <div style={{ fontWeight: 600 }}>{shift.date}</div>
+                                                    <Home size={20} />
                                                     <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
                                                         {shift.start} → {shift.end}
                                                     </div>

@@ -44,3 +44,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# sensitive data
+CREDENZIALI_BULK.json
+MASTER_CONTROL.md
+CREDENTIALS_TEST.md
+*.json.bak

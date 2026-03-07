@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Home, Calendar, Wallet, User, CreditCard, ChevronLeft } from 'lucide-react';
 
 interface Payment {
     id: number;
@@ -94,7 +95,7 @@ export default function PaymentsPage() {
                         marginBottom: '1rem',
                         fontSize: '0.9rem'
                     }}>
-                        ← Torna alla Dashboard
+                        <ChevronLeft size={16} /> Torna alla Dashboard
                     </Link>
                     <h1 style={{ 
                         fontSize: '2rem', 
@@ -103,7 +104,7 @@ export default function PaymentsPage() {
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent'
                     }}>
-                        💰 I Miei Pagamenti
+                        <CreditCard className="inline-block mr-2" /> I Miei Pagamenti
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                         Storico dei pagamenti ricevuti
@@ -248,9 +249,9 @@ export default function PaymentsPage() {
                                         gap: '0.5rem',
                                         color: 'var(--text)'
                                     }}>
-                                        <span>📅 {formatDate(payment.periodStart)}</span>
+                                        <span><Calendar size={14} className="inline-block mr-1" /> {formatDate(payment.periodStart)}</span>
                                         <span style={{ color: 'var(--text-secondary)' }}>→</span>
-                                        <span>📅 {formatDate(payment.periodEnd)}</span>
+                                        <span><Calendar size={14} className="inline-block mr-1" /> {formatDate(payment.periodEnd)}</span>
                                     </div>
                                 </div>
 
@@ -276,19 +277,19 @@ export default function PaymentsPage() {
             {/* Bottom Navigation */}
             <div className="bottom-nav animate-slide-up">
                 <Link href="/dashboard" className="nav-item">
-                    <span style={{ fontSize: '1.2rem' }}>🏠</span>
+                    <Home size={20} />
                     Home
                 </Link>
                 <Link href="/dashboard/calendar" className="nav-item">
-                    <span style={{ fontSize: '1.2rem' }}>📅</span>
+                    <Calendar size={20} />
                     Calendario
                 </Link>
                 <div className="nav-item active">
-                    <span style={{ fontSize: '1.2rem' }}>💰</span>
+                    <Wallet size={20} />
                     Pagamenti
                 </div>
                 <div onClick={handleLogout} className="nav-item" style={{ cursor: 'pointer' }}>
-                    <span style={{ fontSize: '1.2rem' }}>👤</span>
+                    <User size={20} />
                     Esci
                 </div>
             </div>

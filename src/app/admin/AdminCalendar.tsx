@@ -1,5 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { it } from 'date-fns/locale';
+import { Calendar, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 
 interface CalendarEvent {
     id: string;
@@ -50,7 +53,7 @@ export default function AdminCalendar({ users }: { users: User[] }) {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDeleteEvent = async (id: string) => {
         if (!confirm('Eliminare questo evento?')) return;
         try {
             const res = await fetch(`/api/calendar?id=${id}`, { method: 'DELETE' });
@@ -66,16 +69,16 @@ export default function AdminCalendar({ users }: { users: User[] }) {
     return (
         <div className="card mb-8 animate-slide-up">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
-                <h3 style={{ margin: 0 }}>📅 Calendario Aziendale</h3>
+                <h3 style={{ margin: 0 }}><Calendar size={20} className="inline mr-2" /> Calendario Aziendale (Ferie/Malattie)</h3>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)} style={{ width: '200px' }}>
                         <option value="">Tutti i dipendenti</option>
                         {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                     </select>
                     <div style={{ background: 'var(--surface-alt)', padding: '5px 15px', borderRadius: '8px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="btn-ghost" style={{ padding: '5px' }}>◀️</button>
+                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
                         <span style={{ fontWeight: 600, minWidth: '120px', textAlign: 'center' }}>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="btn-ghost" style={{ padding: '5px' }}>▶️</button>
+                        <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
                     </div>
                 </div>
             </div>
@@ -111,7 +114,7 @@ export default function AdminCalendar({ users }: { users: User[] }) {
                                     </td>
                                     <td>{e.title}</td>
                                     <td>
-                                        <button onClick={() => handleDelete(e.id)} className="btn btn-ghost" style={{ color: 'var(--danger)' }}>🗑️</button>
+                                        <button onClick={() => handleDeleteEvent(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}><Trash2 size={18} /></button>
                                     </td>
                                 </tr>
                             ))}

@@ -7,6 +7,7 @@ import autoTable from 'jspdf-autotable';
 import PaymentsManagement from './PaymentsManagement';
 import AdminCalendar from './AdminCalendar';
 import LicenseManagement from './LicenseManagement';
+import { Users, CreditCard, Calendar, Key, Settings, LogOut, Clock, DollarSign, BarChart3, Trash2, Camera, Plus, X } from 'lucide-react';
 
 
 interface AdminUser {
@@ -542,7 +543,7 @@ export default function Admin() {
                             style={{ flex: '1 1 auto', minWidth: 'max-content' }} 
                             className={`btn ${showPayments ? 'btn-primary' : 'btn-secondary'}`}
                         >
-                            {showPayments ? 'Chiudi Pagamenti' : '💰 Gestione Pagamenti'}
+                            {showPayments ? 'Chiudi Pagamenti' : <><CreditCard size={18} className="inline mr-2" /> Gestione Pagamenti</>}
                         </button>
 
                         <button 
@@ -564,17 +565,17 @@ export default function Admin() {
                             {showUsers ? 'Chiudi Dipendenti' : '👥 Gestione Dipendenti'}
                         </button>
                         <button onClick={() => setShowCalendar(!showCalendar)} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className={`btn ${showCalendar ? 'btn-primary' : 'btn-secondary'}`}>
-                            {showCalendar ? 'Chiudi Calendario' : '📅 Calendario Aziendale'}
+                            {showCalendar ? 'Chiudi Calendario' : <><Calendar size={18} className="inline mr-2" /> Calendario Aziendale</>}
                         </button>
                         <button onClick={() => setShowLicense(!showLicense)} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className={`btn ${showLicense ? 'btn-primary' : 'btn-secondary'}`}>
-                            {showLicense ? 'Chiudi Licenza' : '🔑 Gestione Licenza'}
+                            {showLicense ? 'Chiudi Licenza' : <><Key size={18} className="inline mr-2" /> Gestione Licenza</>}
                         </button>
                         <button onClick={() => setShowSettings(!showSettings)} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className={`btn ${showSettings ? 'btn-primary' : 'btn-secondary'}`}>
-                            {showSettings ? 'Chiudi Settings' : '⚙️ Impostazioni'}
+                            {showSettings ? 'Chiudi Settings' : <><Settings size={18} className="inline mr-2" /> Impostazioni</>}
                         </button>
 
                         <button onClick={handleLogout} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className="btn btn-danger">
-                            Esci
+                            <LogOut size={18} className="inline mr-2" /> Esci
                         </button>
                     </div>
                 </div>
@@ -640,7 +641,7 @@ export default function Admin() {
                 {showUsers && (
                     <div className="mb-8 animate-slide-up">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h3 style={{ margin: 0 }}>👥 Gestione Dipendenti & Matricole</h3>
+                             <h3 style={{ margin: 0 }}><Users size={20} className="inline mr-2" /> Gestione Dipendenti & Matricole</h3>
                             <button 
                                 onClick={() => setShowAddUser(!showAddUser)} 
                                 className="btn btn-primary"
@@ -699,7 +700,7 @@ export default function Admin() {
                                             style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
                                             title="Elimina Dipendente"
                                         >
-                                            🗑️
+                                            <Clock size={32} color="var(--accent)" />
                                         </button>
                                     </div>
                                 </div>
@@ -712,7 +713,7 @@ export default function Admin() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }} className="mb-8">
                     <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div style={{ background: 'var(--accent-light)', padding: '16px', borderRadius: '16px', fontSize: '2rem' }}>
-                            ⏱️
+                            <Clock size={32} color="var(--accent)" />
                         </div>
                         <div>
                             <p className="text-muted font-medium mb-1">Ore Totali (Periodo)</p>
@@ -721,7 +722,7 @@ export default function Admin() {
                     </div>
                     <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         <div style={{ background: 'var(--success-bg)', padding: '16px', borderRadius: '16px', fontSize: '2rem' }}>
-                            💸
+                            <DollarSign size={32} color="var(--success)" />
                         </div>
                         <div>
                             <p className="text-muted font-medium mb-1">Stipendio Stimato</p>
@@ -732,7 +733,7 @@ export default function Admin() {
 
                 {/* Charts Section */}
                 <div className="card mb-8 animate-slide-up">
-                    <h3 className="mb-4">📊 Statistiche Ore (Periodo)</h3>
+                     <h3 className="mb-4"><BarChart3 size={20} className="inline mr-2" /> Statistiche Ore (Periodo)</h3>
                     <div style={{ width: '100%', height: 300 }}>
                         {isMounted && (
                             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -890,7 +891,7 @@ export default function Admin() {
                                                     style={{ color: 'var(--danger)', padding: '8px 12px' }}
                                                     title="Elimina"
                                                 >
-                                                    🗑️
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>

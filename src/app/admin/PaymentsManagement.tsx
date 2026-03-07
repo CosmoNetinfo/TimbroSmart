@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { CreditCard, Trash2 } from 'lucide-react';
 
 interface Payment {
     id: string | number;
@@ -148,7 +149,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
         <div className="mb-8 animate-slide-up">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <div>
-                    <h3 style={{ margin: 0 }}>💰 Gestione Pagamenti</h3>
+                    <h3 style={{ margin: 0 }}><CreditCard size={20} className="inline mr-2" /> Gestione Pagamenti</h3>
                     <p className="text-muted" style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem' }}>
                         Totale pagato: <strong style={{ color: 'var(--success)' }}>{formatCurrency(totalPaid)}</strong>
                     </p>
@@ -301,7 +302,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                                             style={{ color: 'var(--danger)', padding: '8px 12px' }}
                                             title="Elimina"
                                         >
-                                            🗑️
+                                             <Trash2 size={18} />
                                         </button>
                                     </td>
                                 </tr>

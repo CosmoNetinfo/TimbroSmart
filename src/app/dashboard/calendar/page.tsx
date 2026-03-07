@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight, ArrowLeft, Trash2, Sun, Heart, Clock, Plus, Sparkles, Home, Wallet, User, Calendar } from 'lucide-react';
 
 interface CalendarEvent {
     id: string;
@@ -73,6 +74,11 @@ export default function CalendarPage() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        router.push('/');
+    };
+
     // Calendar logic
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
@@ -86,18 +92,16 @@ export default function CalendarPage() {
             <div className="animate-slide-up" style={{ padding: '2rem 1rem', paddingBottom: '100px' }}>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <Link href="/dashboard" style={{ textDecoration: 'none', fontSize: '1.5rem' }}>⬅️</Link>
+                    <Link href="/dashboard" style={{ color: 'var(--text-primary)' }}><ArrowLeft /></Link>
                     <h2 style={{ margin: 0 }}>Calendario</h2>
-                    <button onClick={() => setShowModal(true)} className="btn-glass-primary" style={{ padding: '8px 15px', width: 'auto' }}>
-                        +
-                    </button>
+                        <Plus size={20} />
                 </div>
 
                 {/* Month Picker */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', background: 'var(--surface)', padding: '10px', borderRadius: '12px' }}>
-                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>◀️</button>
+                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronLeft /></button>
                     <span style={{ fontWeight: 'bold' }}>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>▶️</button>
+                    <button onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))} className="btn-ghost" style={{ padding: '5px' }}><ChevronRight /></button>
                 </div>
 
                 {/* Grid */}
@@ -158,14 +162,14 @@ export default function CalendarPage() {
                                         background: e.type === 'FERIE' ? '#dcfce7' : e.type === 'MALATTIA' ? '#fee2e2' : '#dbeafe',
                                         fontSize: '1.2rem'
                                     }}>
-                                        {e.type === 'FERIE' ? '🌴' : e.type === 'MALATTIA' ? '🤒' : '🕒'}
+                                        {e.type === 'FERIE' ? <Sun size={20} /> : e.type === 'MALATTIA' ? <Heart size={20} /> : <Clock size={20} />}
                                     </div>
                                     <div>
                                         <div className="font-bold">{e.title}</div>
                                         <div className="text-muted" style={{ fontSize: '0.8rem' }}>{new Date(e.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })}</div>
                                     </div>
                                 </div>
-                                <button onClick={() => handleDeleteEvent(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}>🗑️</button>
+                                <button onClick={() => handleDeleteEvent(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)' }}><Trash2 size={18} /></button>
                             </div>
                         ))}
                         {events.length === 0 && <p className="text-muted text-center py-4">Nessun evento in questo mese.</p>}
@@ -186,10 +190,10 @@ export default function CalendarPage() {
                             <div className="mb-4">
                                 <label className="label">Tipo</label>
                                 <select value={newEvent.type} onChange={e => setNewEvent({...newEvent, type: e.target.value as any})} className="custom-input">
-                                    <option value="FERIE">🌴 Ferie</option>
-                                    <option value="MALATTIA">🤒 Malattia</option>
-                                    <option value="TURNO">🕒 Turno/Straordinario</option>
-                                    <option value="ALTRO">✨ Altro</option>
+                                    <option value="FERIE">Sole - Ferie</option>
+                                    <option value="MALATTIA">Cuore - Malattia</option>
+                                    <option value="TURNO">Orologio - Turno/Straordinario</option>
+                                    <option value="ALTRO">Scintille - Altro</option>
                                 </select>
                             </div>
                             <div className="mb-4">
@@ -208,6 +212,26 @@ export default function CalendarPage() {
                     </div>
                 </div>
             )}
+
+            {/* Bottom Navigation (Richiesto dall'utente) */}
+            <div className="bottom-nav animate-slide-up">
+                <Link href="/dashboard" className="nav-item">
+                    <Home size={20} />
+                    Home
+                </Link>
+                <div className="nav-item active">
+                    <Calendar size={20} />
+                    Calendario
+                </div>
+                <Link href="/dashboard/payments" className="nav-item">
+                    <Wallet size={20} />
+                    Pagamenti
+                </Link>
+                <div onClick={handleLogout} className="nav-item" style={{ cursor: 'pointer' }}>
+                    <User size={20} />
+                    Esci
+                </div>
+            </div>
         </main>
     );
 }

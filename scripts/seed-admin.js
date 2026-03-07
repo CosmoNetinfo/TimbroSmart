@@ -1,4 +1,24 @@
+const fs = require('fs');
+const path = require('path');
 
+// Manual env loading
+try {
+    const envPath = path.resolve(process.cwd(), '.env.local');
+    if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        envContent.split('\n').forEach(line => {
+            const [key, ...valueParts] = line.split('=');
+            if (key && valueParts.length > 0) {
+                let value = valueParts.join('=').trim();
+                // Remove quotes if present
+                if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+                process.env[key.trim()] = value;
+            }
+        });
+    }
+} catch (e) {
+    console.error("Warning: Could not load .env.local manually", e);
+}
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 

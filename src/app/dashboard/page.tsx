@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Camera, Home, Calendar, Wallet, User, Pencil, Clock } from 'lucide-react';
 
 interface DashboardUser {
     id: number;
@@ -227,7 +228,7 @@ export default function Dashboard() {
                                 color: 'white',
                                 border: '2px solid rgba(0,0,0,0.2)'
                             }}>
-                                ✎
+                                <Pencil size={12} />
                             </div>
                         </div>
                     </div>
@@ -250,7 +251,7 @@ export default function Dashboard() {
                                 </div>
                             )}
                             <div style={{ position: 'absolute', top: '30px', right: '40px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '50%' }}>
-                                🕒
+                                <Clock size={24} color="white" />
                             </div>
                         </div>
                     ) : (
@@ -289,7 +290,7 @@ export default function Dashboard() {
                                 onClick={() => document.getElementById('cameraInput')?.click()}
                                 disabled={loading}
                             >
-                                <span style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📸</span>
+                                <Camera size={32} style={{ marginBottom: '0.5rem' }} />
                                 {loading ? 'Attendere...' : 'Timbra Entrata'}
                             </button>
                         ) : (
@@ -298,20 +299,26 @@ export default function Dashboard() {
                                 onClick={() => document.getElementById('cameraInput')?.click()}
                                 disabled={loading}
                             >
-                                <span style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📸</span>
+                                <Camera size={32} style={{ marginBottom: '0.5rem' }} />
                                 {loading ? 'Attendere...' : 'Timbra Uscita'}
                             </button>
                         )}
 
+                        {/* Riquadro Calendario (Richiesto dall'utente) */}
+                        <Link href="/dashboard/calendar" className="btn-square-lg btn-glass" style={{ textDecoration: 'none', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))' }}>
+                            <Calendar size={32} style={{ marginBottom: '0.5rem' }} />
+                            Calendario
+                        </Link>
+
                         {/* Button 2: View History */}
                         <Link href="/dashboard/history" className="btn-square-lg btn-glass" style={{ textDecoration: 'none' }}>
-                            <span style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📅</span>
+                            <Calendar size={32} style={{ marginBottom: '0.5rem' }} />
                             Vedi Storico
                         </Link>
 
                         {/* Button 3: View Payments */}
                         <Link href="/dashboard/payments" className="btn-square-lg btn-glass" style={{ textDecoration: 'none', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))' }}>
-                            <span style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>💰</span>
+                            <Wallet size={32} style={{ marginBottom: '0.5rem' }} />
                             Pagamenti
                         </Link>
                     </div>
@@ -321,20 +328,20 @@ export default function Dashboard() {
             {/* 4. Bottom Navigation */}
             <div className="bottom-nav animate-slide-up">
                 <div onClick={() => { if (user) { setStatus('LOADING'); fetchStatus(user.id); } }} className="nav-item active" style={{ cursor: 'pointer' }}>
-                    <span style={{ fontSize: '1.2rem' }}>🏠</span>
+                    <Home size={20} />
                     Home
                 </div>
                 <Link href="/dashboard/calendar" className="nav-item">
-                    <span style={{ fontSize: '1.2rem' }}>📅</span>
+                    <Calendar size={20} />
                     Calendario
                 </Link>
 
                 <Link href="/dashboard/payments" className="nav-item">
-                    <span style={{ fontSize: '1.2rem' }}>💰</span>
+                    <Wallet size={20} />
                     Pagamenti
                 </Link>
                 <div onClick={handleLogout} className="nav-item" style={{ cursor: 'pointer' }}>
-                    <span style={{ fontSize: '1.2rem' }}>👤</span>
+                    <User size={20} />
                     Esci
                 </div>
             </div>
