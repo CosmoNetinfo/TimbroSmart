@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Mail, HelpCircle } from 'lucide-react';
 
 export default function Home() {
   const [name, setName] = useState('');
@@ -63,6 +64,11 @@ export default function Home() {
       setLoading(false);
     }
 
+  };
+
+  const handleFreePlanRequest = () => {
+    const mailto = "mailto:cosmonetinfo85@gmail.com?subject=TIMBROSMART - Richiesta Chiave Piano FREE&body=Salve, vorrei richiedere una chiave per il piano FREE di TimbroSmart.%0A%0ANome Azienda: ";
+    window.location.assign(mailto);
   };
 
   return (
@@ -144,23 +150,52 @@ export default function Home() {
       {/* 4. Footer & Helper */}
       <div className="animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '2rem', textAlign: 'center', width: '100%' }}>
         
-        {/* Nuovo Box Piano FREE - Messo in evidenza */}
-        <div style={{ marginBottom: '2rem', padding: '1.2rem', background: 'rgba(14, 165, 233, 0.1)', borderRadius: '20px', border: '1px dashed rgba(14, 165, 233, 0.3)' }}>
-          <p style={{ fontSize: '0.85rem', marginBottom: '0.8rem', opacity: 0.9, fontWeight: 600 }}>Cerca il tuo codice azienda o</p>
-          <a 
-            href="mailto:cosmonetinfo85@gmail.com?subject=TIMBROSMART%20-%20Richiesta%20Chiave%20Piano%20FREE&body=Salve,%20vorrei%20richiedere%20una%20chiave%20per%20il%20piano%20FREE%20di%20TimbroSmart.%0A%0ANome%20Azienda:%20"
-            className="btn-glass-secondary"
-            style={{ textDecoration: 'none', height: '45px', fontSize: '0.85rem', width: 'auto', display: 'inline-flex', padding: '0 20px' }}
-          >
-            Richiedi Piano FREE Gratis
-          </a>
-          <p style={{ fontSize: '0.75rem', marginTop: '1rem', opacity: 0.6 }}>
-            Oppure scrivi a: <strong style={{ color: 'var(--primary)' }}>cosmonetinfo85@gmail.com</strong>
+        {/* Nuovo Box Piano FREE - Messo in evidenza con priorità di click */}
+        <div 
+          className="animate-fade-in" 
+          style={{ 
+            animationDelay: '0.4s', 
+            marginBottom: '2rem', 
+            padding: '1.5rem', 
+            background: 'rgba(14, 165, 233, 0.08)', 
+            borderRadius: '24px', 
+            border: '1px dashed rgba(14, 165, 233, 0.3)',
+            position: 'relative',
+            zIndex: 50
+          }}
+        >
+          <p style={{ fontSize: '0.9rem', marginBottom: '1rem', opacity: 0.9, fontWeight: 600 }}>
+            Non hai ancora un codice azienda?
           </p>
+          
+          <button 
+            onClick={handleFreePlanRequest}
+            className="btn-glass-primary"
+            style={{ 
+              height: '55px', 
+              fontSize: '0.95rem', 
+              display: 'flex', 
+              gap: '10px',
+              background: 'linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%)',
+              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)'
+            }}
+          >
+            <Mail size={18} /> Richiedi Piano FREE Gratis
+          </button>
+
+          <div style={{ marginTop: '1.2rem', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+            <p style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '4px' }}>Oppure scrivi direttamente a:</p>
+            <a 
+              href="mailto:cosmonetinfo85@gmail.com" 
+              style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none' }}
+            >
+              cosmonetinfo85@gmail.com
+            </a>
+          </div>
         </div>
 
-        <Link href="/help" className="helper-text" style={{ fontSize: '0.8rem', opacity: 0.6, textDecoration: 'none' }}>
-          Hai bisogno di aiuto o hai dimenticato il codice?
+        <Link href="/help" className="helper-text" style={{ fontSize: '0.85rem', opacity: 0.6, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <HelpCircle size={14} /> Hai bisogno di aiuto o hai dimenticato il codice?
         </Link>
       </div>
 
