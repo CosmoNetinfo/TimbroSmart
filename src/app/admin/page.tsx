@@ -465,10 +465,9 @@ export default function Admin() {
         const monthYear = new Date().toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
 
         // --- ROW 1: Header ---
-        // Logo (Replacing INAIL with TimbroSmart)
+        // Logo (Brand Logo)
         try {
-            // Using a standard public path for the logo
-            doc.addImage('/logo-timbrosmart.png', 'PNG', 160, 10, 35, 35);
+            doc.addImage('/icons/app-icon-nobg.png', 'PNG', 172, 8, 25, 25);
         } catch (e) {
             console.warn("Logo not found, skipping", e);
         }
