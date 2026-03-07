@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import jsPDF from 'jspdf';
@@ -61,25 +61,10 @@ export default function Admin() {
     const [editTimestamp, setEditTimestamp] = useState('');
 
     useEffect(() => {
-        const stored = localStorage.getItem('user_meta');
-        if (!stored) {
-            router.push('/');
-            return;
-        }
-        const user = JSON.parse(stored);
-        if (user.role !== 'ADMIN') {
-            router.push('/dashboard');
-            return;
-        }
-
         setIsMounted(true);
-        fetchUsers();
-        fetchEntries();
-        fetchCompanyPlan();
-        fetchCompanyData();
-    }, [fetchEntries, router]);
+    }, []);
 
-    const fetchCompanyData = async () => {
+    const fetchCompanyData = useCallback(async () => {
         try {
             const res = await fetch('/api/admin/company');
             if (res.ok) {
@@ -87,21 +72,19 @@ export default function Admin() {
                 if (data.name) {
                     setCompanyName(data.name);
                     setNewCompanyName(data.name);
-                    // Attiva il blocco se il nomeazienda è quello di default
                     if (data.name === 'TimbroSmart') {
                         setNeedsCompanyName(true);
                     }
                 } else {
-                    // Se non c'è proprio il nomeazienda, consideralo default e blocca
                     setNeedsCompanyName(true);
                 }
             }
         } catch (e) {
             console.error(e);
         }
-    };
+    }, []);
 
-    const fetchCompanyPlan = async () => {
+    const fetchCompanyPlan = useCallback(async () => {
         try {
             const res = await fetch('/api/admin/license');
             if (res.ok) {
@@ -111,11 +94,9 @@ export default function Admin() {
         } catch (e) {
             console.error(e);
         }
-    };
+    }, []);
 
-
-
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const res = await fetch('/api/admin/users');
             if (res.ok) {
@@ -125,15 +106,14 @@ export default function Admin() {
         } catch (e) {
             console.error(e);
         }
-    };
+    }, []);
 
-    const fetchEntries = async () => {
+    const fetchEntries = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
             if (startDate) params.append('startDate', new Date(startDate).toISOString());
             if (endDate) {
-                // Set to end of day
                 const end = new Date(endDate);
                 end.setHours(23, 59, 59, 999);
                 params.append('endDate', end.toISOString());
@@ -153,7 +133,25 @@ export default function Admin() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [startDate, endDate, selectedUserId]);
+
+    useEffect(() => {
+        const stored = localStorage.getItem('user_meta');
+        if (!stored) {
+            router.push('/');
+            return;
+        }
+        const user = JSON.parse(stored);
+        if (user.role !== 'ADMIN') {
+            router.push('/dashboard');
+            return;
+        }
+
+        fetchUsers();
+        fetchEntries();
+        fetchCompanyPlan();
+        fetchCompanyData();
+    }, [fetchUsers, fetchEntries, fetchCompanyPlan, fetchCompanyData, router]);
 
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
     const [loadingPhoto, setLoadingPhoto] = useState(false);
@@ -488,7 +486,7 @@ export default function Admin() {
         
         // Brand Logo Positioning (Fixed to avoid overlap)
         try {
-            doc.addImage('/icons/app-icon-nobg.png', 'PNG', 165, 8, 30, 30);
+            doc.addImage('/logo-premium.png', 'PNG', 165, 8, 30, 30);
         } catch (e) {
             console.warn("Logo not found, skipping", e);
         }
