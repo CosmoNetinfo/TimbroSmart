@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react';
 
 interface Payment {
-    id: number;
+    id: string | number;
     amount: number;
     paymentDate: string;
     periodStart: string;
     periodEnd: string;
     notes?: string;
-    userId: number;
+    userId: string | number;
     user: {
         name: string;
         code: string;
@@ -16,7 +16,7 @@ interface Payment {
 }
 
 interface User {
-    id: number;
+    id: string | number;
     name: string;
     code: string;
 }
@@ -79,7 +79,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: parseInt(selectedUserId),
+                    userId: selectedUserId,
                     amount: parseFloat(amount),
                     periodStart,
                     periodEnd,
@@ -108,7 +108,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
         }
     };
 
-    const handleDeletePayment = async (paymentId: number) => {
+    const handleDeletePayment = async (paymentId: string | number) => {
         if (!confirm('Sei sicuro di voler eliminare questo pagamento?')) return;
 
         try {

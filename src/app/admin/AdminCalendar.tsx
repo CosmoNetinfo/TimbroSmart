@@ -11,7 +11,7 @@ interface CalendarEvent {
 }
 
 interface User {
-    id: number;
+    id: string | number;
     name: string;
 }
 
