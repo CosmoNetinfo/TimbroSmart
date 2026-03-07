@@ -488,9 +488,10 @@ export default function Admin() {
         drawBox(125, r1Y, 35, 15, "Mese di retribuzione", monthYear);
         drawBox(90, r1Y + 7.5, 35, 7.5, "Posizione INAIL Azienda", "987654321");
         
-        // Brand Logo Positioning (Fixed to avoid overlap)
+        // Brand Logo Positioning (Final fix for transparency and overlap)
         try {
-            doc.addImage('/logo-premium.png', 'PNG', 165, 8, 30, 30);
+            // Using 'FAST' alias for transparency preservation
+            doc.addImage('/logo-premium.png', 'PNG', 165, 5, 22, 22, undefined, 'FAST');
         } catch (e) {
             console.warn("Logo not found, skipping", e);
         }
