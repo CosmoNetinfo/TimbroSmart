@@ -44,8 +44,8 @@ export default function PrivacyPage() {
                 </section>
 
                 <section style={{ marginBottom: '1.5rem' }}>
-                    <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>6. Diritti dell'interessato</h2>
-                    <p>Ai sensi del GDPR (Regolamento UE 2016/679), l'interessato ha il diritto di:</p>
+                    <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>6. Diritti dell&apos;interessato</h2>
+                    <p>Ai sensi del GDPR (Regolamento UE 2016/679), l&apos;interessato ha il diritto di:</p>
                     <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
                         <li>Accedere ai propri dati.</li>
                         <li>Richiedere la rettifica o la cancellazione.</li>
