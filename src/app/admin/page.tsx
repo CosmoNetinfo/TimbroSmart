@@ -144,7 +144,7 @@ export default function Admin() {
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
     const [loadingPhoto, setLoadingPhoto] = useState(false);
 
-    const handleOpenPhoto = async (id: number) => {
+    const handleOpenPhoto = async (id: string | number) => {
         setLoadingPhoto(true);
         try {
             const res = await fetch(`/api/admin/get-photo?id=${id}`);
@@ -161,7 +161,7 @@ export default function Admin() {
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string | number) => {
         if (!confirm('Sei sicuro di voler eliminare questa timbratura?')) return;
 
         try {
@@ -289,7 +289,7 @@ export default function Admin() {
         }
     };
 
-    const handleUpdateWage = async (userId: number, wage: string) => {
+    const handleUpdateWage = async (userId: string | number, wage: string) => {
         try {
             const res = await fetch('/api/admin/update-wage', {
                 method: 'POST',
