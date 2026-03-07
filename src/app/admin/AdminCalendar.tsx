@@ -97,7 +97,12 @@ export default function AdminCalendar({ users }: { users: User[] }) {
                         <tbody>
                             {events.sort((a,b) => a.date.localeCompare(b.date)).map(e => (
                                 <tr key={e.id}>
-                                    <td>{new Date(e.date).toLocaleDateString('it-IT')}</td>
+                                    <td>
+                                        <div style={{ fontWeight: 600 }}>{new Date(e.date).toLocaleDateString('it-IT')}</div>
+                                        <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                                            ore {new Date(e.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    </td>
                                     <td><strong>{e.userName}</strong></td>
                                     <td>
                                         <span className={`status-badge ${e.type === 'FERIE' ? 'status-in' : e.type === 'MALATTIA' ? 'status-out' : ''}`} style={{ background: e.type === 'TURNO' ? '#dbeafe' : '', color: e.type === 'TURNO' ? '#1e40af' : '' }}>

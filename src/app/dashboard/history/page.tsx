@@ -67,27 +67,44 @@ export default function HistoryPage() {
         let totalEurosAllTime = 0;
 
         for (let i = 0; i < sorted.length; i++) {
-            if (sorted[i].type === 'IN') {
-                if (i + 1 < sorted.length && sorted[i + 1].type === 'OUT') {
-                    const start = new Date(sorted[i].timestamp);
-                    const end = new Date(sorted[i + 1].timestamp);
-                    const diff = end.getTime() - start.getTime();
-                    const hours = diff / (1000 * 60 * 60);
-                    const euros = hours * hourlyWage;
+            const current = sorted[i];
+            const next = sorted[i + 1];
 
-                    shifts.push({
-                        dateObj: start,
-                        date: start.toLocaleDateString('it-IT'),
-                        start: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        end: end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        hours,
-                        euros,
-                    });
+            const start = new Date(current.timestamp);
+            const dateStr = start.toLocaleDateString('it-IT');
+            const timeStart = start.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-                    totalHoursAllTime += hours;
-                    totalEurosAllTime += euros;
-                    i++; // Skip the OUT
-                }
+            if (current.type === 'IN' && next && next.type === 'OUT') {
+                const end = new Date(next.timestamp);
+                const timeEnd = end.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                const diff = end.getTime() - start.getTime();
+                const hours = Math.max(0, diff / (1000 * 60 * 60));
+                const euros = hours * hourlyWage;
+
+                shifts.push({
+                    dateObj: start,
+                    date: dateStr,
+                    start: timeStart,
+                    end: timeEnd,
+                    hours,
+                    euros,
+                    type: 'SHIFT'
+                } as any);
+
+                totalHoursAllTime += hours;
+                totalEurosAllTime += euros;
+                i++; // Salta il log OUT accoppiato
+            } else {
+                // Log singolo (es. solo entrata non ancora chiusa o log orfano)
+                shifts.push({
+                    dateObj: start,
+                    date: dateStr,
+                    start: timeStart,
+                    end: current.type === 'IN' ? 'In corso...' : '---',
+                    hours: 0,
+                    euros: 0,
+                    type: current.type
+                } as any);
             }
         }
 
