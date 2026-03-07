@@ -45,6 +45,7 @@ export default function Admin() {
     const [companyPlan, setCompanyPlan] = useState<string>('FREE');
     const [companyName, setCompanyName] = useState<string>('TimbroSmart');
     const [newCompanyName, setNewCompanyName] = useState('');
+    const [needsCompanyName, setNeedsCompanyName] = useState(false);
 
     // New User State
     const [showAddUser, setShowAddUser] = useState(false);
@@ -86,6 +87,13 @@ export default function Admin() {
                 if (data.name) {
                     setCompanyName(data.name);
                     setNewCompanyName(data.name);
+                    // Attiva il blocco se il nomeazienda è quello di default
+                    if (data.name === 'TimbroSmart') {
+                        setNeedsCompanyName(true);
+                    }
+                } else {
+                    // Se non c'è proprio il nomeazienda, consideralo default e blocca
+                    setNeedsCompanyName(true);
                 }
             }
         } catch (e) {
@@ -253,6 +261,7 @@ export default function Admin() {
 
             if (res.ok) {
                 setCompanyName(newCompanyName);
+                setNeedsCompanyName(false); // Sblocca la dashboard
                 alert('Nome azienda aggiornato con successo!');
             } else {
                 const data = await res.json();
@@ -492,7 +501,70 @@ export default function Admin() {
 
     return (
         <main className="container">
-            <div className="animate-slide-up">
+            {/* Overlay Bloccante per Nome Azienda */}
+            {needsCompanyName && (
+                <div 
+                    style={{ 
+                        position: 'fixed', 
+                        top: 0, 
+                        left: 0, 
+                        right: 0, 
+                        bottom: 0, 
+                        backgroundColor: 'rgba(2, 6, 23, 0.95)', 
+                        zIndex: 9999, 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        padding: '20px',
+                        backdropFilter: 'blur(10px)'
+                    }}
+                >
+                    <div className="card animate-slide-up" style={{ maxWidth: '500px', width: '100%', textAlign: 'center', border: '2px solid var(--primary)' }}>
+                        <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem' }}>
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+                                <path d="M20 40C20 23.4315 33.4315 10 50 10C66.5685 10 80 23.4315 80 40C80 56.5685 60 90 50 90C40 90 20 56.5685 20 40Z" fill="url(#azureGradOverlay)" />
+                                <defs>
+                                    <linearGradient id="azureGradOverlay" x1="50" y1="10" x2="50" y2="90">
+                                        <stop stopColor="#0ea5e9" />
+                                        <stop offset="1" stopColor="#2563eb" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>Configura la tua Azienda</h2>
+                        <p className="text-muted mb-6">Benvenuto su TimbroSmart! Per iniziare a utilizzare il pannello, inserisci il nome ufficiale della tua azienda.</p>
+                        
+                        <form onSubmit={handleUpdateCompanyName}>
+                            <div className="mb-4">
+                                <label className="label">Nome Azienda</label>
+                                <input
+                                    type="text"
+                                    placeholder="Es: Rossi Costruzioni S.r.l."
+                                    value={newCompanyName}
+                                    onChange={(e) => setNewCompanyName(e.target.value)}
+                                    className="custom-input"
+                                    autoFocus
+                                    required
+                                    style={{ textAlign: 'center' }}
+                                />
+                            </div>
+                            <button type="submit" className="btn-glass-primary" style={{ height: '55px', fontSize: '1.1rem' }}>
+                                Salva e Inizia
+                            </button>
+                        </form>
+                        
+                        <button 
+                            onClick={handleLogout} 
+                            style={{ marginTop: '1.5rem', opacity: 0.7, background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '0.9rem' }}
+                        >
+                            Esci e torna al login
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <div className="animate-slide-up" style={{ opacity: needsCompanyName ? 0.3 : 1, pointerEvents: needsCompanyName ? 'none' : 'auto' }}>
 
                 {/* Header Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }} className="mb-8">
