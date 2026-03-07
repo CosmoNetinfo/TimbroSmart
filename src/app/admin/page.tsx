@@ -144,7 +144,12 @@ export default function Admin() {
             if (res.ok) {
                 const data = await res.json();
                 setEntries(data);
+            } else {
+                const err = await res.json();
+                alert(`Errore nel caricamento: ${err.error || 'Server error'}`);
             }
+        } catch (e) {
+            alert('Errore di connessione al server');
         } finally {
             setLoading(false);
         }
@@ -439,58 +444,117 @@ export default function Admin() {
         }
         if (entries.length === 0) return;
 
-
         const doc = new jsPDF();
+        
+        // Helper to draw a box with a label
+        const drawBox = (x: number, y: number, w: number, h: number, label: string, content?: string | number) => {
+            doc.setDrawColor(200);
+            doc.rect(x, y, w, h);
+            doc.setFontSize(7);
+            doc.setTextColor(100);
+            doc.setFont("helvetica", "normal");
+            doc.text(label.toUpperCase(), x + 2, y + 4);
+            if (content !== undefined) {
+                doc.setFontSize(9);
+                doc.setTextColor(0);
+                doc.setFont("helvetica", "bold");
+                doc.text(String(content), x + 2, y + 10);
+            }
+        };
 
-        // Title
-        doc.setFontSize(20);
-        doc.setTextColor(30, 41, 59); // var(--primary)
-        doc.text("Report Presenze & Paghe", 14, 22);
+        const monthYear = new Date().toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
 
-        doc.setFontSize(11);
-        doc.setTextColor(100);
-        doc.text(`Generato il: ${new Date().toLocaleDateString()} alle ${new Date().toLocaleTimeString()}`, 14, 30);
+        // --- ROW 1: Header ---
+        // Logo (Replacing INAIL with TimbroSmart)
+        try {
+            // Using a standard public path for the logo
+            doc.addImage('/logo-timbrosmart.png', 'PNG', 160, 10, 35, 35);
+        } catch (e) {
+            console.warn("Logo not found, skipping", e);
+        }
 
-        // Summary Table
-        doc.setFontSize(14);
-        doc.setTextColor(0);
-        doc.text("Riepilogo Stipendi", 14, 45);
+        drawBox(10, 10, 80, 15, "Nome Azienda", companyName);
+        drawBox(90, 10, 35, 7.5, "Posizione INPS Azienda", "1234567890"); // Placeholder
+        drawBox(125, 10, 35, 15, "Mese di retribuzione", monthYear);
+        drawBox(90, 17.5, 35, 7.5, "Posizione INAIL Azienda", "987654321"); // Placeholder
+        
+        doc.setFontSize(6);
+        doc.setTextColor(150);
+        doc.text("C.d.C.", 12, 32);
+        doc.text("--------------------", 12, 38);
 
-        const summaryData = summary.userSummaries.map(s => [
-            s.name,
-            `${s.hours.toFixed(2)} h`,
-            `€ ${s.wage.toFixed(2)}`,
-            `€ ${s.salary.toFixed(2)}`
-        ]);
+        // --- ROW 2: Employee Info ---
+        drawBox(10, 40, 25, 12, "Cod. Dip.", "---");
+        drawBox(35, 40, 30, 12, "Matricola", summary.userSummaries[0]?.userId.toString().slice(-6) || "---");
+        drawBox(65, 40, 100, 12, "Cognome Nome", summary.userSummaries[0]?.name || "Dipendente");
+        drawBox(165, 40, 35, 12, "Data assunzione", "01/01/2024");
 
-        autoTable(doc, {
-            startY: 50,
-            head: [['Dipendente', 'Ore Totali', 'Paga Oraria', 'Totale Stimato']],
-            body: summaryData,
-            theme: 'striped',
-            headStyles: { fillColor: [59, 130, 246] }, // Blue
-        });
+        // --- ROW 3: Secondary Info ---
+        drawBox(10, 52, 60, 12, "Indirizzo", "---");
+        drawBox(70, 52, 40, 6, "Codice Fiscale", "---");
+        drawBox(110, 52, 40, 6, "Codice Inps", "---");
+        drawBox(150, 52, 50, 6, "Sede di Lavoro", "Sede Principale");
+        drawBox(70, 58, 40, 6, "Contratto di Lavoro", "Commercio");
+        drawBox(110, 58, 40, 6, "Qualifica", "Impiegato");
+        drawBox(150, 58, 50, 6, "Livello", "4");
 
-        // Entries Table
-        const finalY = (doc as any).lastAutoTable.finalY || 50;
-        doc.text("Dettaglio Timbrature", 14, finalY + 15);
+        // --- ROW 4: Payment Methods ---
+        drawBox(10, 64, 80, 10, "Modalità di pagamento", "Bonifico Bancario");
+        drawBox(90, 64, 110, 10, "Riferimenti Bancari", "---");
 
-        const tableData = entries.map(e => [
+        // --- ROW 5: Time Stats ---
+        drawBox(10, 74, 18, 10, "Sett. Retr.", "---");
+        drawBox(28, 74, 18, 10, "GG. Retr.", "26");
+        drawBox(46, 74, 25, 10, "GG. Lavorati", (summary.userSummaries[0]?.hours / 8).toFixed(0));
+        drawBox(71, 74, 25, 10, "Ore Lavorate", summary.userSummaries[0]?.hours.toFixed(2));
+        drawBox(96, 74, 25, 5, "Scatti Anzianità", "");
+        doc.setFontSize(6);
+        doc.text("n° --  Data --  Prossimo --", 98, 83);
+        drawBox(121, 74, 25, 10, "", "");
+        drawBox(146, 74, 25, 10, "", "");
+        drawBox(171, 74, 29, 10, "", "");
+
+        // --- ROW 6: Wage Breakdown ---
+        drawBox(10, 84, 30, 10, "Paga base", `€ ${summary.userSummaries[0]?.wage.toFixed(2)}`);
+        drawBox(40, 84, 30, 10, "Ind. Contigenza", "---");
+        drawBox(70, 84, 20, 10, "E.D.R", "---");
+        drawBox(90, 84, 20, 10, "E.E.T", "---");
+        drawBox(110, 84, 40, 10, "Ind. Terr. Settore", "---");
+
+        // --- SECTION: Variable Items Table ---
+        const tableHeader = [['Data', 'Voci Variabili', 'Quantità', 'Trattenute', 'Competenze', 'Riferimento']];
+        const tableBody = entries.map(e => [
             new Date(e.timestamp).toLocaleDateString(),
-            new Date(e.timestamp).toLocaleTimeString(),
-            e.user.name,
             e.type === 'IN' ? 'ENTRATA' : 'USCITA',
+            '1.00',
+            '',
+            '',
+            new Date(e.timestamp).toLocaleTimeString()
         ]);
 
         autoTable(doc, {
-            startY: finalY + 20,
-            head: [['Data', 'Ora', 'Dipendente', 'Stato']],
-            body: tableData,
+            startY: 96,
+            head: tableHeader,
+            body: tableBody,
             theme: 'grid',
-            headStyles: { fillColor: [30, 41, 59] }, // Dark Slate
+            headStyles: { fillColor: [240, 240, 240] as [number, number, number], textColor: [100, 100, 100] as [number, number, number], fontSize: 7, fontStyle: 'bold' },
+            bodyStyles: { fontSize: 8 },
+            margin: { left: 10, right: 10 },
+            tableWidth: 190,
         });
 
-        doc.save(`busta_paga_simulata_${new Date().toISOString().split('T')[0]}.pdf`);
+        const finalY = (doc as any).lastAutoTable.finalY + 5;
+
+        // --- SECTION: Footer Summary ---
+        drawBox(10, finalY, 25, 10, "Comp. Tot.", `€ ${summary.userSummaries[0]?.salary.toFixed(2)}`);
+        drawBox(35, finalY, 25, 10, "Tratt. Tot.", "€ 0,00");
+        drawBox(60, finalY, 30, 10, "Arrotondamento", "0,00");
+        drawBox(150, finalY, 50, 10, "NETTO BUSTA", "");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(`€ ${summary.userSummaries[0]?.salary.toFixed(2)}`, 160, finalY + 8);
+
+        doc.save(`busta_paga_${summary.userSummaries[0]?.name.replace(/\s/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     const handleLogout = () => {

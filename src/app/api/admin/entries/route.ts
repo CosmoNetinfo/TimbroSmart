@@ -32,19 +32,24 @@ export async function GET(request: Request) {
             query = query.where('userId', '==', userId);
         }
 
-        if (startDate && endDate) {
-            query = query.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate);
-        } else if (startDate) {
-            query = query.where('timestamp', '>=', startDate);
-        }
-
-        query = query.orderBy('timestamp', 'desc');
-
-        if (!startDate && !userId) {
-            query = query.limit(50);
-        }
-
         const querySnapshot = await query.get();
+
+        // Perform date filtering and sorting in memory to avoid index requirements
+        let allEntries = querySnapshot.docs.map((doc: any) => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        if (startDate) {
+            allEntries = allEntries.filter((e: any) => e.timestamp >= startDate);
+        }
+        if (endDate) {
+            allEntries = allEntries.filter((e: any) => e.timestamp <= endDate);
+        }
+
+        allEntries.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+        const limitedEntries = (!startDate && !userId) ? allEntries.slice(0, 50) : allEntries;
 
         // Fetch all users for this company to simulate JOIN
         const usersSnapshot = await adminDb.collection('users')
@@ -58,11 +63,9 @@ export async function GET(request: Request) {
             usersMap.set(doc.id, { id: doc.id, name: data.name, code: data.code, hourlyWage: data.hourlyWage });
         });
 
-        const safeEntries = querySnapshot.docs.map((doc: any) => {
-            const data = doc.data();
-
+        const safeEntries = limitedEntries.map((data: any) => {
             return {
-                id: doc.id,
+                id: data.id,
                 type: data.type,
                 timestamp: data.timestamp,
                 userId: data.userId,
