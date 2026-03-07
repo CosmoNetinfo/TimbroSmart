@@ -479,19 +479,19 @@ export default function Admin() {
         doc.setFontSize(14);
         doc.setTextColor(40);
         doc.setFont("helvetica", "bold");
-        doc.text("CEDOLINO PAGA", 10, 8);
+        doc.text("CEDOLINO PAGA", 10, 10);
 
         // --- ROW 1: Company Header ---
-        const r1Y = 12;
+        const r1Y = 14;
         drawBox(10, r1Y, 80, 15, "Nome Azienda", companyName);
         drawBox(90, r1Y, 35, 7.5, "Posizione INPS Azienda", "1234567890");
         drawBox(125, r1Y, 35, 15, "Mese di retribuzione", monthYear);
         drawBox(90, r1Y + 7.5, 35, 7.5, "Posizione INAIL Azienda", "987654321");
         
-        // Brand Logo Positioning (Final fix for transparency and overlap)
+        // Brand Logo Positioning (Ultimate fix for transparency and overlap)
         try {
-            // Using 'FAST' alias for transparency preservation
-            doc.addImage('/logo-premium.png', 'PNG', 165, 5, 22, 22, undefined, 'FAST');
+            // Using app-icon-nobg for verified transparency. Shrink to 15x15 for premium understated look.
+            doc.addImage('/icons/app-icon-nobg.png', 'PNG', 175, 4, 15, 15, undefined, 'FAST');
         } catch (e) {
             console.warn("Logo not found, skipping", e);
         }
@@ -501,7 +501,7 @@ export default function Admin() {
         doc.text("C.d.C. --------------------", 12, r1Y + 18);
 
         // --- ROW 2: Employee Main Info ---
-        const r2Y = 32;
+        const r2Y = 36;
         drawBox(10, r2Y, 25, 12, "Cod. Dip.", "---");
         drawBox(35, r2Y, 50, 12, "Matricola", summary.userSummaries[0]?.userId.toString().slice(-8) || "---");
         drawBox(85, r2Y, 80, 12, "Cognome Nome", summary.userSummaries[0]?.name || "Dipendente");
