@@ -1002,7 +1002,7 @@ export default function Admin() {
                 )}
 
                 <div className="text-center mt-10" style={{ marginTop: '4rem', opacity: 0.5, fontSize: '0.85rem' }}>
-                    TimbroSmart &copy; {new Date().getFullYear()}
+                    TimbroSmart cosmonet.info &copy; {new Date().getFullYear()}
                 </div>
             </div>
         </main>
