@@ -279,9 +279,9 @@ export default function PaymentsPage() {
                     <span style={{ fontSize: '1.2rem' }}>🏠</span>
                     Home
                 </Link>
-                <Link href="/dashboard/chat" className="nav-item">
-                    <span style={{ fontSize: '1.2rem' }}>💬</span>
-                    Chat
+                <Link href="/dashboard/calendar" className="nav-item">
+                    <span style={{ fontSize: '1.2rem' }}>📅</span>
+                    Calendario
                 </Link>
                 <div className="nav-item active">
                     <span style={{ fontSize: '1.2rem' }}>💰</span>
