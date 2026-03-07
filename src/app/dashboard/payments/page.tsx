@@ -27,14 +27,18 @@ export default function PaymentsPage() {
     const router = useRouter();
 
     useEffect(() => {
-        const stored = localStorage.getItem('user');
+        const stored = localStorage.getItem('user_meta');
         if (!stored) {
             router.push('/');
             return;
         }
-        const parsedUser = JSON.parse(stored);
-        setUser(parsedUser);
-        fetchPayments(parsedUser.id);
+        try {
+            const parsedUser = JSON.parse(stored);
+            setUser(parsedUser);
+            fetchPayments(parsedUser.id);
+        } catch {
+            router.push('/');
+        }
     }, [router]);
 
     const fetchPayments = async (userId: number) => {
@@ -69,7 +73,7 @@ export default function PaymentsPage() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
+        localStorage.removeItem('user_meta');
         router.push('/');
     };
 

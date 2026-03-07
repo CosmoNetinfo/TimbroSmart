@@ -1,4 +1,4 @@
-import { adminAuth } from '@/lib/firebase/admin';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { cookies } from 'next/headers';
 
 export async function getAuthSession() {
@@ -9,9 +9,21 @@ export async function getAuthSession() {
     }
 
     try {
-        // Verify the session cookie. In production, checkRevoked should be true in some cases.
-        const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, false);
-        return decodedClaims;
+        // Token format: Base64(uid:timestamp:role)
+        const [uid, timestamp, role] = Buffer.from(sessionCookie, 'base64').toString().split(':');
+        
+        if (!uid || !timestamp) return null;
+
+        // Verify if the user still exists in Firestore (resilient check)
+        const userDoc = await adminDb.collection('users').doc(uid).get();
+        if (!userDoc.exists) return null;
+
+        return {
+            uid,
+            role: role || userDoc.data()?.role || 'USER',
+            companyId: userDoc.data()?.companyId || null,
+            email: userDoc.data()?.email || `${userDoc.data()?.code}@timbrosmart.local`
+        };
     } catch (error) {
         return null;
     }

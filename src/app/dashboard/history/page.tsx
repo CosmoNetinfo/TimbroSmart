@@ -24,14 +24,18 @@ export default function HistoryPage() {
     const [user, setUser] = useState<DashboardUser | null>(null);
 
     useEffect(() => {
-        const stored = localStorage.getItem('user');
+        const stored = localStorage.getItem('user_meta');
         if (!stored) {
             router.push('/');
             return;
         }
-        const parsedUser = JSON.parse(stored);
-        setUser(parsedUser);
-        fetchHistory(parsedUser.id);
+        try {
+            const parsedUser = JSON.parse(stored);
+            setUser(parsedUser);
+            fetchHistory(parsedUser.id);
+        } catch {
+            router.push('/');
+        }
     }, []);
 
     const fetchHistory = async (userId: number) => {

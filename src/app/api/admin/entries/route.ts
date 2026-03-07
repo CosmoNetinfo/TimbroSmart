@@ -11,14 +11,22 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const companyId = session.companyId;
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
+        
+        // Type safety: cast session or use specific check
+        const sessionAny = session as any;
+        
+        let finalCompanyId = sessionAny.companyId;
+        if (!finalCompanyId) {
+            const userDoc = await adminDb.collection('users').doc(session.uid).get();
+            finalCompanyId = userDoc.data()?.companyId;
+        }
 
         const entriesRef = adminDb.collection('entries');
-        let query: any = entriesRef.where('companyId', '==', companyId);
+        let query: any = entriesRef.where('companyId', '==', finalCompanyId);
 
         if (userId) {
             query = query.where('userId', '==', userId);

@@ -32,11 +32,18 @@ export default function Dashboard() {
     const fetchStatus = async (userId: number) => {
         try {
             const res = await fetch(`/api/status?userId=${userId}`);
-            const data = await res.json();
-            setStatus(data.status); // IN or OUT
-            setLastEntry(data.lastEntry);
+            if (res.ok) {
+                const data = await res.json();
+                setStatus(data.status); // IN or OUT
+                setLastEntry(data.lastEntry);
+            } else {
+                console.warn('Status fetch failed:', res.status);
+                // If unauthorized, don't leave status in LOADING
+                setStatus('OUT'); 
+            }
         } catch (e) {
             console.error(e);
+            setStatus('OUT');
         }
     };
 

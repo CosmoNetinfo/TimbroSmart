@@ -25,9 +25,9 @@ export async function POST(request: Request) {
         const role = userData.role || 'USER';
 
         // 2. Simplified Session logic (don't block on adminAuth if DB is verified)
-        // This makes the login MUCH more resilient to Firebase Auth config issues on Vercel
-        const userUid = userId; // User Firestore ID as seed
-        const sessionToken = Buffer.from(`${userUid}:${Date.now()}`).toString('base64');
+        // Token format: Base64(uid:timestamp:role)
+        const userUid = userId;
+        const sessionToken = Buffer.from(`${userUid}:${Date.now()}:${role}`).toString('base64');
         const expiresIn = 60 * 60 * 24 * 5 * 1000;
         
         const response = NextResponse.json({ 

@@ -2,10 +2,9 @@
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
-// Use existing environment variables or placeholders for local execution
-// In a real scenario, this would run once to setup the master DB
+// SECURE: Use environment variables
 const serviceAccount = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "timbrosmart-9f170",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
   privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
 };
@@ -18,41 +17,66 @@ if (!getApps().length) {
 
 const db = getFirestore();
 
-async function seedAdmin() {
-  console.log("Inizializzazione Account Master Admin...");
+async function seedSystem() {
+  console.log("🚀 Inizializzazione Sistema TimbroSmart...");
   
-  const MASTER_COMPANY_ID = "MASTER_ADMIN_COMPANY";
-  const MASTER_ADMIN_CODE = "ADMIN2026"; // Codice fornito all'acquisto
-
-  try {
-    // 1. Create/Update Company
-    await db.collection('companies').doc(MASTER_COMPANY_ID).set({
-      name: "TimbroSmart Admin",
+  const configs = [
+    {
+      companyId: "BASE_PLAN_COMPANY",
+      companyName: "TimbroSmart Base",
+      plan: "FREE",
+      adminCode: "ADMIN_BASE",
+      adminName: "Admin Base"
+    },
+    {
+      companyId: "PRO_PLAN_COMPANY",
+      companyName: "TimbroSmart PRO",
       plan: "PRO",
-      createdAt: new Date().toISOString(),
-      ownerName: "Administrator"
-    }, { merge: true });
-
-    // 2. Create/Update Admin User
-    const usersRef = db.collection('users');
-    const existing = await usersRef.where('code', '==', MASTER_ADMIN_CODE).get();
-    
-    if (existing.empty) {
-      await usersRef.add({
-        name: "Amministratore",
-        role: "ADMIN",
-        code: MASTER_ADMIN_CODE,
-        companyId: MASTER_COMPANY_ID,
-        createdAt: new Date().toISOString(),
-        hourlyWage: 0
-      });
-      console.log(`Successo! Account Admin creato con codice: ${MASTER_ADMIN_CODE}`);
-    } else {
-      console.log("L'account Admin esiste già.");
+      adminCode: "ADMIN_PRO",
+      adminName: "Admin PRO"
+    },
+    {
+      companyId: "ENTERPRISE_PLAN_COMPANY",
+      companyName: "TimbroSmart Enterprise",
+      plan: "ENTERPRISE",
+      adminCode: "ADMIN_ENT",
+      adminName: "Admin Enterprise"
     }
-  } catch (e) {
-    console.error("Errore durante il seeding:", e);
+  ];
+
+  for (const config of configs) {
+    try {
+      console.log(`Configurazione ${config.companyName}...`);
+      
+      // 1. Create/Update Company
+      await db.collection('companies').doc(config.companyId).set({
+        name: config.companyName,
+        plan: config.plan,
+        createdAt: new Date().toISOString(),
+        ownerName: config.adminName
+      }, { merge: true });
+
+      // 2. Create/Update Admin User
+      const usersRef = db.collection('users');
+      const existing = await usersRef.where('code', '==', config.adminCode).get();
+      
+      if (existing.empty) {
+        await usersRef.add({
+          name: config.adminName,
+          role: "ADMIN",
+          code: config.adminCode,
+          companyId: config.companyId,
+          createdAt: new Date().toISOString(),
+          hourlyWage: 0
+        });
+        console.log(`✅ Creato Admin: ${config.adminCode} (${config.plan})`);
+      } else {
+        console.log(`ℹ️ Admin ${config.adminCode} già esistente.`);
+      }
+    } catch (e) {
+      console.error(`❌ Errore per ${config.companyName}:`, e);
+    }
   }
 }
 
-seedAdmin();
+seedSystem();
