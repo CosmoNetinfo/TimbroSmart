@@ -70,31 +70,11 @@ export default function Home() {
     const email = 'cosmonetinfo85@gmail.com';
     const subject = encodeURIComponent('TIMBROSMART - Richiesta Chiave Piano FREE');
     const body = encodeURIComponent('Salve, vorrei richiedere una chiave per il piano FREE di TimbroSmart.\n\nNome Azienda: ');
-    const mailto = `mailto:${email}?subject=${subject}&body=${body}`;
-
-    // Approccio 1: window.open (funziona su più piattaforme)
-    const win = window.open(mailto, '_blank');
     
-    // Approccio 2: fallback con location.href se window.open fallisce
-    if (!win || win.closed) {
-      window.location.href = mailto;
-    }
-
-    // Approccio 3: dopo un breve delay, se nulla si è aperto, mostra fallback
-    setTimeout(() => {
-      // Se siamo ancora qui dopo 2 secondi, il mailto probabilmente non ha funzionato
-      const userWantsManual = confirm(
-        `Se il client email non si è aperto, copia questo indirizzo:\n\n${email}\n\nOggetto: TIMBROSMART - Richiesta Chiave Piano FREE\n\nVuoi copiare l'email negli appunti?`
-      );
-      if (userWantsManual) {
-        navigator.clipboard.writeText(email).then(() => {
-          alert('Email copiata! Incollala nella tua app di posta.');
-        }).catch(() => {
-          // Fallback per browser senza clipboard API
-          prompt('Copia questo indirizzo email:', email);
-        });
-      }
-    }, 2500);
+    // Link diretto a Gmail Compose — funziona su qualsiasi browser
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${email}&su=${subject}&body=${body}`;
+    
+    window.open(gmailUrl, '_blank');
   };
 
   return (
