@@ -68,29 +68,40 @@ export async function GET(request: Request) {
         }
 
         const companyId = session.companyId;
-        const licenseRef = adminDb.collection('license_keys');
-        const snapshot = await licenseRef
-            .where('companyId', '==', companyId)
-            .orderBy('timestamp', 'desc')
-            .limit(1)
-            .get();
-
-        // Fetch the current company plan (CRITICAL for seeded accounts)
+        
+        // 1. Fetch Company Plan FIRST (Most reliable source)
         const companyDoc = await adminDb.collection('companies').doc(companyId).get();
-        const currentPlan = companyDoc.exists ? companyDoc.data()?.plan : 'FREE';
+        if (!companyDoc.exists) {
+            return NextResponse.json({ error: 'Dati azienda non trovati' }, { status: 404 });
+        }
+        
+        const currentPlan = companyDoc.data()?.plan || 'FREE';
 
-        if (snapshot.empty) {
-            return NextResponse.json({ 
-                status: 'NONE',
-                currentPlan: currentPlan
-            });
+        // 2. Try to fetch license history (Fail gracefully if index is missing)
+        let licenseStatus = 'NONE';
+        let serialKey = null;
+
+        try {
+            const licenseRef = adminDb.collection('license_keys');
+            const snapshot = await licenseRef
+                .where('companyId', '==', companyId)
+                .orderBy('timestamp', 'desc')
+                .limit(1)
+                .get();
+
+            if (!snapshot.empty) {
+                const doc = snapshot.docs[0].data();
+                licenseStatus = doc.status;
+                serialKey = doc.serialKey;
+            }
+        } catch (queryError) {
+            console.warn('Index missing or query failed, but proceeding with company plan:', queryError);
+            // We proceed even if logs fail, as the core plan info is in the company doc
         }
 
-        const licenseDoc = snapshot.docs[0].data();
-        
         return NextResponse.json({
-            status: licenseDoc.status, 
-            serialKey: licenseDoc.serialKey,
+            status: licenseStatus, 
+            serialKey: serialKey,
             currentPlan: currentPlan 
         });
 
