@@ -51,21 +51,24 @@ export async function GET(request: Request) {
             .limit(1)
             .get();
 
+        // Fetch the current company plan (CRITICAL for seeded accounts)
+        const companyDoc = await adminDb.collection('companies').doc(companyId).get();
+        const currentPlan = companyDoc.exists ? companyDoc.data()?.plan : 'FREE';
+
         if (snapshot.empty) {
-            return NextResponse.json({ status: 'NONE' });
+            return NextResponse.json({ 
+                status: 'NONE',
+                currentPlan: currentPlan
+            });
         }
 
         const licenseDoc = snapshot.docs[0].data();
         
-        // Also fetch the current company plan
-        const companyDoc = await adminDb.collection('companies').doc(companyId).get();
-        const currentPlan = companyDoc.exists ? companyDoc.data()?.plan : 'FREE';
-
-        return NextResponse.json({ 
+        return {
             status: licenseDoc.status, 
             serialKey: licenseDoc.serialKey,
             currentPlan: currentPlan 
-        });
+        };
 
     } catch (error) {
         console.error('Fetch license error:', error);
