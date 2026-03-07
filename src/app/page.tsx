@@ -84,12 +84,12 @@ export default function Home() {
       {/* 1. Icon Header */}
       <div className="animate-fade-in" style={{ marginBottom: '0.5rem' }}>
         <Image 
-          src="/logo-timbrosmart.png" 
+          src="/icons/app-icon-nobg.png" 
           alt="TimbroSmart Logo" 
-          width={100} 
-          height={100} 
+          width={120} 
+          height={120} 
           priority
-          style={{ borderRadius: '20px', objectFit: 'contain' }}
+          style={{ objectFit: 'contain' }}
         />
       </div>
 
