@@ -7,6 +7,7 @@ interface MasterKey {
     id: string;
     plan: string;
     isActive: boolean;
+    adminCode?: string;
     createdAt: string;
 }
 
@@ -210,21 +211,22 @@ export default function SuperAdminPage() {
                             <thead style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
                                 <tr>
                                     <th style={{ textAlign: 'left', padding: '15px' }}>Codice Serial</th>
+                                    <th style={{ textAlign: 'left', padding: '15px' }}>Admin Code</th>
                                     <th style={{ textAlign: 'left', padding: '15px' }}>Piano</th>
                                     <th style={{ textAlign: 'center', padding: '15px' }}>Stato</th>
-                                    <th style={{ textAlign: 'left', padding: '15px' }}>Data Creazione</th>
+                                    <th style={{ textAlign: 'left', padding: '15px' }}>Creazione</th>
                                     <th style={{ textAlign: 'right', padding: '15px' }}>Azioni</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loading && (
                                     <tr>
-                                        <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>Caricamento dati...</td>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Caricamento dati...</td>
                                     </tr>
                                 )}
                                 {!loading && filteredKeys.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
                                             {errorMsg ? '⚠️ Errore nel caricamento' : '📭 Nessuna licenza trovata. Clicca "+ Nuova Chiave" per crearne una.'}
                                         </td>
                                     </tr>
@@ -232,6 +234,9 @@ export default function SuperAdminPage() {
                                 {!loading && filteredKeys.map((k) => (
                                     <tr key={k.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }} className="hover-row">
                                         <td style={{ padding: '15px', fontWeight: 600, fontFamily: 'monospace' }}>{k.id}</td>
+                                        <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--primary)', fontWeight: 600 }}>
+                                            {k.adminCode || <span style={{color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'normal'}}>N/D</span>}
+                                        </td>
                                         <td style={{ padding: '15px' }}>
                                             <span className={`badge ${k.plan}`}>
                                                 {k.plan}

@@ -29,6 +29,7 @@ export async function GET(request: Request) {
                 id: doc.id,
                 plan: data.plan || 'UNKNOWN',
                 isActive: data.isActive !== undefined ? data.isActive : true,
+                adminCode: data.adminCode || null,
                 createdAt: data.createdAt || data.updatedAt || new Date().toISOString(),
                 updatedAt: data.updatedAt || '',
             };
