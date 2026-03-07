@@ -70,6 +70,28 @@ export async function POST(request: Request) {
         const existing = await adminDb.collection('master_keys').doc(serialKey).get();
         const existingData = existing.exists ? existing.data() : null;
 
+        // Se la chiave è NUOVA, creiamo in automatico anche la Compagnia e l'Utente Admin
+        if (!existing.exists) {
+            const companyId = `CMP-${plan}-${Date.now().toString().slice(-6)}`;
+            
+            await adminDb.collection('companies').doc(companyId).set({
+                name: `Nuova Azienda ${plan}`,
+                plan: plan,
+                createdAt: new Date().toISOString(),
+                ownerName: `Admin ${plan}`
+            });
+
+            await adminDb.collection('users').add({
+                name: `Admin ${plan}`,
+                role: "ADMIN",
+                code: adminCode,
+                companyId: companyId,
+                createdAt: new Date().toISOString(),
+                hourlyWage: 0
+            });
+            console.log(`[SuperAdmin POST] Provisioning account completato per ${adminCode}`);
+        }
+
         await adminDb.collection('master_keys').doc(serialKey).set({
             plan,
             adminCode,
