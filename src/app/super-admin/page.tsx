@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Key, Save, Trash2, Plus, Search, ShieldCheck, ArrowLeft, RefreshCw, FileSpreadsheet } from 'lucide-react';
+import { Trash2, Plus, Search, ShieldCheck, ArrowLeft, RefreshCw, FileSpreadsheet, AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface MasterKey {
@@ -18,10 +18,19 @@ export default function SuperAdminPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showNewForm, setShowNewForm] = useState(false);
     const [newKey, setNewKey] = useState({ serialKey: '', plan: 'PRO', isActive: true });
+    const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+
+    // Auto-nasconde i messaggi di successo dopo 3 secondi
+    useEffect(() => {
+        if (successMsg) {
+            const timer = setTimeout(() => setSuccessMsg(''), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMsg]);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        // In produzione questa password sarebbe in .env
         if (password === 'TSMT_2026') {
             setIsAuthenticated(true);
             fetchKeys();
@@ -32,14 +41,23 @@ export default function SuperAdminPage() {
 
     const fetchKeys = async () => {
         setLoading(true);
+        setErrorMsg('');
         try {
             const res = await fetch(`/api/super-admin/licenses?secret=TSMT_2026`);
             if (res.ok) {
                 const data = await res.json();
-                setKeys(data);
+                setKeys(Array.isArray(data) ? data : []);
+                if (Array.isArray(data) && data.length > 0) {
+                    setSuccessMsg(`${data.length} licenze caricate`);
+                }
+            } else {
+                const errData = await res.json().catch(() => ({ error: res.statusText }));
+                setErrorMsg(`Errore ${res.status}: ${errData.error || 'Impossibile recuperare le licenze'}`);
+                console.error('Fetch keys error:', errData);
             }
         } catch (e) {
-            console.error(e);
+            setErrorMsg('Errore di connessione al server. Verifica la tua connessione internet.');
+            console.error('Fetch keys network error:', e);
         } finally {
             setLoading(false);
         }
@@ -63,7 +81,7 @@ export default function SuperAdminPage() {
                 const errorData = await res.json();
                 alert(`Errore aggiornamento: ${errorData.error || res.statusText}`);
             }
-        } catch (e) {
+        } catch {
             alert('Errore di connessione durante l\'aggiornamento');
         }
     };
@@ -80,7 +98,7 @@ export default function SuperAdminPage() {
                 const errorData = await res.json();
                 alert(`Errore eliminazione: ${errorData.error || res.statusText}`);
             }
-        } catch (e) {
+        } catch {
             alert('Errore di connessione durante l\'eliminazione');
         }
     };
@@ -104,7 +122,7 @@ export default function SuperAdminPage() {
                 const errorData = await res.json();
                 alert(`Errore creazione: ${errorData.error || res.statusText}`);
             }
-        } catch (e) {
+        } catch {
             alert('Errore di connessione durante la creazione');
         }
     };
@@ -155,6 +173,18 @@ export default function SuperAdminPage() {
                     </div>
                 </div>
 
+                {/* Messaggi Errore / Successo */}
+                {errorMsg && (
+                    <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444' }}>
+                        <AlertCircle size={18} /> {errorMsg}
+                    </div>
+                )}
+                {successMsg && (
+                    <div style={{ padding: '12px 16px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '12px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#22c55e' }}>
+                        <CheckCircle size={18} /> {successMsg}
+                    </div>
+                )}
+
                 {/* Toolbar */}
                 <div className="glass p-4 mb-6" style={{ borderRadius: '15px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div style={{ position: 'relative', flexGrow: 1 }}>
@@ -190,6 +220,13 @@ export default function SuperAdminPage() {
                                 {loading && (
                                     <tr>
                                         <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>Caricamento dati...</td>
+                                    </tr>
+                                )}
+                                {!loading && filteredKeys.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                                            {errorMsg ? '⚠️ Errore nel caricamento' : '📭 Nessuna licenza trovata. Clicca "+ Nuova Chiave" per crearne una.'}
+                                        </td>
                                     </tr>
                                 )}
                                 {!loading && filteredKeys.map((k) => (

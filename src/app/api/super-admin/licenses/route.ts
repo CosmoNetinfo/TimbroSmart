@@ -4,53 +4,84 @@ import { adminDb } from '@/lib/firebase/admin';
 // FUNZIONE DI SICUREZZA TEMPORANEA
 // In un ambiente reale, useremmo un ruolo SUPER_ADMIN in Firebase Auth.
 // Qui usiamo un controllo basato su una Master Key definita nel server.
-const MASTER_SECRET = process.env.SUPER_ADMIN_PASSWORD || 'TSMT_ADMIN_2026';
+const MASTER_SECRET = process.env.SUPER_ADMIN_PASSWORD || 'TSMT_2026';
 
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const secret = searchParams.get('secret');
 
+        console.log('[SuperAdmin GET] Tentativo di accesso...');
+
         if (secret !== MASTER_SECRET) {
+            console.warn('[SuperAdmin GET] Password errata');
             return NextResponse.json({ error: 'Accesso negato' }, { status: 403 });
         }
 
-        const snapshot = await adminDb.collection('master_keys').orderBy('createdAt', 'desc').get();
-        const keys = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        // Recupera TUTTE le licenze senza orderBy (evita errori indice Firestore)
+        const snapshot = await adminDb.collection('master_keys').get();
+        
+        console.log(`[SuperAdmin GET] Documenti trovati: ${snapshot.size}`);
+
+        const keys = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                plan: data.plan || 'UNKNOWN',
+                isActive: data.isActive !== undefined ? data.isActive : true,
+                createdAt: data.createdAt || data.updatedAt || new Date().toISOString(),
+                updatedAt: data.updatedAt || '',
+            };
+        });
+
+        // Sort lato server (più recenti prima) - evita la necessità di indici Firestore
+        keys.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime() || 0;
+            const dateB = new Date(b.createdAt).getTime() || 0;
+            return dateB - dateA;
+        });
 
         return NextResponse.json(keys);
-    } catch (error) {
-        console.error('Super Admin GET error:', error);
-        return NextResponse.json({ error: 'Errore nel recupero licenze' }, { status: 500 });
+    } catch (error: unknown) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error('[SuperAdmin GET] Errore critico:', errMsg);
+        return NextResponse.json({ error: `Errore nel recupero licenze: ${errMsg}` }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     try {
-        const { secret, serialKey, plan, isActive } = await request.json();
+        const body = await request.json();
+        const { secret, serialKey, plan, isActive } = body;
+
+        console.log(`[SuperAdmin POST] Richiesta per chiave: ${serialKey}, piano: ${plan}`);
 
         if (secret !== MASTER_SECRET) {
+            console.warn('[SuperAdmin POST] Password errata');
             return NextResponse.json({ error: 'Accesso negato' }, { status: 403 });
         }
 
         if (!serialKey || !plan) {
-            return NextResponse.json({ error: 'Dati mancanti' }, { status: 400 });
+            return NextResponse.json({ error: 'Dati mancanti (serialKey e plan sono obbligatori)' }, { status: 400 });
         }
+
+        // Controlla se la chiave esiste già per preservare createdAt
+        const existing = await adminDb.collection('master_keys').doc(serialKey).get();
+        const existingData = existing.exists ? existing.data() : null;
 
         await adminDb.collection('master_keys').doc(serialKey).set({
             plan,
-            isActive,
+            isActive: isActive !== undefined ? isActive : true,
             updatedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString() // Fallback se nuova
+            createdAt: existingData?.createdAt || new Date().toISOString(),
         }, { merge: true });
 
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Super Admin POST error:', error);
-        return NextResponse.json({ error: 'Errore nel salvataggio licenza' }, { status: 500 });
+        console.log(`[SuperAdmin POST] Chiave ${serialKey} salvata con successo`);
+        return NextResponse.json({ success: true, message: `Licenza ${serialKey} salvata` });
+    } catch (error: unknown) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error('[SuperAdmin POST] Errore critico:', errMsg);
+        return NextResponse.json({ error: `Errore nel salvataggio licenza: ${errMsg}` }, { status: 500 });
     }
 }
 
@@ -60,7 +91,10 @@ export async function DELETE(request: Request) {
         const secret = searchParams.get('secret');
         const serialKey = searchParams.get('serialKey');
 
+        console.log(`[SuperAdmin DELETE] Richiesta eliminazione: ${serialKey}`);
+
         if (secret !== MASTER_SECRET) {
+            console.warn('[SuperAdmin DELETE] Password errata');
             return NextResponse.json({ error: 'Accesso negato' }, { status: 403 });
         }
 
@@ -68,11 +102,19 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'SerialKey mancante' }, { status: 400 });
         }
 
+        // Verifica che la chiave esista prima di eliminare
+        const doc = await adminDb.collection('master_keys').doc(serialKey).get();
+        if (!doc.exists) {
+            return NextResponse.json({ error: `Chiave ${serialKey} non trovata` }, { status: 404 });
+        }
+
         await adminDb.collection('master_keys').doc(serialKey).delete();
 
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Super Admin DELETE error:', error);
-        return NextResponse.json({ error: 'Errore nell\'eliminazione' }, { status: 500 });
+        console.log(`[SuperAdmin DELETE] Chiave ${serialKey} eliminata`);
+        return NextResponse.json({ success: true, message: `Licenza ${serialKey} eliminata` });
+    } catch (error: unknown) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error('[SuperAdmin DELETE] Errore critico:', errMsg);
+        return NextResponse.json({ error: `Errore nell'eliminazione: ${errMsg}` }, { status: 500 });
     }
 }
