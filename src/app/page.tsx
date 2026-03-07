@@ -195,6 +195,12 @@ export default function Home() {
         <a href="https://wa.me/393517064080?text=Salve,%20ho%20bisogno%20di%20assistenza%20o%20ho%20dimenticato%20il%20codice." target="_blank" rel="noopener noreferrer" className="helper-text" style={{ fontSize: '0.85rem', opacity: 0.6, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '1rem' }}>
           <HelpCircle size={14} /> Hai bisogno di aiuto o hai dimenticato il codice?
         </a>
+
+        <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+          <a href="/privacy" style={{ fontSize: '0.75rem', opacity: 0.4, color: 'var(--text-primary)', textDecoration: 'none' }}>
+            Privacy Policy
+          </a>
+        </div>
       </div>
 
     </main>

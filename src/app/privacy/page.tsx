@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
                 <section style={{ marginBottom: '1.5rem' }}>
                     <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>1. Titolare del Trattamento</h2>
-                    <p>Il titolare del trattamento dei dati è [Inserire Nome Azienda / Cosmonet].</p>
+                    <p>Il titolare del trattamento dei dati è **Cosmonet**.</p>
                 </section>
 
                 <section style={{ marginBottom: '1.5rem' }}>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
                 </section>
 
                 <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                    Per richieste relative alla privacy: <strong>[Inserire Email di supporto]</strong>
+                    Per richieste relative alla privacy: <strong>cosmonetinfo85@gmail.com</strong>
                 </div>
             </div>
         </main>
