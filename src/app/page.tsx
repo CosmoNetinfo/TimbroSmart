@@ -142,9 +142,24 @@ export default function Home() {
       </form>
 
       {/* 4. Footer & Helper */}
-      <Link href="/help" className="helper-text animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '1.5rem', display: 'block', fontSize: '0.8rem', opacity: 0.7 }}>
-        Hai bisogno di aiuto o hai dimenticato il codice?
-      </Link>
+      <div className="animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '2rem', textAlign: 'center', width: '100%' }}>
+        
+        {/* Nuovo Box Piano FREE - Messo in evidenza */}
+        <div style={{ marginBottom: '2rem', padding: '1.2rem', background: 'rgba(14, 165, 233, 0.1)', borderRadius: '20px', border: '1px dashed rgba(14, 165, 233, 0.3)' }}>
+          <p style={{ fontSize: '0.85rem', marginBottom: '0.8rem', opacity: 0.9, fontWeight: 600 }}>Cerca il tuo codice azienda o</p>
+          <a 
+            href="mailto:info@timbrosmart.it?subject=Richiesta%20Chiave%20Piano%20FREE%20-%20TimbroSmart&body=Salve,%20vorrei%20richiedere%20una%20chiave%20per%20il%20piano%20FREE%20di%20TimbroSmart.%0A%0ANome%20Azienda:%20"
+            className="btn-glass-secondary"
+            style={{ textDecoration: 'none', height: '45px', fontSize: '0.85rem', width: 'auto', display: 'inline-flex', padding: '0 20px' }}
+          >
+            Richiedi Piano FREE Gratis
+          </a>
+        </div>
+
+        <Link href="/help" className="helper-text" style={{ fontSize: '0.8rem', opacity: 0.6, textDecoration: 'none' }}>
+          Hai bisogno di aiuto o hai dimenticato il codice?
+        </Link>
+      </div>
 
     </main>
   );
