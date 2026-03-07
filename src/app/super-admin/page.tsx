@@ -57,9 +57,14 @@ export default function SuperAdminPage() {
                     isActive: !key.isActive
                 })
             });
-            if (res.ok) fetchKeys();
+            if (res.ok) {
+                fetchKeys();
+            } else {
+                const errorData = await res.json();
+                alert(`Errore aggiornamento: ${errorData.error || res.statusText}`);
+            }
         } catch (e) {
-            alert('Errore aggiornamento');
+            alert('Errore di connessione durante l\'aggiornamento');
         }
     };
 
@@ -69,9 +74,14 @@ export default function SuperAdminPage() {
             const res = await fetch(`/api/super-admin/licenses?secret=TSMT_2026&serialKey=${serialKey}`, {
                 method: 'DELETE'
             });
-            if (res.ok) fetchKeys();
+            if (res.ok) {
+                fetchKeys();
+            } else {
+                const errorData = await res.json();
+                alert(`Errore eliminazione: ${errorData.error || res.statusText}`);
+            }
         } catch (e) {
-            alert('Errore eliminazione');
+            alert('Errore di connessione durante l\'eliminazione');
         }
     };
 
@@ -90,9 +100,12 @@ export default function SuperAdminPage() {
                 setShowNewForm(false);
                 setNewKey({ serialKey: '', plan: 'PRO', isActive: true });
                 fetchKeys();
+            } else {
+                const errorData = await res.json();
+                alert(`Errore creazione: ${errorData.error || res.statusText}`);
             }
         } catch (e) {
-            alert('Errore creazione');
+            alert('Errore di connessione durante la creazione');
         }
     };
 

@@ -168,8 +168,8 @@ export default function Home() {
             Non hai ancora un codice azienda?
           </p>
           
-          <button 
-            onClick={handleFreePlanRequest}
+          <a 
+            href="mailto:cosmonetinfo85@gmail.com?subject=TIMBROSMART - Richiesta Chiave Piano FREE&body=Salve, vorrei richiedere una chiave per il piano FREE di TimbroSmart.%0A%0ANome Azienda: "
             className="btn-glass-primary"
             style={{ 
               height: '55px', 
@@ -177,11 +177,12 @@ export default function Home() {
               display: 'flex', 
               gap: '10px',
               background: 'linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%)',
-              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)'
+              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)',
+              textDecoration: 'none'
             }}
           >
             <Mail size={18} /> Richiedi Piano FREE Gratis
-          </button>
+          </a>
 
           <div style={{ marginTop: '1.2rem', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
             <p style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '4px' }}>Oppure scrivi direttamente a:</p>
