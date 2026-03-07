@@ -16,19 +16,43 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Serial Key is required' }, { status: 400 });
         }
 
-        // Add to license_keys collection for manual verification
-        const licenseRef = adminDb.collection('license_keys');
-        await licenseRef.add({
+        // 1. Check against Master Keys
+        const masterKeyRef = adminDb.collection('master_keys').doc(serialKey);
+        const masterKeySnap = await masterKeyRef.get();
+
+        if (!masterKeySnap.exists || !masterKeySnap.data()?.isActive) {
+            return NextResponse.json({ error: 'Chiave non valida o già utilizzata' }, { status: 400 });
+        }
+
+        const planToActivate = masterKeySnap.data()?.plan;
+
+        // 2. Perform Upgrade (Atomic)
+        const batch = adminDb.batch();
+        
+        // Update company plan
+        const companyRef = adminDb.collection('companies').doc(companyId);
+        batch.update(companyRef, { plan: planToActivate });
+
+        // Register activation in license_keys
+        const licenseRef = adminDb.collection('license_keys').doc();
+        batch.set(licenseRef, {
             companyId,
             serialKey,
-            status: 'PENDING',
-            submittedBy: session.uid,
+            status: 'ACTIVE',
+            plan: planToActivate,
+            activatedBy: session.uid,
             timestamp: new Date().toISOString()
         });
 
+        // (Optional) Mark key as used if one-time use
+        // batch.update(masterKeyRef, { isActive: false, usedBy: companyId });
+
+        await batch.commit();
+
         return NextResponse.json({ 
             success: true, 
-            message: 'Licenza inviata per revisione. Lo sblocco avverrà dopo la convalida.' 
+            newPlan: planToActivate,
+            message: `Fantastico! Il piano ${planToActivate} è stato attivato con successo.` 
         });
     } catch (error) {
         console.error('License submit error:', error);
@@ -64,11 +88,11 @@ export async function GET(request: Request) {
 
         const licenseDoc = snapshot.docs[0].data();
         
-        return {
+        return NextResponse.json({
             status: licenseDoc.status, 
             serialKey: licenseDoc.serialKey,
             currentPlan: currentPlan 
-        };
+        });
 
     } catch (error) {
         console.error('Fetch license error:', error);
