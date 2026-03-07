@@ -1,52 +1,55 @@
-# Easy Employee Management
+<div align="center">
+  <img src="public/icons/app-icon-nobg.png" alt="TimbroSmart Logo" width="120" />
+</div>
+
+<h1 align="center">TimbroSmart</h1>
+<p align="center"><strong>Elevate Time Management (SaaS Ready)</strong></p>
+
+---
 
 ## 📋 Descrizione
-**Easy Employee Management** è una Progressive Web App (PWA) avanzata per la gestione delle presenze e della contabilità del personale. Ideata per essere snella e altamente performante, permette di tracciare orari, scattare prove fotografiche delle timbrature e gestire pagamenti in tempo reale, tutto dal palmo di una mano.
+**TimbroSmart** è una Progressive Web App (PWA) avanzata, progettata in stile *Glassmorphism* moderno, per la gestione delle presenze e della contabilità aziendale. 
+Ideata per operare come un SaaS (Software as a Service) multi-tenant, permette alle aziende di gestire i propri dipendenti, e a quest'ultimi di tracciare orari con prove fotografiche e calcolare i guadagni in tempo reale.
 
-## 🚀 Funzionalità Complete
+## 🚀 Funzionalità Principali
 
-### 📱 Portale Dipendenti
-*   **Accesso Semplificato**: Login rapido tramite codice personale univoco.
-*   **Auto-Login Persistente**: L'app ricorda l'utente per un accesso istantaneo alle funzioni di timbratura.
-*   **Timbratura con Verifica Fotografica**:
-    *   Integrazione nativa con la fotocamera dello smartphone.
-    *   Obbligo di scatto fotografico all'entrata e all'uscita per garantire la trasparenza.
-    *   Salvaggio automatico della data e dell'ora di sistema.
-*   **Dashboard Personale**:
-    *   Visualizzazione in tempo reale delle ore lavorate (giornaliere, settimanali, totali).
-    *   Calcolo automatico del guadagno stimato basato sulla tariffa oraria personale.
-*   **Storico Pagamenti**: Sezione dedicata per consultare tutti i compensi ricevuti, con dettagli sui periodi di riferimento e note dell'amministratore.
+### 🏢 Categorie di Utenti (Multi-Level)
+- **Super Amministratore (License Manager)**: Strumento segreto per la generazione e gestione delle licenze SaaS (FREE, PRO, ENTERPRISE).
+- **Amministratore Aziendale (Admin)**: Creazione dipendenti, monitoraggio timbrature in tempo reale, statistiche, esportazione PDF/Excel e gestione buste paga/versamenti.
+- **Dipendente**: Timbratura geolocalizzata rapida, visualizzazione calendario e storico pagamenti.
+
+### 💎 Design Premium (UI/UX)
+- Interfaccia **Glassmorphism** moderna: sfondi sfocati, transizioni fluide ed estetica al neon (Tema Azure/Blue). 
+- Completamente vettoriale (Lucide Icons) e ottimizzato sia per schermi desktop che per il mobile (PWA).
+
+### 🔐 Sicurezza e SaaS
+- **Firebase Auth + Firestore**: Gestione sicura delle sessioni (JWT storage via Cookie per prevenire colli di bottiglia e cold-boot lenti).
+- **Controllo Accessi Rigoroso**: Impossibile registrarsi senza una chiave di licenza valida generata dal Super Admin.
+- Timbrature bloccate e verificate fotograficamente.
 
 ### 💻 Pannello Amministratore (Admin)
-*   **Dashboard Statistica**: Grafici interattivi (Bar Charts) per monitorare il carico di lavoro del team.
-*   **Controllo Costi**: Riepilogo immediato delle ore totali e della spesa salariale prevista per il periodo selezionato.
-*   **Gestione Presenze**:
-    *   Visualizzazione di tutte le timbrature con anteprima delle foto originali.
-    *   Editing manuale delle timbrature (per correzioni di errori umani).
-    *   Eliminazione di record singoli o multipli.
-*   **Gestione Pagamenti Avanzata**:
-    *   Registrazione di nuovi versamenti collegati ai dipendenti.
-    *   Tracciamento dei periodi salariali (Inizio/Fine periodo).
-    *   Visualizzazione dello storico pagamenti globale e filtrato.
-*   **Filtri Intelligenti**: Selezione rapida per dipendente o range di date personalizzato.
-*   **Esportazione Dati**:
-    *   **CSV**: Download immediato dei dati per analisi esterne in Excel.
-    *   **PDF Professionali**: Generazione automatica di report in formato "Busta Paga" pronti per la condivisione.
+- **Dashboard Statistica**: Grafici interattivi (Bar Charts) del carico di lavoro.
+- **Calendario Integrato**: Panoramica visiva mensile delle presenze del team.
+- **Esportazione**: Generazione istantanea di PDF professionali (Busta Paga) e CSV.
+
+### 📱 Portale Dipendenti
+- Auto-Login persistente (PWA).
+- Azioni veloci: "Entra" / "Esci" con fotocamera integrata.
+- Calcolo automatico del guadagno in base al monte ore settimanale/mensile.
 
 ## 🛠️ Stack Tecnologico
 *   **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
-*   **Linguaggio**: TypeScript
-*   **Database**: PostgreSQL
-*   **ORM**: [Prisma](https://www.prisma.io/)
-*   **Analisi Dati**: [Recharts](https://recharts.org/) per la visualizzazione dinamica.
-*   **Generazione PDF**: JSPDF & JSPDF-Autotable.
-*   **PWA**: Service Worker personalizzato per caching e installazione su Homescreen.
-*   **Hosting**: Vercel (ottimizzato per serverless e database edge).
+*   **Linguaggio**: TypeScript & JSX
+*   **Backend & DB**: [Firebase](https://firebase.google.com/) (Firestore, Storage, Admin SDK)
+*   **Styling**: CSS Modules & Variabili Native
+*   **Visualizzazione Dati**: [Recharts](https://recharts.org/)
+*   **Esportazioni**: JSPDF & AutoTable
+*   **Hosting**: [Vercel](https://vercel.com/) 
 
-## 📱 Guida all'Installazione (PWA)
-L'app non richiede download dagli store tradizionali:
-1.  **Android (Chrome)**: Apri il link -> 3 puntini -> "Aggiungi a schermata Home".
-2.  **iOS (Safari)**: Apri il link -> Tasto Condividi -> "Aggiungi alla schermata Home".
+## � Installazione PWA (Senza Store)
+Essendo una Web App Progressiva, non richiede l'App Store o Google Play:
+1. **iOS (Safari)**: Apri il link -> Condividi -> "Aggiungi alla schermata Home".
+2. **Android (Chrome)**: Apri il link -> Menu (3 puntini) -> "Aggiungi a schermata Home".
 
 ---
-*Sviluppato con cura per ottimizzare il workflow dei team dinamici.*
+*Sviluppato con passione per i team che vogliono semplificare la burocrazia aziendale.*
