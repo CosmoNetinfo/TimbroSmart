@@ -176,7 +176,7 @@ export default function Dashboard() {
 
     return (
         <main className="mobile-container">
-            <div className="animate-slide-up" style={{ padding: '2rem 1.5rem', flex: 1, paddingBottom: '100px' }}>
+            <div className="animate-slide-up" style={{ padding: '1rem 1.5rem', flex: 1, paddingBottom: '90px' }}>
 
                 {/* 1. Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* 2. Status Sphere */}
-                <div style={{ margin: '2rem 0', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ margin: '1rem 0 1.5rem 0', display: 'flex', justifyContent: 'center' }}>
                     {status === 'LOADING' ? (
                         <div className="status-sphere" style={{ background: '#f1f5f9' }}>
                             <span style={{ color: '#94a3b8' }}>Caricamento...</span>
@@ -258,7 +258,7 @@ export default function Dashboard() {
                         <div className="status-sphere sphere-out">
                             <div className="sphere-glass-overlay" />
                             <div className="status-text-label">STATO ATTUALE:</div>
-                            <div className="status-text-main" style={{ fontSize: '1.8rem' }}>NON AL LAVORO</div>
+                            <div className="status-text-main" style={{ fontSize: '1.5rem' }}>NON AL LAVORO</div>
                             <div style={{ marginTop: '10px', color: 'white', opacity: 0.9, fontSize: '0.9rem', fontWeight: 500 }}>
                                 Riposo...
                             </div>

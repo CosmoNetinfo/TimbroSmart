@@ -255,10 +255,10 @@ input[type="datetime-local"] {
 
 /* Sphere */
 .status-sphere {
-  width: 260px;
-  height: 260px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
-  margin: 2rem auto;
+  margin: 1rem auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -301,8 +301,8 @@ input[type="datetime-local"] {
 .action-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding: 0 1.5rem;
+  gap: 1rem;
+  padding: 0 1rem;
 }
 
 .btn-square-lg {
