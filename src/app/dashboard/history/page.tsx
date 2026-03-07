@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Calendar, Wallet, User, History, ChevronLeft } from 'lucide-react';
+import { Home, History } from 'lucide-react';
 
 interface HistoryEntry {
     type: 'IN' | 'OUT';
@@ -148,6 +148,12 @@ export default function HistoryPage() {
         return { weeks, totalHoursAllTime, totalEurosAllTime };
     }, [entries, hourlyWage]);
 
+    const formatDuration = (decimalHours: number) => {
+        const h = Math.floor(decimalHours);
+        const m = Math.round((decimalHours - h) * 60);
+        return `${h}h ${m}m`;
+    };
+
     const fmtEur = (val: number) =>
         val.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 });
 
@@ -172,7 +178,7 @@ export default function HistoryPage() {
                 }}>
                     <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Totale Generale</p>
                     <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', margin: 0, marginBottom: '0.4rem' }}>
-                        {historyData.totalHoursAllTime.toFixed(2)} <span style={{ fontSize: '1.5rem' }}>h</span>
+                        {formatDuration(historyData.totalHoursAllTime)}
                     </h1>
                     <div style={{ fontSize: '1.4rem', color: 'var(--success)', fontWeight: 700 }}>
                         {fmtEur(historyData.totalEurosAllTime)}
@@ -210,7 +216,7 @@ export default function HistoryPage() {
                                         </h3>
                                         <div style={{ textAlign: 'right' }}>
                                             <div style={{ fontWeight: 'bold', color: 'var(--success)', fontSize: '1.1rem' }}>
-                                                {week.totalHours.toFixed(2)} h
+                                                {formatDuration(week.totalHours)}
                                             </div>
                                             <div style={{ fontWeight: 700, color: '#f0c040', fontSize: '1rem' }}>
                                                 {fmtEur(week.totalEuros)}
@@ -238,7 +244,7 @@ export default function HistoryPage() {
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
                                                     <div style={{ opacity: 0.85, fontSize: '0.95rem' }}>
-                                                        {shift.hours.toFixed(2)} h
+                                                        {formatDuration(shift.hours)}
                                                     </div>
                                                     <div style={{ color: '#f0c040', fontWeight: 600, fontSize: '0.9rem' }}>
                                                         {fmtEur(shift.euros)}
