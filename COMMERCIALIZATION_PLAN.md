@@ -9,9 +9,9 @@ Il primo passo per la commercializzazione è permettere a più aziende di regist
 - **Isolamento Dati**: Ogni azienda avrà il proprio spazio database logico separato.
 - **Gestione Abbonamenti**: Integrazione con **Stripe** per gestire pagamenti ricorrenti (Monthly/Annual).
 - **Tiers di Prezzo**:
-  - **Free**: Fino a 3 dipendenti, report base.
-  - **Pro**: Dipendenti illimitati, export PDF avanzati, gestione pagamenti.
-  - **Enterprise**: Branding personalizzato, supporto prioritario 24/7 (WhatsApp dedicato), API access, e **SLA al 99.9%**.
+  - **FREE**: Fino a 3 dipendenti, base matricole factorial. (€0)
+  - **PRO**: 4,99€ una tantum. Dipendenti illimitati, export PDF avanzati, gestione pagamenti.
+  - **ENTERPRISE**: 9,99€ una tantum. Dipendenti illimitati, White-label, API access, supporto 24/7.
 
 ## 2. Compliance e Infrastruttura
 

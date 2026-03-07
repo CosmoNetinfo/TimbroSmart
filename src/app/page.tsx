@@ -157,8 +157,13 @@ export default function Home() {
             zIndex: 50
           }}
         >
-          <p style={{ fontSize: '0.9rem', marginBottom: '1rem', opacity: 0.9, fontWeight: 600 }}>
-            Non hai ancora un codice azienda?
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '0.8rem' }}>
+            <p style={{ fontSize: '1rem', margin: 0, fontWeight: 700, color: 'var(--primary)' }}>
+              Piano FREE - Base
+            </p>
+          </div>
+          <p style={{ fontSize: '0.85rem', marginBottom: '1rem', opacity: 0.8 }}>
+            Gestisci fino a <strong>3 dipendenti</strong> gratuitamente.
           </p>
           
           <button 
@@ -166,30 +171,129 @@ export default function Home() {
             onClick={handleFreePlanRequest}
             className="btn-glass-primary"
             style={{ 
-              height: '55px', 
-              fontSize: '0.95rem', 
+              height: '45px', 
+              fontSize: '0.9rem', 
               display: 'flex', 
               gap: '10px',
-              background: 'linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%)',
-              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)',
+              background: 'rgba(14, 165, 233, 0.1)',
+              border: '1px solid var(--primary)',
+              boxShadow: 'none',
               cursor: 'pointer',
               width: '100%'
             }}
           >
-            <Mail size={18} /> Richiedi Piano FREE Gratis
+            <Mail size={18} /> Richiedi Piano FREE
           </button>
+        </div>
 
-          <div style={{ marginTop: '1rem', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-            <p style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '4px' }}>Oppure scrivici su WhatsApp:</p>
-            <a 
-              href="https://wa.me/393517064080" 
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--success)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', cursor: 'pointer' }}
-            >
-              +39 351 706 4080
-            </a>
+        {/* --- Box Piano PRO (PayPal) --- */}
+        <div 
+          className="animate-fade-in" 
+          style={{ 
+            animationDelay: '0.5s', 
+            marginBottom: '1rem', 
+            padding: '1.2rem', 
+            background: 'rgba(240, 192, 64, 0.08)', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(240, 192, 64, 0.3)',
+            position: 'relative',
+            zIndex: 50,
+            textAlign: 'center'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '0.8rem' }}>
+            <span style={{ background: '#f0c040', color: '#000', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 'bold' }}>CONSIGLIATO</span>
+            <p style={{ fontSize: '1rem', margin: 0, fontWeight: 700, color: '#f0c040' }}>
+              Piano PRO - Illimitato
+            </p>
           </div>
+          
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', fontSize: '0.85rem', textAlign: 'left', opacity: 0.9 }}>
+            <li style={{ marginBottom: '6px' }}>✅ Dipendenti <strong>Illimitati</strong></li>
+            <li style={{ marginBottom: '6px' }}>✅ Export PDF & Report avanzati</li>
+            <li style={{ marginBottom: '6px' }}>✅ Gestione pagamenti integrata</li>
+          </ul>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>€4,99</span>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}> una tantum</span>
+          </div>
+          
+          <a
+            href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=stephenkingitaly@gmail.com&item_name=TimbroSmart%20PRO&amount=4.99&currency_code=EUR&return=https://timbrosmart.vercel.app/payment-success" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-glass-primary"
+            style={{ 
+              height: '55px', 
+              fontSize: '0.95rem', 
+              display: 'flex', 
+              gap: '10px',
+              background: '#0ea5e9',
+              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)',
+              cursor: 'pointer',
+              width: '100%',
+              textDecoration: 'none',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Image src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal" width={24} height={15} />
+            Attiva PRO
+          </a>
+        </div>
+
+        {/* --- Box Piano ENTERPRISE --- */}
+        <div 
+          className="animate-fade-in" 
+          style={{ 
+            animationDelay: '0.6s', 
+            marginBottom: '1rem', 
+            padding: '1.2rem', 
+            background: 'rgba(168, 85, 247, 0.08)', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(168, 85, 247, 0.3)',
+            position: 'relative',
+            zIndex: 50,
+            textAlign: 'center'
+          }}
+        >
+          <p style={{ fontSize: '1rem', margin: '0 0 0.8rem 0', fontWeight: 700, color: '#a855f7' }}>
+            Piano ENTERPRISE
+          </p>
+          
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', fontSize: '0.85rem', textAlign: 'left', opacity: 0.9 }}>
+            <li style={{ marginBottom: '6px' }}>✅ Tutto il piano PRO</li>
+            <li style={{ marginBottom: '6px' }}>✅ <strong>White-label</strong> (Tuo Logo)</li>
+            <li style={{ marginBottom: '6px' }}>✅ Supporto 24/7 & API</li>
+          </ul>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>€9,99</span>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}> una tantum</span>
+          </div>
+          
+          <a
+            href="https://wa.me/393517064080?text=Salve,%20vorrei%20informazioni%20per%20il%20piano%20ENTERPRISE." 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-glass-primary"
+            style={{ 
+              height: '50px', 
+              fontSize: '0.9rem', 
+              display: 'flex', 
+              gap: '10px',
+              background: 'transparent',
+              border: '1px solid #a855f7',
+              cursor: 'pointer',
+              width: '100%',
+              textDecoration: 'none',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            Contattaci per Enterprise
+          </a>
         </div>
 
         <a href="https://wa.me/393517064080?text=Salve,%20ho%20bisogno%20di%20assistenza%20o%20ho%20dimenticato%20il%20codice." target="_blank" rel="noopener noreferrer" className="helper-text" style={{ fontSize: '0.85rem', opacity: 0.6, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '1rem' }}>

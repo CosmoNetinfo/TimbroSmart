@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, Search, ShieldCheck, ArrowLeft, RefreshCw, FileSpreadsheet, AlertCircle, CheckCircle } from 'lucide-react';
+import { Trash2, Plus, Search, ShieldCheck, ArrowLeft, RefreshCw, FileSpreadsheet, AlertCircle, CheckCircle, Send } from 'lucide-react';
 import Link from 'next/link';
 
 interface MasterKey {
@@ -22,6 +22,9 @@ export default function SuperAdminPage() {
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
 
+    const [view, setView] = useState<'LICENSES' | 'ORDERS'>('LICENSES');
+    const [orders, setOrders] = useState<any[]>([]);
+
     // Auto-nasconde i messaggi di successo dopo 3 secondi
     useEffect(() => {
         if (successMsg) {
@@ -35,6 +38,7 @@ export default function SuperAdminPage() {
         if (password === 'TSMT_2026') {
             setIsAuthenticated(true);
             fetchKeys();
+            fetchOrders();
         } else {
             alert('Password errata!');
         }
@@ -48,19 +52,26 @@ export default function SuperAdminPage() {
             if (res.ok) {
                 const data = await res.json();
                 setKeys(Array.isArray(data) ? data : []);
-                if (Array.isArray(data) && data.length > 0) {
-                    setSuccessMsg(`${data.length} licenze caricate`);
-                }
             } else {
                 const errData = await res.json().catch(() => ({ error: res.statusText }));
                 setErrorMsg(`Errore ${res.status}: ${errData.error || 'Impossibile recuperare le licenze'}`);
-                console.error('Fetch keys error:', errData);
             }
         } catch (e) {
-            setErrorMsg('Errore di connessione al server. Verifica la tua connessione internet.');
-            console.error('Fetch keys network error:', e);
+            setErrorMsg('Errore di connessione al server.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchOrders = async () => {
+        try {
+            const res = await fetch(`/api/super-admin/orders?secret=TSMT_2026`);
+            if (res.ok) {
+                const data = await res.json();
+                setOrders(data || []);
+            }
+        } catch (e) {
+            console.error('Fetch orders error:', e);
         }
     };
 
@@ -104,6 +115,20 @@ export default function SuperAdminPage() {
         }
     };
 
+    const handleDeleteOrder = async (orderId: string) => {
+        if (!confirm('Eliminare questa richiesta ordine?')) return;
+        try {
+            const res = await fetch(`/api/super-admin/orders?secret=TSMT_2026&orderId=${orderId}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                fetchOrders();
+            }
+        } catch {
+            alert('Errore di connessione');
+        }
+    };
+
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -119,6 +144,7 @@ export default function SuperAdminPage() {
                 setShowNewForm(false);
                 setNewKey({ serialKey: '', adminCode: '', plan: 'PRO', isActive: true });
                 fetchKeys();
+                setSuccessMsg('Licenza generata con successo');
             } else {
                 const errorData = await res.json();
                 alert(`Errore creazione: ${errorData.error || res.statusText}`);
@@ -126,6 +152,17 @@ export default function SuperAdminPage() {
         } catch {
             alert('Errore di connessione durante la creazione');
         }
+    };
+
+    const handleFulfillOrder = (order: any) => {
+        setNewKey({
+            serialKey: `PRO-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-TSMT`,
+            adminCode: `ADM-PRO-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            plan: 'PRO',
+            isActive: true
+        });
+        setShowNewForm(true);
+        // Suggeriamo di inviare i dati via WhatsApp dopo il salvataggio
     };
 
     const filteredKeys = keys.filter(k => 
@@ -163,14 +200,23 @@ export default function SuperAdminPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <Link href="/admin" style={{ color: 'var(--text-primary)' }}><ArrowLeft /></Link>
                         <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <FileSpreadsheet className="text-primary" /> License Manager
+                            <FileSpreadsheet className="text-primary" /> {view === 'LICENSES' ? 'License Manager' : 'Gestione Ordini'}
                         </h2>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={fetchKeys} className="btn-ghost" style={{ padding: '8px' }}><RefreshCw size={20} /></button>
-                        <button onClick={() => setShowNewForm(true)} className="btn-glass-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
-                            <Plus size={18} className="mr-2 inline" /> Nuova Chiave
+                        <button 
+                            onClick={() => { setView(view === 'LICENSES' ? 'ORDERS' : 'LICENSES'); view === 'LICENSES' ? fetchOrders() : fetchKeys(); }} 
+                            className="btn-ghost" 
+                            style={{ fontSize: '0.85rem', border: '1px solid var(--border)' }}
+                        >
+                            {view === 'LICENSES' ? `Vedi Ordini (${orders.length})` : 'Vedi Licenze'}
                         </button>
+                        <button onClick={view === 'LICENSES' ? fetchKeys : fetchOrders} className="btn-ghost" style={{ padding: '8px' }}><RefreshCw size={20} /></button>
+                        {view === 'LICENSES' && (
+                            <button onClick={() => setShowNewForm(true)} className="btn-glass-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                                <Plus size={18} className="mr-2 inline" /> Nuova Chiave
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -186,92 +232,138 @@ export default function SuperAdminPage() {
                     </div>
                 )}
 
-                {/* Toolbar */}
-                <div className="glass p-4 mb-6" style={{ borderRadius: '15px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', flexGrow: 1 }}>
-                        <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
-                        <input 
-                            type="text" 
-                            placeholder="Cerca per codice o piano..." 
-                            className="custom-input" 
-                            style={{ paddingLeft: '40px' }}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <div className="text-muted" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
-                        Totale: <strong>{keys.length}</strong> licenze
-                    </div>
-                </div>
+                {view === 'LICENSES' ? (
+                    <>
+                        {/* Toolbar Licenze */}
+                        <div className="glass p-4 mb-6" style={{ borderRadius: '15px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <div style={{ position: 'relative', flexGrow: 1 }}>
+                                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
+                                <input 
+                                    type="text" 
+                                    placeholder="Cerca per codice o piano..." 
+                                    className="custom-input" 
+                                    style={{ paddingLeft: '40px' }}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="text-muted" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
+                                Totale: <strong>{keys.length}</strong> licenze
+                            </div>
+                        </div>
 
-                {/* Table (Excel Style) */}
-                <div className="glass" style={{ borderRadius: '15px', overflow: 'hidden' }}>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-                                <tr>
-                                    <th style={{ textAlign: 'left', padding: '15px' }}>Codice Serial</th>
-                                    <th style={{ textAlign: 'left', padding: '15px' }}>Admin Code</th>
-                                    <th style={{ textAlign: 'left', padding: '15px' }}>Piano</th>
-                                    <th style={{ textAlign: 'center', padding: '15px' }}>Stato</th>
-                                    <th style={{ textAlign: 'left', padding: '15px' }}>Creazione</th>
-                                    <th style={{ textAlign: 'right', padding: '15px' }}>Azioni</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading && (
-                                    <tr>
-                                        <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Caricamento dati...</td>
-                                    </tr>
-                                )}
-                                {!loading && filteredKeys.length === 0 && (
-                                    <tr>
-                                        <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-                                            {errorMsg ? '⚠️ Errore nel caricamento' : '📭 Nessuna licenza trovata. Clicca "+ Nuova Chiave" per crearne una.'}
-                                        </td>
-                                    </tr>
-                                )}
-                                {!loading && filteredKeys.map((k) => (
-                                    <tr key={k.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }} className="hover-row">
-                                        <td style={{ padding: '15px', fontWeight: 600, fontFamily: 'monospace' }}>{k.id}</td>
-                                        <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--primary)', fontWeight: 600 }}>
-                                            {k.adminCode || <span style={{color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'normal'}}>N/D</span>}
-                                        </td>
-                                        <td style={{ padding: '15px' }}>
-                                            <span className={`badge ${k.plan}`}>
-                                                {k.plan}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '15px', textAlign: 'center' }}>
-                                            <button 
-                                                onClick={() => handleToggleActive(k)}
-                                                style={{ 
-                                                    padding: '4px 12px', 
-                                                    borderRadius: '20px', 
-                                                    fontSize: '0.8rem',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    background: k.isActive ? '#dcfce7' : '#fee2e2',
-                                                    color: k.isActive ? '#166534' : '#991b1b'
-                                                }}
-                                            >
-                                                {k.isActive ? 'Attiva' : 'Disattivata'}
-                                            </button>
-                                        </td>
-                                        <td style={{ padding: '15px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                            {new Date(k.createdAt).toLocaleDateString()} {new Date(k.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </td>
-                                        <td style={{ padding: '15px', textAlign: 'right' }}>
-                                            <button onClick={() => handleDelete(k.id)} className="btn-ghost" style={{ color: 'var(--danger)', padding: '5px' }}>
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                        {/* Tavola Licenze */}
+                        <div className="glass" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+                                        <tr>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Codice Serial</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Admin Code</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Piano</th>
+                                            <th style={{ textAlign: 'center', padding: '15px' }}>Stato</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Creazione</th>
+                                            <th style={{ textAlign: 'right', padding: '15px' }}>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {loading && (
+                                            <tr>
+                                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Caricamento dati...</td>
+                                            </tr>
+                                        )}
+                                        {!loading && filteredKeys.length === 0 && (
+                                            <tr>
+                                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                                                    {errorMsg ? '⚠️ Errore nel caricamento' : '📭 Nessuna licenza trovata.'}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {!loading && filteredKeys.map((k) => (
+                                            <tr key={k.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }} className="hover-row">
+                                                <td style={{ padding: '15px', fontWeight: 600, fontFamily: 'monospace' }}>{k.id}</td>
+                                                <td style={{ padding: '15px', fontFamily: 'monospace', color: 'var(--primary)', fontWeight: 600 }}>
+                                                    {k.adminCode || <span style={{color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'normal'}}>N/D</span>}
+                                                </td>
+                                                <td style={{ padding: '15px' }}>
+                                                    <span className={`badge ${k.plan}`}>
+                                                        {k.plan}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '15px', textAlign: 'center' }}>
+                                                    <button onClick={() => handleToggleActive(k)} style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', border: 'none', cursor: 'pointer', background: k.isActive ? '#dcfce7' : '#fee2e2', color: k.isActive ? '#166534' : '#991b1b' }}>
+                                                        {k.isActive ? 'Attiva' : 'Disattivata'}
+                                                    </button>
+                                                </td>
+                                                <td style={{ padding: '15px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                    {new Date(k.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td style={{ padding: '15px', textAlign: 'right' }}>
+                                                    <button 
+                                                        onClick={() => {
+                                                            const text = `Ecco i tuoi codici TimbroSmart:\n\nSerial Key: ${k.id}\nAdmin Code: ${k.adminCode}\nPiano: ${k.plan}\n\nAccedi qui: https://timbrosmart.vercel.app/`;
+                                                            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                                                        }} 
+                                                        className="btn-ghost" 
+                                                        style={{ color: 'var(--success)', padding: '5px' }}
+                                                        title="Invia via WhatsApp"
+                                                    >
+                                                        <Send size={18} />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(k.id)} className="btn-ghost" style={{ color: 'var(--danger)', padding: '5px' }}>
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {/* Tavola Ordini */}
+                        <div className="glass" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+                                        <tr>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Azienda</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Contatto / Email</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Piano</th>
+                                            <th style={{ textAlign: 'left', padding: '15px' }}>Data</th>
+                                            <th style={{ textAlign: 'right', padding: '15px' }}>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {orders.length === 0 && (
+                                            <tr>
+                                                <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>📭 Nessun ordine pendente</td>
+                                            </tr>
+                                        )}
+                                        {orders.map((o) => (
+                                            <tr key={o.id} style={{ borderBottom: '1px solid var(--border)' }} className="hover-row">
+                                                <td style={{ padding: '15px', fontWeight: 700 }}>{o.companyName}</td>
+                                                <td style={{ padding: '15px', color: 'var(--primary)' }}>{o.email}</td>
+                                                <td style={{ padding: '15px' }}><span className={`badge ${o.plan}`}>{o.plan}</span></td>
+                                                <td style={{ padding: '15px', fontSize: '0.85rem' }}>{new Date(o.createdAt).toLocaleString()}</td>
+                                                <td style={{ padding: '15px', textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                    <button onClick={() => handleFulfillOrder(o)} className="btn-glass-primary" style={{ padding: '6px 12px', fontSize: '0.8rem', height: 'auto' }}>
+                                                        Crea Licenza
+                                                    </button>
+                                                    <button onClick={() => handleDeleteOrder(o.id)} className="btn-ghost" style={{ color: 'var(--danger)', padding: '5px' }}>
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Modal - Nuova Chiave */}
@@ -281,16 +373,9 @@ export default function SuperAdminPage() {
                         <h3 className="mb-4">Genera Licenza Manuale</h3>
                         <form onSubmit={handleCreate}>
                             <div className="mb-4">
-                                <label className="label">Serial Key (Manuale o Gen)</label>
+                                <label className="label">Serial Key</label>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <input 
-                                        type="text" 
-                                        className="custom-input" 
-                                        value={newKey.serialKey} 
-                                        onChange={e => setNewKey({...newKey, serialKey: e.target.value})} 
-                                        placeholder="ES. PRO-XYZ-TSMT" 
-                                        required 
-                                    />
+                                    <input type="text" className="custom-input" value={newKey.serialKey} onChange={e => setNewKey({...newKey, serialKey: e.target.value})} placeholder="PRO-..." required />
                                     <button 
                                         type="button" 
                                         className="btn-ghost" 
@@ -299,7 +384,6 @@ export default function SuperAdminPage() {
                                             serialKey: `${newKey.plan}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-TSMT`,
                                             adminCode: `ADM-${newKey.plan}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
                                         })}
-                                        title="Genera random (Seriale e Admin Code)"
                                     >
                                         <RefreshCw size={18} />
                                     </button>
@@ -307,24 +391,11 @@ export default function SuperAdminPage() {
                             </div>
                             <div className="mb-4">
                                 <label className="label">Admin Code</label>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <input 
-                                        type="text" 
-                                        className="custom-input" 
-                                        value={newKey.adminCode} 
-                                        onChange={e => setNewKey({...newKey, adminCode: e.target.value})} 
-                                        placeholder="ES. ADM-PRO-XYZ123" 
-                                        required 
-                                    />
-                                </div>
+                                <input type="text" className="custom-input" value={newKey.adminCode} onChange={e => setNewKey({...newKey, adminCode: e.target.value})} placeholder="ADM-..." required />
                             </div>
                             <div className="mb-4">
                                 <label className="label">Piano</label>
-                                <select 
-                                    className="custom-input" 
-                                    value={newKey.plan}
-                                    onChange={e => setNewKey({...newKey, plan: e.target.value})}
-                                >
+                                <select className="custom-input" value={newKey.plan} onChange={e => setNewKey({...newKey, plan: e.target.value})}>
                                     <option value="FREE">FREE</option>
                                     <option value="PRO">PRO</option>
                                     <option value="ENTERPRISE">ENTERPRISE</option>
@@ -340,32 +411,13 @@ export default function SuperAdminPage() {
             )}
 
             <style jsx>{`
-                .badge {
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    font-size: 0.75rem;
-                    font-weight: bold;
-                }
+                .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
                 .badge.FREE { background: #f3f4f6; color: #4b5563; }
                 .badge.PRO { background: #dbeafe; color: #1e40af; }
                 .badge.ENTERPRISE { background: #fef3c7; color: #92400e; }
-                .hover-row:hover {
-                    background: rgba(var(--primary-rgb), 0.05) !important;
-                }
-                th { 
-                    color: var(--text-secondary); 
-                    font-size: 0.8rem; 
-                    text-transform: uppercase; 
-                    letter-spacing: 0.05em; 
-                    background: rgba(var(--primary-rgb), 0.05);
-                }
-                tr:nth-child(even) {
-                    background: rgba(0,0,0,0.02);
-                }
-                input.custom-input:focus {
-                    border-color: var(--primary);
-                    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
-                }
+                .hover-row:hover { background: rgba(var(--primary-rgb), 0.05) !important; }
+                th { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(var(--primary-rgb), 0.05); }
+                tr:nth-child(even) { background: rgba(0,0,0,0.02); }
             `}</style>
         </main>
     );
