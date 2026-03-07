@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import jsPDF from 'jspdf';
@@ -372,8 +372,6 @@ export default function Admin() {
             // Iterate and pair IN/OUT
             for (let i = 0; i < logs.length; i++) {
                 if (logs[i].type === 'IN') {
-                    // Look for next OUT
-                    // We just take the Next event if it is OUT. If it is IN, then the previous IN is ignored/incomplete.
                     if (i + 1 < logs.length && logs[i + 1].type === 'OUT') {
                         const start = new Date(logs[i].timestamp).getTime();
                         const end = new Date(logs[i + 1].timestamp).getTime();
@@ -383,11 +381,11 @@ export default function Admin() {
                 }
             }
             totalHours += hours;
-            const wage = logs[0].user.hourlyWage || 7;
+            const wage = logs[0].user?.hourlyWage || 7;
             const salary = hours * wage;
             return {
                 userId: logs[0].userId,
-                name: logs[0].user.name,
+                name: logs[0].user?.name || 'Dipendente',
                 hours: hours,
                 salary: salary,
                 wage: wage
@@ -442,7 +440,13 @@ export default function Admin() {
         }
         if (entries.length === 0) return;
 
-        const doc = new jsPDF();
+        interface JsPDFWithAutoTable extends jsPDF {
+            lastAutoTable?: {
+                finalY: number;
+            };
+        }
+
+        const doc = new jsPDF() as JsPDFWithAutoTable;
         
         // --- PREMIUM STYLING HELPERS ---
         const drawBox = (x: number, y: number, w: number, h: number, label: string, content?: string | number) => {
@@ -569,8 +573,7 @@ export default function Admin() {
             tableWidth: 190,
         });
 
-        const tableDoc = doc as any;
-        const finalY = tableDoc.lastAutoTable.finalY + 8;
+        const finalY = (doc.lastAutoTable?.finalY || 100) + 8;
 
         // --- SECTION: Footer Final Totals ---
         drawBox(10, finalY, 30, 15, "Comp. Tot.", `€ ${summary.userSummaries[0]?.salary.toFixed(2)}`);
@@ -936,7 +939,7 @@ export default function Admin() {
                                     cursor={{ fill: 'var(--surface-alt)' }}
                                 />
                                 <Bar dataKey="hours" radius={[8, 8, 0, 0]}>
-                                    {summary.userSummaries.map((entry, index) => (
+                                    {summary.userSummaries.map((_entry, index: number) => (
                                         <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--accent)' : 'var(--accent-dark)'} />
                                     ))}
                                 </Bar>
