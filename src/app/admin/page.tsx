@@ -254,7 +254,8 @@ export default function Admin() {
                 setCompanyName(newCompanyName);
                 alert('Nome azienda aggiornato con successo!');
             } else {
-                alert('Errore durante l\'aggiornamento');
+                const data = await res.json();
+                alert(`Errore: ${data.error || 'Impossibile aggiornare'}`);
             }
         } catch (error) {
             alert('Errore di connessione');
@@ -544,7 +545,22 @@ export default function Admin() {
                             {showPayments ? 'Chiudi Pagamenti' : '💰 Gestione Pagamenti'}
                         </button>
 
-                        <button onClick={() => setShowUsers(!showUsers)} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className={`btn ${showUsers ? 'btn-primary' : 'btn-secondary'}`}>
+                        <button 
+                            onClick={() => {
+                                if (!companyName || companyName === 'TimbroSmart') {
+                                    alert('Per favore, imposta prima il Nome Azienda nelle Impostazioni');
+                                    setShowSettings(true);
+                                } else {
+                                    setShowUsers(!showUsers);
+                                }
+                            }} 
+                            style={{ 
+                                flex: '1 1 auto', 
+                                minWidth: 'max-content',
+                                opacity: (!companyName || companyName === 'TimbroSmart') ? 0.7 : 1
+                            }} 
+                            className={`btn ${showUsers ? 'btn-primary' : 'btn-secondary'}`}
+                        >
                             {showUsers ? 'Chiudi Dipendenti' : '👥 Gestione Dipendenti'}
                         </button>
                         <button onClick={() => setShowCalendar(!showCalendar)} style={{ flex: '1 1 auto', minWidth: 'max-content' }} className={`btn ${showCalendar ? 'btn-primary' : 'btn-secondary'}`}>
