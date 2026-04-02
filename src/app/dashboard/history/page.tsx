@@ -1,9 +1,7 @@
-
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Home, History } from 'lucide-react';
 
 interface HistoryEntry {
     type: 'IN' | 'OUT';
@@ -37,14 +35,13 @@ export default function HistoryPage() {
         } catch {
             router.push('/');
         }
-    }, []);
+    }, [router]);
 
     const fetchHistory = async (userId: number) => {
         try {
             const res = await fetch(`/api/history?userId=${userId}&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
-                // Support both old (array) and new ({ entries, hourlyWage }) response shapes
                 if (Array.isArray(data)) {
                     setEntries(data);
                 } else {
@@ -60,7 +57,6 @@ export default function HistoryPage() {
     };
 
     const historyData = useMemo(() => {
-        // Sort Ascending for calculation
         const sorted = [...entries].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
         const shifts: { dateObj: Date; date: string; start: string; end: string; hours: number; euros: number }[] = [];
@@ -94,9 +90,8 @@ export default function HistoryPage() {
 
                 totalHoursAllTime += hours;
                 totalEurosAllTime += euros;
-                i++; // Salta il log OUT accoppiato
+                i++; 
             } else {
-                // Log singolo (es. solo entrata non ancora chiusa o log orfano)
                 shifts.push({
                     dateObj: start,
                     date: dateStr,
@@ -109,7 +104,6 @@ export default function HistoryPage() {
             }
         }
 
-        // Group by Week
         const weeksMap = new Map<string, { label: string; totalHours: number; totalEuros: number; shifts: typeof shifts }>();
 
         shifts.forEach(shift => {
@@ -137,7 +131,6 @@ export default function HistoryPage() {
             week.totalEuros += shift.euros;
         });
 
-        // Convert to array and sort by date descending (newest week first)
         const weeks = Array.from(weeksMap.entries())
             .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
             .map(([_key, val]) => {
@@ -157,108 +150,143 @@ export default function HistoryPage() {
     const fmtEur = (val: number) =>
         val.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 });
 
+    const handleLogout = () => {
+        localStorage.removeItem('user_meta');
+        router.push('/');
+    };
+
     if (!user) return null;
 
     return (
-        <main className="container">
-            <div className="glass card animate-fade-in" style={{ textAlign: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
-                    <Link href="/dashboard" className="btn" style={{ width: 'auto', padding: '0.5rem 1rem', marginRight: '1rem', background: 'var(--surface)' }}>
-                        <History className="inline-block mr-2" /> Lo Storico
+        <div className="bg-surface font-body text-on-surface min-h-screen pb-28">
+            
+            {/* TopAppBar */}
+            <header className="w-full top-0 sticky z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6 h-16 shadow-sm">
+                <div className="flex items-center gap-4">
+                    <Link href="/dashboard" className="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors">
+                        <span className="material-symbols-outlined">arrow_back</span>
                     </Link>
-                    <h2 style={{ margin: 0, flexGrow: 1 }}>Storico Settimanale</h2>
-                </div>
-
-                {/* ── Totale Generale ── */}
-                <div style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    padding: '1.5rem',
-                    borderRadius: '16px',
-                    marginBottom: '2rem',
-                }}>
-                    <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Totale Generale</p>
-                    <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', margin: 0, marginBottom: '0.4rem' }}>
-                        {formatDuration(historyData.totalHoursAllTime)}
-                    </h1>
-                    <div style={{ fontSize: '1.4rem', color: 'var(--success)', fontWeight: 700 }}>
-                        {fmtEur(historyData.totalEurosAllTime)}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-                        tariffa {fmtEur(hourlyWage)}/h
+                    <div className="flex flex-col">
+                        <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">TimbroSmart</span>
+                        <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Storico Timbrature</h1>
                     </div>
                 </div>
+            </header>
 
-                <div style={{ textAlign: 'left' }}>
+            <main className="max-w-4xl mx-auto px-4 md:px-6 pt-6">
+                
+                {/* Hero Total Container */}
+                <div className="mb-8 animate-slide-up">
+                    <div className="bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-3xl p-6 relative overflow-hidden shadow-md flex flex-col min-h-[140px]">
+                        <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2"></div>
+                        <p className="font-label text-xs uppercase tracking-widest font-bold opacity-80 mb-2">Totale Generale Mese</p>
+                        
+                        <div className="flex items-end gap-4 mt-auto">
+                            <div>
+                                <h2 className="font-headline text-4xl font-extrabold tracking-tight">
+                                    {formatDuration(historyData.totalHoursAllTime)}
+                                </h2>
+                                <p className="opacity-90 font-medium text-sm mt-1">Ore Lavorate</p>
+                            </div>
+                            <div className="h-10 w-px bg-on-primary/20"></div>
+                            <div>
+                                <div className="text-2xl font-bold text-[#fde047]">
+                                    {fmtEur(historyData.totalEurosAllTime)}
+                                </div>
+                                <p className="opacity-90 font-medium text-sm">Tariffa {fmtEur(hourlyWage)}/h</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* History List */}
+                <div className="space-y-6">
                     {loading ? (
-                        <p style={{ textAlign: 'center', opacity: 0.5 }}>Caricamento...</p>
+                        <div className="flex justify-center p-8">
+                            <span className="material-symbols-outlined animate-spin text-primary text-3xl">refresh</span>
+                        </div>
                     ) : historyData.weeks.length === 0 ? (
-                        <p style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Non ci sono turni registrati.</p>
+                        <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-8 text-center shadow-sm">
+                            <span className="material-symbols-outlined text-4xl text-secondary mb-2">history_toggle_off</span>
+                            <h3 className="font-bold text-lg text-on-surface mb-1">Nessuna timbratura</h3>
+                            <p className="text-secondary text-sm">Non hai ancora registrato nessun turno di lavoro.</p>
+                        </div>
                     ) : (
-                        <div style={{ display: 'grid', gap: '2rem' }}>
-                            {historyData.weeks.map((week, idx) => (
-                                <div key={idx} style={{
-                                    border: '1px solid var(--border)',
-                                    borderRadius: '16px',
-                                    padding: '1rem',
-                                    background: 'rgba(255,255,255,0.02)',
-                                }}>
-                                    {/* Week header */}
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        marginBottom: '1rem',
-                                        borderBottom: '1px solid var(--border)',
-                                        paddingBottom: '0.75rem',
-                                    }}>
-                                        <h3 style={{ fontSize: '1rem', margin: 0 }}>
-                                            📅 {week.label}
-                                        </h3>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontWeight: 'bold', color: 'var(--success)', fontSize: '1.1rem' }}>
-                                                {formatDuration(week.totalHours)}
-                                            </div>
-                                            <div style={{ fontWeight: 700, color: '#f0c040', fontSize: '1rem' }}>
-                                                {fmtEur(week.totalEuros)}
-                                            </div>
+                        historyData.weeks.map((week, idx) => (
+                            <div key={idx} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl overflow-hidden shadow-sm animate-slide-up" style={{ animationDelay: `${(idx + 1) * 100}ms` }}>
+                                
+                                {/* Week Header */}
+                                <div className="bg-surface-container-low px-5 py-3 flex justify-between items-center border-b border-outline-variant/30">
+                                    <div className="flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-secondary">date_range</span>
+                                        <h3 className="font-bold text-sm text-on-surface">{week.label}</h3>
+                                    </div>
+                                    <div className="text-right flex items-center gap-4">
+                                        <div className="font-bold text-primary text-sm flex gap-1 items-center">
+                                            <span className="material-symbols-outlined text-[16px]">schedule</span>
+                                            {formatDuration(week.totalHours)}
+                                        </div>
+                                        <div className="font-bold text-[#d97706] text-sm flex gap-1 items-center">
+                                             <span className="material-symbols-outlined text-[16px]">payments</span>
+                                            {fmtEur(week.totalEuros)}
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Shifts */}
-                                    <div style={{ display: 'grid', gap: '0.5rem' }}>
-                                        {week.shifts.map((shift, sIdx) => (
-                                            <div key={sIdx} style={{
-                                                background: 'rgba(0,0,0,0.2)',
-                                                padding: '0.8rem 1rem',
-                                                borderRadius: '10px',
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                            }}>
-                                                <div>
-                                                    <div style={{ fontWeight: 600 }}>{shift.date}</div>
-                                                    <Home size={20} />
-                                                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
-                                                        {shift.start} → {shift.end}
-                                                    </div>
+                                {/* Shifts */}
+                                <div className="divide-y divide-outline-variant/20">
+                                    {week.shifts.map((shift, sIdx) => (
+                                        <div key={sIdx} className="p-4 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                                    <span className="material-symbols-outlined">work_history</span>
                                                 </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ opacity: 0.85, fontSize: '0.95rem' }}>
-                                                        {formatDuration(shift.hours)}
-                                                    </div>
-                                                    <div style={{ color: '#f0c040', fontWeight: 600, fontSize: '0.9rem' }}>
-                                                        {fmtEur(shift.euros)}
-                                                    </div>
+                                                <div>
+                                                    <p className="font-bold text-on-surface text-sm">{shift.date}</p>
+                                                    <p className="text-secondary text-xs flex items-center gap-1 mt-0.5">
+                                                        <span className="w-2 h-2 rounded-full bg-green-500"></span> {shift.start}
+                                                        <span className="mx-1 text-secondary/50">→</span>
+                                                        <span className={`w-2 h-2 rounded-full ${shift.type === 'IN' ? 'bg-orange-500 animate-pulse' : 'bg-red-500'}`}></span> {shift.end}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
+
+                                            <div className="text-right">
+                                                <p className="font-bold text-on-surface text-sm">{formatDuration(shift.hours)}</p>
+                                                <p className="text-[#d97706] font-medium text-xs mt-0.5">{fmtEur(shift.euros)}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))
                     )}
                 </div>
-            </div>
-        </main>
+            </main>
+
+            {/* Bottom Nav */}
+            <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-6 pt-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-[#c3c6d6]/20 shadow-[0_-12px_32px_rgba(23,28,31,0.06)] z-50 rounded-t-2xl">
+                <Link href="/dashboard" className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">home</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Home</span>
+                </Link>
+                <Link href="/dashboard/calendar" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">event_note</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Ferie</span>
+                </Link>
+                <div className="flex flex-col items-center justify-center bg-[#e4e9ed] text-primary rounded-xl px-3 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-bold">Storico</span>
+                </div>
+                <Link href="/dashboard/payments" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">account_balance_wallet</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Paga</span>
+                </Link>
+                <div onClick={handleLogout} className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">logout</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Esci</span>
+                </div>
+            </nav>
+        </div>
     );
 }

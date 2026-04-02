@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { CreditCard, Trash2 } from 'lucide-react';
 
 interface Payment {
     id: string | number;
@@ -56,7 +55,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                     const entries = Array.isArray(data) ? data : (data.entries ?? []);
                     const hourlyWage = Array.isArray(data) ? 7.0 : (data.hourlyWage ?? 7.0);
 
-                    // Sort ascending as in history page
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const sorted = [...entries].sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
                     let totalEuros = 0;
@@ -79,8 +78,6 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                         }
                     }
 
-                    // Only update if it's > 0, to not overwrite manually entered values if history is empty?
-                    // Actually, let's just update it so the user sees the calculated value.
                     setAmount(totalEuros.toFixed(2));
                 }
             } catch (error) {
@@ -90,7 +87,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
 
         const timerId = setTimeout(() => {
             calculateAmount();
-        }, 300); // debounce API call
+        }, 300);
 
         return () => clearTimeout(timerId);
     }, [selectedUserId, periodStart, periodEnd]);
@@ -98,7 +95,6 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
     const fetchAllPayments = async () => {
         setLoading(true);
         try {
-            // Fetch payments for all users
             const allPayments: Payment[] = [];
             for (const user of users) {
                 const res = await fetch(`/api/payments?userId=${user.id}`);
@@ -110,7 +106,6 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                     })));
                 }
             }
-            // Sort by payment date descending
             allPayments.sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
             setPayments(allPayments);
         } catch (error) {
@@ -144,19 +139,17 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
             if (res.ok) {
                 alert('Pagamento registrato con successo!');
                 setShowAddForm(false);
-                // Reset form
                 setSelectedUserId('');
                 setAmount('');
                 setPeriodStart('');
                 setPeriodEnd('');
                 setNotes('');
                 setPaymentDate(new Date().toISOString().split('T')[0]);
-                // Refresh payments
                 fetchAllPayments();
             } else {
                 alert('Errore durante la registrazione del pagamento');
             }
-        } catch (error) {
+        } catch {
             alert('Errore di connessione');
         }
     };
@@ -165,9 +158,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
         if (!confirm('Sei sicuro di voler eliminare questo pagamento?')) return;
 
         try {
-            const res = await fetch(`/api/payments?paymentId=${paymentId}`, {
-                method: 'DELETE'
-            });
+            const res = await fetch(`/api/payments?paymentId=${paymentId}`, { method: 'DELETE' });
 
             if (res.ok) {
                 alert('Pagamento eliminato');
@@ -175,7 +166,7 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
             } else {
                 alert('Errore durante l\'eliminazione');
             }
-        } catch (error) {
+        } catch {
             alert('Errore di connessione');
         }
     };
@@ -198,34 +189,43 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
 
     return (
-        <div className="mb-8 animate-slide-up">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <div>
-                    <h3 style={{ margin: 0 }}><CreditCard size={20} className="inline mr-2" /> Gestione Pagamenti</h3>
-                    <p className="text-muted" style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem' }}>
-                        Totale pagato: <strong style={{ color: 'var(--success)' }}>{formatCurrency(totalPaid)}</strong>
-                    </p>
+        <div>
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="bg-tertiary/10 text-tertiary p-3 rounded-xl">
+                        <span className="material-symbols-outlined text-[28px]">euro</span>
+                    </div>
+                    <div>
+                        <p className="text-secondary text-xs font-bold uppercase tracking-wider">Totale Pagato</p>
+                        <h2 className="font-headline text-2xl font-extrabold text-tertiary">{formatCurrency(totalPaid)}</h2>
+                    </div>
                 </div>
                 <button 
                     onClick={() => setShowAddForm(!showAddForm)} 
-                    className="btn btn-primary"
+                    className="px-5 py-3 rounded-xl bg-primary text-white font-bold active:scale-95 transition-all shadow-md shadow-primary/20 flex items-center gap-2"
                 >
-                    {showAddForm ? 'Annulla' : '+ Nuovo Pagamento'}
+                    <span className="material-symbols-outlined text-[20px]">{showAddForm ? 'close' : 'add'}</span>
+                    {showAddForm ? 'Annulla' : 'Nuovo Pagamento'}
                 </button>
             </div>
 
             {/* Add Payment Form */}
             {showAddForm && (
-                <div className="card mb-4 animate-slide-up">
-                    <h4 className="mb-4">Registra Nuovo Pagamento</h4>
-                    <form onSubmit={handleAddPayment}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="bg-surface-container-lowest border border-primary/20 rounded-2xl p-6 mb-6 shadow-sm animate-slide-up">
+                    <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary">receipt_long</span> Registra Pagamento
+                    </h4>
+                    <form onSubmit={handleAddPayment} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label className="label">Dipendente *</label>
+                                <label className="block text-xs font-bold text-secondary mb-1">Dipendente *</label>
                                 <select 
                                     value={selectedUserId} 
                                     onChange={(e) => setSelectedUserId(e.target.value)}
                                     required
+                                    title="Seleziona dipendente"
+                                    className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white"
                                 >
                                     <option value="">Seleziona dipendente</option>
                                     {users.filter(u => u.id !== 1).map(user => (
@@ -236,59 +236,30 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                                 </select>
                             </div>
                             <div>
-                                <label className="label">Importo (€) *</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    placeholder="0.00"
-                                    required
-                                />
+                                <label className="block text-xs font-bold text-secondary mb-1">Importo (€) *</label>
+                                <input type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Calcolato automaticamente" required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
                             </div>
                             <div>
-                                <label className="label">Data Pagamento *</label>
-                                <input
-                                    type="date"
-                                    value={paymentDate}
-                                    onChange={(e) => setPaymentDate(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-xs font-bold text-secondary mb-1">Data Pagamento *</label>
+                                <input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
                             </div>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="label">Periodo Dal *</label>
-                                <input
-                                    type="date"
-                                    value={periodStart}
-                                    onChange={(e) => setPeriodStart(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-xs font-bold text-secondary mb-1">Periodo Dal *</label>
+                                <input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
                             </div>
                             <div>
-                                <label className="label">Periodo Al *</label>
-                                <input
-                                    type="date"
-                                    value={periodEnd}
-                                    onChange={(e) => setPeriodEnd(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-xs font-bold text-secondary mb-1">Periodo Al *</label>
+                                <input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
                             </div>
                         </div>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label className="label">Note (opzionale)</label>
-                            <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Aggiungi note sul pagamento..."
-                                rows={3}
-                                style={{ width: '100%', resize: 'vertical' }}
-                            />
+                        <div>
+                            <label className="block text-xs font-bold text-secondary mb-1">Note (opzionale)</label>
+                            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Note aggiuntive..." rows={2} className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white resize-vertical" />
                         </div>
-                        <button type="submit" className="btn btn-success">
-                            💾 Salva Pagamento
+                        <button type="submit" className="px-6 py-3 rounded-xl bg-tertiary text-white font-bold active:scale-95 transition-all flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[20px]">save</span> Salva Pagamento
                         </button>
                     </form>
                 </div>
@@ -296,71 +267,62 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
 
             {/* Payments List */}
             {loading ? (
-                <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-                    <p className="text-muted">Caricamento pagamenti...</p>
+                <div className="flex justify-center py-12">
+                    <span className="material-symbols-outlined animate-spin text-primary text-3xl">refresh</span>
                 </div>
             ) : payments.length === 0 ? (
-                <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-                    <h4>Nessun pagamento registrato</h4>
-                    <p className="text-muted">Clicca su "Nuovo Pagamento" per registrare il primo pagamento</p>
+                <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-12 text-center shadow-sm">
+                    <span className="material-symbols-outlined text-5xl text-secondary mb-3">account_balance_wallet</span>
+                    <h4 className="font-bold text-on-surface text-lg mb-1">Nessun pagamento</h4>
+                    <p className="text-secondary text-sm">Clicca su &quot;Nuovo Pagamento&quot; per registrare il primo.</p>
                 </div>
             ) : (
-                <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data Pagamento</th>
-                                <th>Dipendente</th>
-                                <th>Periodo</th>
-                                <th>Importo</th>
-                                <th>Note</th>
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payments.map((payment) => (
-                                <tr key={payment.id}>
-                                    <td>
-                                        <div className="font-medium">{formatDate(payment.paymentDate)}</div>
-                                    </td>
-                                    <td>
-                                        <div className="font-bold">{payment.user.name}</div>
-                                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-                                            {payment.user.code}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style={{ fontSize: '0.85rem' }}>
-                                            {formatDate(payment.periodStart)}
-                                            <br />
-                                            <span className="text-muted">→</span> {formatDate(payment.periodEnd)}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="font-bold" style={{ color: 'var(--success)', fontSize: '1.1rem' }}>
-                                            {formatCurrency(payment.amount)}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style={{ maxWidth: '200px', fontSize: '0.85rem' }}>
-                                            {payment.notes || <span className="text-muted">-</span>}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleDeletePayment(payment.id)}
-                                            className="btn btn-ghost"
-                                            style={{ color: 'var(--danger)', padding: '8px 12px' }}
-                                            title="Elimina"
-                                        >
-                                             <Trash2 size={18} />
-                                        </button>
-                                    </td>
+                <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-surface-container-low border-b border-outline-variant/20">
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Data</th>
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Dipendente</th>
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Periodo</th>
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Importo</th>
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Note</th>
+                                    <th className="text-left px-5 py-3 text-xs font-bold text-secondary uppercase tracking-wider">Azioni</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-outline-variant/10">
+                                {payments.map((payment) => (
+                                    <tr key={payment.id} className="hover:bg-surface-container-low transition-colors">
+                                        <td className="px-5 py-3 font-medium text-on-surface">{formatDate(payment.paymentDate)}</td>
+                                        <td className="px-5 py-3">
+                                            <p className="font-bold text-on-surface">{payment.user.name}</p>
+                                            <p className="text-xs text-secondary">{payment.user.code}</p>
+                                        </td>
+                                        <td className="px-5 py-3 text-xs">
+                                            <span className="text-on-surface">{formatDate(payment.periodStart)}</span>
+                                            <span className="text-secondary mx-1">→</span>
+                                            <span className="text-on-surface">{formatDate(payment.periodEnd)}</span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <span className="font-extrabold text-tertiary text-base">{formatCurrency(payment.amount)}</span>
+                                        </td>
+                                        <td className="px-5 py-3 text-secondary text-xs max-w-[200px] truncate">
+                                            {payment.notes || <span className="opacity-40">—</span>}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <button
+                                                onClick={() => handleDeletePayment(payment.id)}
+                                                className="p-1.5 rounded-lg hover:bg-error/10 text-error transition-colors"
+                                                title="Elimina"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

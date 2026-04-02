@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function LicenseManagement() {
     const [serialKey, setSerialKey] = useState('');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [status, setStatus] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
@@ -32,17 +33,15 @@ export default function LicenseManagement() {
                 body: JSON.stringify({ serialKey: serialKey })
             });
 
-
             if (res.ok) {
                 const data = await res.json();
                 alert(data.message || 'Fantastico! Il piano è stato attivato.');
                 setSerialKey('');
-                // Forza un aggiornamento immediato dello stato locale
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 if (data.newPlan) {
                     setStatus((prev: any) => ({ ...prev, currentPlan: data.newPlan, status: 'ACTIVE' }));
                 }
                 fetchStatus();
-                // Opzionale: ricarica la pagina per aggiornare l'header
                 window.location.reload();
             } else {
                 const data = await res.json();
@@ -54,86 +53,82 @@ export default function LicenseManagement() {
     };
 
     return (
-        <div className="card mb-8 animate-slide-up" style={{ background: 'linear-gradient(145deg, var(--surface), var(--surface-alt))', border: '1px solid var(--accent-light)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '2rem' }}>💎</div>
-                <div>
-                    <h3 style={{ margin: 0 }}>Gestione Licenza & Piani</h3>
-                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Attiva le funzionalità avanzate del tuo ecosistema TimbroSmart.</p>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Activation Form */}
+            <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
+                <h4 className="font-bold text-on-surface mb-1 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">vpn_key</span> Attivazione Rapida
+                </h4>
+                <p className="text-secondary text-xs mb-4">Inserisci il codice seriale per attivare o aggiornare il tuo piano.</p>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-secondary mb-1">Codice Seriale</label>
+                        <input 
+                            type="text" 
+                            value={serialKey} 
+                            onChange={e => {
+                                const val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+                                setSerialKey(val);
+                            }}
+                            placeholder="XXXX-XXXX-XXXX-XXXX"
+                            className="w-full rounded-xl border-2 border-primary/30 px-4 py-3 text-center text-lg font-mono tracking-[4px] bg-white focus:ring-primary focus:border-primary"
+                            required
+                        />
+                    </div>
+                    <button 
+                        type="submit" 
+                        disabled={loading} 
+                        className="w-full py-3 rounded-xl bg-primary text-white font-bold text-sm active:scale-95 transition-all shadow-md shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">verified</span>
+                        {loading ? 'Verifica in corso...' : 'Attiva Piano'}
+                    </button>
+                </form>
+                <p className="text-xs text-secondary text-center mt-3 opacity-60">
+                    Il piano viene aggiornato istantaneamente dopo la convalida.
+                </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                <div className="card" style={{ background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border)' }}>
-                    <h4 className="mb-4">Attivazione Rapida</h4>
-                    <form onSubmit={handleSubmit}>
-                        <label className="label">Codice Seriale (XXXX-XXXX-XXXX-XXXX)</label>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <input 
-                                type="text" 
-                                value={serialKey} 
-                                onChange={e => {
-                                    // Auto-format: CAPITALS and Hyphens
-                                    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-                                    setSerialKey(val);
-                                }}
-                                placeholder="INSERISCI SERIALE..."
-                                style={{ 
-                                    fontSize: '1.2rem', 
-                                    textAlign: 'center', 
-                                    letterSpacing: '4px', 
-                                    padding: '1rem',
-                                    background: 'var(--surface)',
-                                    border: '2px solid var(--accent)',
-                                    borderRadius: '12px',
-                                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                                }}
-                                required
-                            />
-                            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', fontWeight: 'bold' }}>
-                                {loading ? 'Verifica in corso...' : '✨ Attiva Piano Ora'}
-                            </button>
+            {/* Status Display */}
+            <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center">
+                <p className="text-[10px] uppercase tracking-[3px] font-bold text-secondary mb-2">Status Attuale</p>
+                
+                {status ? (
+                    <>
+                        <h2 className={`font-headline text-4xl font-extrabold ${
+                            status.currentPlan === 'FREE' ? 'text-secondary' : 
+                            status.currentPlan === 'PRO' ? 'text-primary' : 
+                            'text-amber-600'
+                        }`}>
+                            {status.currentPlan}
+                        </h2>
+                        <p className="text-xs text-secondary font-medium mt-1">PLAN</p>
+                        
+                        {status.status && status.status === 'ACTIVE' && (
+                            <div className="mt-4 inline-flex items-center gap-1.5 bg-tertiary/10 text-tertiary px-4 py-1.5 rounded-full text-xs font-bold">
+                                <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                LICENZA ATTIVA
+                            </div>
+                        )}
+
+                        <div className="mt-6 w-full border-t border-outline-variant/20 pt-4 space-y-2">
+                            <div className="flex justify-between text-xs">
+                                <span className="text-secondary">Dispositivi</span>
+                                <span className="font-bold text-on-surface">Illimitati</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                                <span className="text-secondary">Supporto</span>
+                                <span className="font-bold text-on-surface">{status.currentPlan === 'ENTERPRISE' ? 'Prioritario 24/7' : 'Standard'}</span>
+                            </div>
                         </div>
-                    </form>
-                    <p style={{ fontSize: '0.8rem', marginTop: '1rem', textAlign: 'center' }} className="text-muted">
-                        Il piano verrà aggiornato istantaneamente dopo la convalida del codice.
-                    </p>
-                </div>
-
-                <div style={{ background: 'var(--surface)', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Status Attuale</div>
-                    {status ? (
-                        <>
-                            <div style={{ 
-                                fontSize: '2.5rem', 
-                                fontWeight: 900, 
-                                color: status.currentPlan === 'FREE' ? 'var(--text-secondary)' : status.currentPlan === 'PRO' ? 'var(--accent)' : '#d97706',
-                                textShadow: '0 0 20px rgba(59, 130, 246, 0.2)'
-                            }}>
-                                {status.currentPlan} PLAN
-                            </div>
-                            
-                            {status.status && status.status === 'ACTIVE' && (
-                                <div style={{ marginTop: '1rem', padding: '6px 12px', background: 'var(--success-bg)', color: 'var(--success)', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700 }}>
-                                    ✓ LICENZA ATTIVA
-                                </div>
-                            )}
-
-                            <div style={{ marginTop: '1.5rem', width: '100%', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                                    <span className="text-muted">Dispositivi:</span>
-                                    <span>Illimitati</span>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                                    <span className="text-muted">Supporto:</span>
-                                    <span>{status.currentPlan === 'ENTERPRISE' ? 'Prioritario 24/7' : 'Standard'}</span>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="animate-pulse text-muted">Sincronizzazione...</div>
-                    )}
-                </div>
+                    </>
+                ) : (
+                    <div className="flex items-center gap-2 text-secondary">
+                        <span className="material-symbols-outlined animate-spin text-xl">refresh</span>
+                        <span className="text-sm">Sincronizzazione...</span>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Calendar, Wallet, User, CreditCard, ChevronLeft } from 'lucide-react';
 
 interface Payment {
     id: number;
@@ -61,7 +60,7 @@ export default function PaymentsPage() {
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('it-IT', {
             day: '2-digit',
-            month: 'long',
+            month: 'short',
             year: 'numeric'
         });
     };
@@ -81,218 +80,127 @@ export default function PaymentsPage() {
     if (!user) return null;
 
     return (
-        <main className="mobile-container">
-            <div className="animate-slide-up" style={{ padding: '2rem 1.5rem', flex: 1, paddingBottom: '100px' }}>
-                
-                {/* Header */}
-                <div style={{ marginBottom: '2rem' }}>
-                    <Link href="/dashboard" style={{ 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        gap: '0.5rem',
-                        color: 'var(--text-secondary)',
-                        textDecoration: 'none',
-                        marginBottom: '1rem',
-                        fontSize: '0.9rem'
-                    }}>
-                        <ChevronLeft size={16} /> Torna alla Dashboard
+        <div className="bg-surface font-body text-on-surface min-h-screen pb-28">
+            
+            {/* TopAppBar */}
+            <header className="w-full top-0 sticky z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6 h-16 shadow-sm border-b border-outline-variant/20">
+                <div className="flex items-center gap-4">
+                    <Link href="/dashboard" className="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors">
+                        <span className="material-symbols-outlined">arrow_back</span>
                     </Link>
-                    <h1 style={{ 
-                        fontSize: '2rem', 
-                        margin: '0 0 0.5rem 0',
-                        background: 'linear-gradient(135deg, var(--accent-dark), var(--accent))',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                    }}>
-                        <CreditCard className="inline-block mr-2" /> I Miei Pagamenti
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                        Storico dei pagamenti ricevuti
-                    </p>
+                    <div className="flex flex-col">
+                        <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">TimbroSmart</span>
+                        <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Buste Paga</h1>
+                    </div>
                 </div>
+            </header>
 
+            <main className="max-w-4xl mx-auto px-4 md:px-6 pt-6">
+                
                 {/* Total Earned Card */}
-                <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: '20px',
-                    padding: '2rem',
-                    marginBottom: '2rem',
-                    boxShadow: 'var(--shadow-lg)',
-                    color: 'white',
-                    position: 'relative',
-                    overflow: 'hidden'
-                }}>
-                    <div style={{
-                        position: 'absolute',
-                        top: '-50px',
-                        right: '-50px',
-                        width: '150px',
-                        height: '150px',
-                        background: 'rgba(255,255,255,0.1)',
-                        borderRadius: '50%',
-                        filter: 'blur(40px)'
-                    }} />
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '0.5rem' }}>
-                            Totale Guadagnato
-                        </div>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>
-                            {formatCurrency(totalEarned)}
-                        </div>
-                        <div style={{ fontSize: '0.85rem', opacity: 0.8, marginTop: '0.5rem' }}>
-                            {payments.length} {payments.length === 1 ? 'pagamento ricevuto' : 'pagamenti ricevuti'}
+                <div className="mb-8 animate-slide-up">
+                    <div className="bg-gradient-to-br from-tertiary to-tertiary-container text-on-tertiary rounded-3xl p-6 relative overflow-hidden shadow-md flex flex-col min-h-[140px]">
+                        <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2"></div>
+                        <p className="font-label text-xs uppercase tracking-widest font-bold opacity-80 mb-2">Totale Guadagnato Finora</p>
+                        
+                        <div className="flex items-end gap-4 mt-auto">
+                            <div>
+                                <h2 className="font-headline text-4xl font-extrabold tracking-tight">
+                                    {formatCurrency(totalEarned)}
+                                </h2>
+                                <p className="opacity-90 font-medium text-sm mt-1">{payments.length} {payments.length === 1 ? 'pagamento ricevuto' : 'pagamenti ricevuti'}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Payments List */}
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-secondary)' }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-                        Caricamento...
-                    </div>
-                ) : payments.length === 0 ? (
-                    <div style={{
-                        textAlign: 'center',
-                        padding: '3rem 1rem',
-                        background: 'var(--surface)',
-                        borderRadius: '16px',
-                        border: '2px dashed var(--border)'
-                    }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-                        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--text)' }}>
-                            Nessun pagamento ancora
-                        </h3>
-                        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                            I tuoi pagamenti appariranno qui quando verranno registrati
-                        </p>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {payments.map((payment, index) => (
-                            <div
-                                key={payment.id}
-                                className="animate-fade-in"
-                                style={{
-                                    animationDelay: `${index * 0.1}s`,
-                                    background: 'var(--surface)',
-                                    borderRadius: '16px',
-                                    padding: '1.5rem',
-                                    boxShadow: 'var(--shadow-md)',
-                                    border: '1px solid var(--border)',
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                                }}
-                            >
-                                {/* Payment Header */}
-                                <div style={{ 
-                                    display: 'flex', 
-                                    justifyContent: 'space-between', 
-                                    alignItems: 'flex-start',
-                                    marginBottom: '1rem'
-                                }}>
-                                    <div>
-                                        <div style={{ 
-                                            fontSize: '1.5rem', 
-                                            fontWeight: 'bold',
-                                            color: 'var(--accent-dark)',
-                                            marginBottom: '0.25rem'
-                                        }}>
-                                            {formatCurrency(payment.amount)}
+                <div className="space-y-6">
+                    {loading ? (
+                        <div className="flex justify-center p-8">
+                            <span className="material-symbols-outlined animate-spin text-primary text-3xl">refresh</span>
+                        </div>
+                    ) : payments.length === 0 ? (
+                        <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-8 text-center shadow-sm">
+                            <span className="material-symbols-outlined text-4xl text-secondary mb-2">account_balance_wallet</span>
+                            <h3 className="font-bold text-lg text-on-surface mb-1">Nessun pagamento</h3>
+                            <p className="text-secondary text-sm">Non hai ancora ricevuto pagamenti.</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {payments.map((payment, index) => (
+                                <div 
+                                    key={payment.id} 
+                                    className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow animate-slide-up relative overflow-hidden group"
+                                    style={{ animationDelay: `${(index + 1) * 100}ms` }}
+                                >
+                                    {/* Left accent bar */}
+                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary group-hover:bg-primary transition-colors"></div>
+
+                                    <div className="flex justify-between items-start mb-4 pl-2">
+                                        <div>
+                                            <h3 className="font-headline text-2xl font-extrabold text-on-surface">
+                                                {formatCurrency(payment.amount)}
+                                            </h3>
+                                            <p className="text-secondary font-medium text-sm flex items-center gap-1 mt-1">
+                                                <span className="material-symbols-outlined text-[16px]">task_alt</span>
+                                                Pagato il {formatDate(payment.paymentDate)}
+                                            </p>
                                         </div>
-                                        <div style={{ 
-                                            fontSize: '0.85rem', 
-                                            color: 'var(--text-secondary)' 
-                                        }}>
-                                            Pagato il {formatDate(payment.paymentDate)}
+                                        <div className="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                            Saldato
                                         </div>
                                     </div>
-                                    <div style={{
-                                        background: 'linear-gradient(135deg, #10b981, #059669)',
-                                        color: 'white',
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '12px',
-                                        fontSize: '0.85rem',
-                                        fontWeight: '600'
-                                    }}>
-                                        ✓ Pagato
+
+                                    <div className="bg-surface-container-low rounded-xl p-3 flex flex-col gap-2 pl-4">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="font-semibold text-secondary">Periodo d'opera</span>
+                                            <span className="font-bold text-on-surface flex items-center gap-1">
+                                                {formatDate(payment.periodStart)} 
+                                                <span className="material-symbols-outlined text-[14px] text-secondary/50">arrow_forward</span> 
+                                                {formatDate(payment.periodEnd)}
+                                            </span>
+                                        </div>
+                                        {payment.notes && (
+                                            <div className="pt-2 mt-2 border-t border-outline-variant/20">
+                                                <p className="text-sm text-secondary flex items-start gap-1">
+                                                    <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5 text-primary">chat</span>
+                                                    <span className="italic">"{payment.notes}"</span>
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-
-                                {/* Period Info */}
-                                <div style={{
-                                    background: 'var(--background)',
-                                    borderRadius: '12px',
-                                    padding: '1rem',
-                                    marginBottom: payment.notes ? '1rem' : 0
-                                }}>
-                                    <div style={{ 
-                                        fontSize: '0.8rem', 
-                                        color: 'var(--text-secondary)',
-                                        marginBottom: '0.5rem',
-                                        fontWeight: '600',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px'
-                                    }}>
-                                        Periodo di Riferimento
-                                    </div>
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        gap: '0.5rem',
-                                        color: 'var(--text)'
-                                    }}>
-                                        <span><Calendar size={14} className="inline-block mr-1" /> {formatDate(payment.periodStart)}</span>
-                                        <span style={{ color: 'var(--text-secondary)' }}>→</span>
-                                        <span><Calendar size={14} className="inline-block mr-1" /> {formatDate(payment.periodEnd)}</span>
-                                    </div>
-                                </div>
-
-                                {/* Notes */}
-                                {payment.notes && (
-                                    <div style={{
-                                        background: 'rgba(99, 102, 241, 0.1)',
-                                        borderLeft: '3px solid var(--accent)',
-                                        borderRadius: '8px',
-                                        padding: '0.75rem 1rem',
-                                        fontSize: '0.9rem',
-                                        color: 'var(--text-secondary)'
-                                    }}>
-                                        <strong style={{ color: 'var(--text)' }}>Note:</strong> {payment.notes}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Bottom Navigation */}
-            <div className="bottom-nav animate-slide-up">
-                <Link href="/dashboard" className="nav-item">
-                    <Home size={20} />
-                    Home
-                </Link>
-                <Link href="/dashboard/calendar" className="nav-item">
-                    <Calendar size={20} />
-                    Calendario
-                </Link>
-                <div className="nav-item active">
-                    <Wallet size={20} />
-                    Pagamenti
+                            ))}
+                        </div>
+                    )}
                 </div>
-                <div onClick={handleLogout} className="nav-item" style={{ cursor: 'pointer' }}>
-                    <User size={20} />
-                    Esci
+            </main>
+
+            {/* Bottom Nav */}
+            <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-6 pt-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-[#c3c6d6]/20 shadow-[0_-12px_32px_rgba(23,28,31,0.06)] z-50 rounded-t-2xl">
+                <Link href="/dashboard" className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">home</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Home</span>
+                </Link>
+                <Link href="/dashboard/calendar" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">event_note</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Ferie</span>
+                </Link>
+                <Link href="/dashboard/history" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">history</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Storico</span>
+                </Link>
+                <div className="flex flex-col items-center justify-center bg-[#e4e9ed] text-primary rounded-xl px-3 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-bold">Paga</span>
                 </div>
-            </div>
-        </main>
+                <div onClick={handleLogout} className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <span className="material-symbols-outlined">logout</span>
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Esci</span>
+                </div>
+            </nav>
+        </div>
     );
 }

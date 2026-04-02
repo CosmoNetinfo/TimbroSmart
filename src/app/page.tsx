@@ -12,8 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Check for existing session - we rely on the middleware for redirects mostly,
-  // but we can check if a 'user' exists for UI state.
+  // Check for existing session
   useEffect(() => {
     const stored = localStorage.getItem('user_meta');
     if (stored) {
@@ -26,8 +25,7 @@ export default function Home() {
         localStorage.removeItem('user_meta');
       }
     }
-  }, []);
-
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +44,6 @@ export default function Home() {
 
       if (res.ok) {
         const user = await res.json();
-        // Store only non-sensitive metadata for UI personalization
         localStorage.setItem('user_meta', JSON.stringify({ 
           name: user.name, 
           role: user.role,
@@ -63,7 +60,6 @@ export default function Home() {
       setError('Errore di connessione');
       setLoading(false);
     }
-
   };
 
   const handleFreePlanRequest = () => {
@@ -72,241 +68,146 @@ export default function Home() {
   };
 
   return (
-    <main className="azure-login-container">
-
-      {/* 1. Icon Header */}
-      <div className="animate-fade-in" style={{ marginBottom: '0.2rem' }}>
-        <Image 
-          src="/icons/app-icon-nobg.png" 
-          alt="TimbroSmart Logo" 
-          width={100} 
-          height={100} 
-          priority
-          style={{ objectFit: 'contain' }}
-        />
-      </div>
-
-
-      {/* 2. Text Content */}
-      <h1 className="login-title animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {isRegister ? 'Registrati' : 'Login'}
-      </h1>
-      <p className="login-subtitle animate-fade-in" style={{ animationDelay: '0.2s' }}>
-        {isRegister ? 'Crea il tuo account dipendente' : 'Accedi al sistema di timbratura digitale'}
-      </p>
-
-      {/* 3. Form */}
-      <form onSubmit={handleSubmit} style={{ width: '100%' }} className="animate-fade-in">
-
-        {isRegister && (
-          <div className="input-group" style={{ marginBottom: '1rem' }}>
-            <input
-              type="text"
-              placeholder="Nome e Cognome:"
-              className="custom-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required={isRegister}
-            />
-          </div>
-        )}
-
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder={isRegister ? "Scegli un codice (es. 1234):" : "Inserisci il tuo codice segreto:"}
-            className="custom-input"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-            autoCapitalize="none"
-          />
+    <main className="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-surface-container-lowest rounded-3xl shadow-xl border border-slate-100 overflow-hidden animate-slide-up">
+        
+        <div className="p-8 text-center bg-[#f6fafe] border-b border-surface-container">
+            <div className="flex justify-center mb-4">
+              <div className="bg-primary-container p-3 rounded-2xl shadow-sm text-on-primary-container">
+                  <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>fingerprint</span>
+              </div>
+            </div>
+            <h1 className="font-headline text-3xl font-extrabold text-on-surface mb-2">
+              {isRegister ? 'Registrati' : 'Bentornato'}
+            </h1>
+            <p className="font-body text-secondary text-sm">
+              {isRegister ? 'Crea il tuo account dipendente' : 'Accedi al sistema di timbratura digitale'}
+            </p>
         </div>
 
-        {error && (
-          <div className="error-box">
-            {error}
-          </div>
-        )}
+        <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {isRegister && (
+                    <div>
+                        <label className="block text-sm font-bold text-secondary mb-1">Nome e Cognome</label>
+                        <input
+                        type="text"
+                        placeholder="Mario Rossi"
+                        className="w-full rounded-xl border-outline-variant p-4 text-on-surface focus:ring-primary focus:border-primary transition-all bg-surface-container-lowest"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required={isRegister}
+                        />
+                    </div>
+                )}
+                <div>
+                    <label className="block text-sm font-bold text-secondary mb-1">Codice Segreto</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none material-symbols-outlined">key</span>
+                        <input
+                        type="password"
+                        placeholder={isRegister ? "Scegli un codice" : "Inserisci il tuo codice"}
+                        className="w-full rounded-xl border-outline-variant p-4 pl-12 text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface-container-lowest"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        required
+                        autoCapitalize="none"
+                        />
+                    </div>
+                </div>
 
-        {/* Main Submit Button */}
-        <button
-          type="submit"
-          className="btn-glass-primary"
-          disabled={loading}
-        >
-          {loading ? 'Attendi...' : (isRegister ? 'Conferma Registrazione' : 'Entra')}
-        </button>
+                {error && (
+                    <div className="p-4 rounded-xl bg-error-container text-on-error-container text-sm font-bold flex items-center gap-2">
+                        <span className="material-symbols-outlined">error</span>
+                        {error}
+                    </div>
+                )}
 
-      </form>
+                <button
+                type="submit"
+                className="w-full py-4 mt-4 rounded-xl bg-primary text-white font-bold tracking-wide active:scale-95 transition-all shadow-md shadow-primary/20 flex justify-center items-center gap-2 hover:bg-primary/90"
+                disabled={loading}
+                >
+                {loading ? (
+                    <><span className="material-symbols-outlined animate-spin">refresh</span> Attendi...</>
+                ) : (
+                    <>{isRegister ? 'Registrati' : 'Accedi'} <span className="material-symbols-outlined ml-1">arrow_forward</span></>
+                )}
+                </button>
+            </form>
+        </div>
+      </div>
 
-      {/* 4. Footer & Helper */}
-      <div className="animate-fade-in" style={{ animationDelay: '0.4s', marginTop: '1.5rem', textAlign: 'center', width: '100%' }}>
+      <div className="w-full max-w-md mt-6 space-y-4 animate-slide-up" style={{ animationDelay: '100ms' }}>
         
-        {/* Nuovo Box Piano FREE - Messo in evidenza con priorità di click */}
-        <div 
-          className="animate-fade-in" 
-          style={{ 
-            animationDelay: '0.4s', 
-            marginBottom: '1rem', 
-            padding: '1.2rem', 
-            background: 'rgba(14, 165, 233, 0.08)', 
-            borderRadius: '24px', 
-            border: '1px dashed rgba(14, 165, 233, 0.3)',
-            position: 'relative',
-            zIndex: 50
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '0.8rem' }}>
-            <p style={{ fontSize: '1rem', margin: 0, fontWeight: 700, color: 'var(--primary)' }}>
-              Piano FREE - Base
-            </p>
+        {/* FREE PLAN */}
+        <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-5 text-center transition-transform hover:-translate-y-1">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-primary-container">work</span>
+            <span className="font-bold text-primary-container">Piano FREE</span>
           </div>
-          <p style={{ fontSize: '0.85rem', marginBottom: '1rem', opacity: 0.8 }}>
-            Gestisci fino a <strong>3 dipendenti</strong> gratuitamente.
-          </p>
-          
+          <p className="text-sm text-secondary mb-4">Fino a 3 dipendenti gratis.</p>
           <button 
-            type="button"
             onClick={handleFreePlanRequest}
-            className="btn-glass-primary"
-            style={{ 
-              height: '45px', 
-              fontSize: '0.9rem', 
-              display: 'flex', 
-              gap: '10px',
-              background: 'rgba(14, 165, 233, 0.1)',
-              border: '1px solid var(--primary)',
-              boxShadow: 'none',
-              cursor: 'pointer',
-              width: '100%'
-            }}
+            className="w-full py-3 rounded-xl border-2 border-primary-container/20 text-primary-container font-bold hover:bg-primary-container/10 transition-colors flex justify-center items-center gap-2"
           >
-            <Mail size={18} /> Richiedi Piano FREE
+            <Mail size={16} /> Richiedi Ora
           </button>
         </div>
 
-        {/* --- Box Piano PRO (PayPal) --- */}
-        <div 
-          className="animate-fade-in" 
-          style={{ 
-            animationDelay: '0.5s', 
-            marginBottom: '1rem', 
-            padding: '1.2rem', 
-            background: 'rgba(240, 192, 64, 0.08)', 
-            borderRadius: '24px', 
-            border: '1px solid rgba(240, 192, 64, 0.3)',
-            position: 'relative',
-            zIndex: 50,
-            textAlign: 'center'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '0.8rem' }}>
-            <span style={{ background: '#f0c040', color: '#000', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 'bold' }}>CONSIGLIATO</span>
-            <p style={{ fontSize: '1rem', margin: 0, fontWeight: 700, color: '#f0c040' }}>
-              Piano PRO - Illimitato
-            </p>
+        {/* PRO PLAN */}
+        <div className="bg-[#fff9ed] border border-orange-200 rounded-2xl p-5 text-center shadow-lg relative transition-transform hover:-translate-y-1">
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">CONSIGLIATO</span>
+          <div className="flex items-center justify-center gap-2 mb-2 mt-2">
+            <span className="material-symbols-outlined text-orange-600">star</span>
+            <span className="font-bold text-orange-600 text-lg">Piano PRO</span>
           </div>
-          
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', fontSize: '0.85rem', textAlign: 'left', opacity: 0.9 }}>
-            <li style={{ marginBottom: '6px' }}>✅ Dipendenti <strong>Illimitati</strong></li>
-            <li style={{ marginBottom: '6px' }}>✅ Export PDF & Report avanzati</li>
-            <li style={{ marginBottom: '6px' }}>✅ Gestione pagamenti integrata</li>
-          </ul>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>€4,99</span>
-            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}> una tantum</span>
+          <p className="text-sm text-orange-800 mb-2">Dipendenti illimitati, Export Avanzato, Gestione Pagamenti.</p>
+          <div className="mb-4">
+             <span className="text-2xl font-extrabold text-orange-600">€4,99</span>
+             <span className="text-xs text-orange-800 opacity-70 ml-1">Una tantum</span>
           </div>
-          
           <a
             href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=stephenkingitaly@gmail.com&item_name=TimbroSmart%20PRO&amount=4.99&currency_code=EUR&return=https://timbrosmart.vercel.app/payment-success" 
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-glass-primary"
-            style={{ 
-              height: '55px', 
-              fontSize: '0.95rem', 
-              display: 'flex', 
-              gap: '10px',
-              background: '#0ea5e9',
-              boxShadow: '0 10px 20px rgba(14, 165, 233, 0.3)',
-              cursor: 'pointer',
-              width: '100%',
-              textDecoration: 'none',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold hover:shadow-orange-500/30 hover:shadow-lg transition-all flex justify-center items-center gap-2"
           >
-            <CreditCard size={20} />
-            Attiva PRO
+            <CreditCard size={18} /> Attiva Subito
           </a>
         </div>
 
-        {/* --- Box Piano ENTERPRISE --- */}
-        <div 
-          className="animate-fade-in" 
-          style={{ 
-            animationDelay: '0.6s', 
-            marginBottom: '1rem', 
-            padding: '1.2rem', 
-            background: 'rgba(168, 85, 247, 0.08)', 
-            borderRadius: '24px', 
-            border: '1px solid rgba(168, 85, 247, 0.3)',
-            position: 'relative',
-            zIndex: 50,
-            textAlign: 'center'
-          }}
-        >
-          <p style={{ fontSize: '1rem', margin: '0 0 0.8rem 0', fontWeight: 700, color: '#a855f7' }}>
-            Piano ENTERPRISE
-          </p>
-          
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.2rem 0', fontSize: '0.85rem', textAlign: 'left', opacity: 0.9 }}>
-            <li style={{ marginBottom: '6px' }}>✅ Tutto il piano PRO</li>
-            <li style={{ marginBottom: '6px' }}>✅ <strong>White-label</strong> (Tuo Logo)</li>
-            <li style={{ marginBottom: '6px' }}>✅ Supporto 24/7 & API</li>
-          </ul>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>€9,99</span>
-            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}> una tantum</span>
+        {/* ENTERPRISE */}
+         <div className="bg-purple-50 border border-purple-200 rounded-2xl p-5 text-center transition-transform hover:-translate-y-1">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-purple-600">apartment</span>
+            <span className="font-bold text-purple-600">Piano ENTERPRISE</span>
           </div>
-          
-          <a
+          <p className="text-sm text-purple-800 mb-2">White-label Logo & Assistenza 24/7.</p>
+          <div className="mb-4">
+             <span className="text-xl font-bold text-purple-600">€9,99</span>
+             <span className="text-xs text-purple-800 opacity-70 ml-1">Una tantum</span>
+          </div>
+          <a  
             href="https://wa.me/393517064080?text=Salve,%20vorrei%20informazioni%20per%20il%20piano%20ENTERPRISE." 
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-glass-primary"
-            style={{ 
-              height: '50px', 
-              fontSize: '0.9rem', 
-              display: 'flex', 
-              gap: '10px',
-              background: 'transparent',
-              border: '1px solid #a855f7',
-              cursor: 'pointer',
-              width: '100%',
-              textDecoration: 'none',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            className="w-full py-3 rounded-xl border border-purple-300 text-purple-700 font-bold hover:bg-purple-100 transition-colors flex justify-center items-center"
           >
-            Contattaci per Enterprise
+            Contattaci
           </a>
         </div>
-
-        <a href="https://wa.me/393517064080?text=Salve,%20ho%20bisogno%20di%20assistenza%20o%20ho%20dimenticato%20il%20codice." target="_blank" rel="noopener noreferrer" className="helper-text" style={{ fontSize: '0.85rem', opacity: 0.6, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '1rem' }}>
-          <HelpCircle size={14} /> Hai bisogno di aiuto o hai dimenticato il codice?
-        </a>
-
-        <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
-          <a href="/privacy" style={{ fontSize: '0.75rem', opacity: 0.4, color: 'var(--text-primary)', textDecoration: 'none' }}>
-            Privacy Policy
-          </a>
-        </div>
+        
       </div>
 
+      <div className="mt-8 text-center pb-8">
+        <a href="https://wa.me/393517064080" target="_blank" rel="noopener noreferrer" className="flex justify-center items-center gap-2 text-secondary hover:text-primary transition-colors text-sm mb-4">
+          <HelpCircle size={14} /> Password dimenticata o Info?
+        </a>
+        <a href="/privacy" className="text-xs font-medium text-slate-400 hover:text-slate-600">
+          Privacy Policy
+        </a>
+      </div>
     </main>
   );
 }
