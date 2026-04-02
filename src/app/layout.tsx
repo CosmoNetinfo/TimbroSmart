@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Manrope, Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
@@ -13,6 +13,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const manrope = Manrope({
+  weight: ['400', '500', '600', '700', '800'],
+  subsets: ["latin"],
+  variable: "--font-manrope",
+});
+
+const inter = Inter({
+  weight: ['400', '500', '600', '700'],
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
 export const metadata: Metadata = {
   title: "TimbroSmart",
   description: "Gestione facile dei dipendenti",
@@ -24,7 +36,6 @@ export const metadata: Metadata = {
     ],
     apple: "/icons/app-icon-192.png",
   },
-
 };
 
 export const viewport = {
@@ -43,7 +54,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it" translate="no">
-      <body className={`${geistSans.variable} ${geistMono.variable} notranslate`}>
+      <head>
+          <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+          <style>{`
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+          `}</style>
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} ${inter.variable} notranslate`}>
         {children}
         <SpeedInsights />
         <script
