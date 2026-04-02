@@ -1,46 +1,47 @@
-# 📋 TimbroSmart: Stato del Progetto & Roadmap
+# 📋 TimbroSmart: Piano di Battaglia ⚔️
 
-Questo documento riassume il lavoro completato nella fase di modernizzazione e delinea i prossimi passi per l'evoluzione di TimbroSmart.
+Questo documento traccia l'avanzamento della modernizzazione di TimbroSmart e le sfide future.
 
 ---
 
-## ✅ Lavoro Completato (Fatto)
+## ✅ Obiettivi Raggiunti (Missioni Completate)
 
-### 🎨 Interfaccia & Design (Bento Style)
-- **Login Principale**: Redesign completo con layout moderno, card in stile Bento e ottimizzazione mobile.
-- **Registrazione Dipendente**: Allineamento visivo e correzione bug grafici.
-- **Pannello Admin**: Migrazione a un design light-themed con card informative e statistiche.
-- **Pannello Super Admin**: Interfaccia di gestione licenze e ordini modernizzata.
-- **Correzioni Grafiche**: Risolto il problema di sovrapposizione delle icone/testo nei campi di input (Login/Register).
+### 🎨 Restyling Premium "Bento System"
+- [x] **Login Core**: Redesign "Bento" per il login principale.
+- [x] **Safe-Padding**: Risolto definitivamente l'overlap icone/testo con `!important` e `padding: 80px`.
+- [x] **Register UI**: Modernizzazione del form registrazione dipendenti.
+- [x] **Admin Refresh**: Dashboard Admin con card informative e stile coordinato.
+- [x] **Super Admin UI**: Login e tabella licenze modernizzate per la gestione SaaS.
 
-### ⚙️ Logica di Business & Backend
-- **Gestione Licenze**: Implementata la scadenza automatica a 12 mesi dall'attivazione.
-- **Informazioni Aziendali**: Arricchito il database per tracciare nome azienda, attivazione e scadenza delle licenze.
-- **Sistema di Pagamento**: Ottimizzazione del pulsante PayPal e preparazione del layout multi-payment.
+### ⚙️ Motore SaaS & Business Logic
+- [x] **License Engine**: Sistema di scadenza a **12 mesi** dall'attivazione.
+- [x] **Company Metadata**: Database Firestore arricchito con info azienda e date di validità.
+- [x] **Master Key System**: Generazione e tracking delle licenze pienamente operativo.
 
 ### 📚 Documentazione & Marketing
-- **README**: Aggiornamento completo con stack tecnologico, funzionalità e piani di abbonamento.
-- **Asset Marketing**: Generazione di immagini promozionali professionali in stile Bento.
+- [x] **README Advanced**: Nuova documentazione tecnica e commerciale.
+- [x] **Marketing Assets**: Immagini promozionali generate per il lancio.
 
 ---
 
-## 🚀 Prossimi Passi (Da Fare)
+## 🚀 Prossimi Obiettivi (In Corso di Battaglia)
 
-### 💳 Integrazione Stripe (In corso)
-- [x] Preparazione codice UI (nascosto) per pulsante Stripe.
-- [x] Aggiornamento README (Stato: *Disponibile a breve*).
-- [ ] Inserimento dei **Stripe Payment Link** reali (In attesa dei dati utente).
-- [ ] Attivazione dei pulsanti Carta di Credito nell'interfaccia pubblica.
+### 💳 Squadra Pagamenti: Stripe & PayPal
+- [x] **Layout Multi-Payment**: Predisposizione griglia pulsanti in `page.tsx`.
+- [x] **Codice Ready (Hidden)**: Inseriti componenti Stripe silenti pronti all'attivazione.
+- [ ] **Stripe Account Setup**: (In attesa dell'utente per API Keys/Payment Links).
+- [ ] **Deployment Stripe**: Switch dei pulsanti da "Disponibile a breve" a "Attivo".
 
-### 🛠️ Ottimizzazioni Tecniche
-- [ ] **Risoluzione Linting**: Pulizia degli avvisi di tipo e accessibilità (JSX, Any type, etc.).
-- [ ] **Prestazioni PWA**: Ottimizzazione del file manifest e delle icone per una migliore installazione mobile.
+### 🛠️ Rafforzamento Tecnico (Hardening)
+- [ ] **Linter Cleanup**: Eliminazione di tutti gli avvisi "any", JSX e accessibilità.
+- [ ] **SEO Boost**: Ottimizzazione meta-tag e titoli per il posizionamento.
+- [ ] **Iconography Sync**: Uniformare tutti i set di icone (Lucide vs Material Symbols).
 
-### 🌟 Nuove Funzionalità (Backlog)
-- [ ] Notifiche Push per avvisi di timbratura mancante.
-- [ ] Export dei dati in formato Excel avanzato filtrabile per periodo.
-- [ ] Dashboard analitica con trend mensili delle ore lavorate.
+### 🌟 Funzionalità Evolute (Espansione)
+- [ ] **Notifiche Push**: Avvisi automatici per timbrature e scadenze licenza.
+- [ ] **Export Center**: Generatore Excel multi-periodo per contabilità avanzata.
+- [ ] **Cloud Storage**: Backup automatico delle foto di timbratura su Firebase Storage.
 
 ---
 
-*Ultimo aggiornamento: 3 Aprile 2026*
+*Ultimo aggiornamento del comando: 3 Aprile 2026, ore 00:30*
