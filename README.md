@@ -63,7 +63,7 @@ Dimentica i fogli Excel complessi:
 
 ---
 
-## 🏢 Livelli di Accesso
+## 🏢 Livelli di Accesso & Piani
 
 1. **Super Amministratore**:
    - Generazione Master Keys (Licenze).
@@ -76,6 +76,23 @@ Dimentica i fogli Excel complessi:
 3. **Dipendente**:
    - Timbratura rapida con interfaccia semplificata.
    - Visibilità trasparente dello storico orari e guadagni.
+
+---
+
+## 💳 Piani e Metodi di Pagamento
+
+TimbroSmart offre flessibilità e trasparenza per ogni tipo di azienda. Tutti i piani a pagamento hanno una **validità di 12 mesi** dall'attivazione.
+
+### 💰 Piani di Abbonamento
+- **FREE (Omaggio)**: Per piccole realtà o periodi di prova. Tutte le funzioni base incluse.
+- **PRO (€4.99 / 12 Mesi)**: Ideale per startup e team in crescita. Include tutte le funzioni di gestione e reportistica.
+- **ENTERPRISE (€9.99 / 12 Mesi)**: Supporto prioritario, export illimitati e funzionalità avanzate di analisi contabile.
+
+### 💳 Metodi di Pagamento Supportati
+Supportiamo i circuiti più sicuri per garantirti la massima tranquillità:
+- **PayPal**: Pagamento istantaneo e sicuro.
+- **Carte di Credito/Debito**: (Visa, Mastercard, Maestro, AMEX) via Stripe.
+- **Bonifico Bancario**: Disponibile per piani Enterprise o volumi elevati (contattare il supporto).
 
 ---
 
