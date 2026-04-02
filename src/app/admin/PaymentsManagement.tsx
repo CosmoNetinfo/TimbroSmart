@@ -43,6 +43,58 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
         fetchAllPayments();
     }, []);
 
+    // Auto-calculate amount when userId and period changes
+    useEffect(() => {
+        const calculateAmount = async () => {
+            if (!selectedUserId || !periodStart || !periodEnd) return;
+
+            try {
+                const res = await fetch(`/api/history?userId=${selectedUserId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    const entries = Array.isArray(data) ? data : (data.entries ?? []);
+                    const hourlyWage = Array.isArray(data) ? 7.0 : (data.hourlyWage ?? 7.0);
+
+                    // Sort ascending as in history page
+                    const sorted = [...entries].sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+                    let totalEuros = 0;
+                    const startBoundary = new Date(periodStart + 'T00:00:00');
+                    const endBoundary = new Date(periodEnd + 'T23:59:59');
+
+                    for (let i = 0; i < sorted.length; i++) {
+                        const current = sorted[i];
+                        const next = sorted[i + 1];
+
+                        if (current.type === 'IN' && next && next.type === 'OUT') {
+                            const start = new Date(current.timestamp);
+                            if (start >= startBoundary && start <= endBoundary) {
+                                const end = new Date(next.timestamp);
+                                const diff = end.getTime() - start.getTime();
+                                const hours = Math.max(0, diff / (1000 * 60 * 60));
+                                totalEuros += hours * hourlyWage;
+                            }
+                            i++; // skip next since it's OUT
+                        }
+                    }
+
+                    // Only update if it's > 0, to not overwrite manually entered values if history is empty?
+                    // Actually, let's just update it so the user sees the calculated value.
+                    setAmount(totalEuros.toFixed(2));
+                }
+            } catch (error) {
+                console.error("Error calculating amount:", error);
+            }
+        };
+
+        const timerId = setTimeout(() => {
+            calculateAmount();
+        }, 300); // debounce API call
+
+        return () => clearTimeout(timerId);
+    }, [selectedUserId, periodStart, periodEnd]);
+
     const fetchAllPayments = async () => {
         setLoading(true);
         try {
