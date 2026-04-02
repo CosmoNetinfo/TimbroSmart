@@ -191,12 +191,12 @@ export default function SuperAdminPage() {
 
                         <form onSubmit={handleLogin} className="space-y-5">
                             <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-primary transition-colors">
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-primary transition-colors">
                                     <ShieldCheck size={20} />
                                 </div>
                                 <input 
                                     type="password" 
-                                    className="w-full h-14 pl-12 pr-4 bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-2xl transition-all outline-none text-on-surface font-bold tracking-widest placeholder:tracking-normal placeholder:font-normal" 
+                                    className="w-full h-14 pl-16 pr-4 bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-2xl transition-all outline-none text-on-surface font-bold tracking-widest placeholder:tracking-normal placeholder:font-normal" 
                                     placeholder="Master Password" 
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}

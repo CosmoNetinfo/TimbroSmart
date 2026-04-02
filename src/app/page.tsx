@@ -103,11 +103,11 @@ export default function Home() {
                 <div>
                     <label className="block text-sm font-bold text-secondary mb-1">Codice Segreto</label>
                     <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary/60 pointer-events-none material-symbols-outlined text-[22px] transition-colors group-focus-within:text-primary">key</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary/60 pointer-events-none material-symbols-outlined text-[20px] transition-colors group-focus-within:text-primary">key</span>
                         <input
                         type="password"
                         placeholder={isRegister ? "Scegli un codice" : "Inserisci il tuo codice"}
-                        className="w-full rounded-2xl border-2 border-outline-variant/30 px-4 py-4 pl-14 text-on-surface focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-white shadow-sm"
+                        className="w-full rounded-2xl border-2 border-outline-variant/30 px-4 py-4 pl-16 text-on-surface focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-white shadow-sm"
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                         required
