@@ -246,7 +246,7 @@ export default function HistoryPage() {
                                                     <p className="text-secondary text-xs flex items-center gap-1 mt-0.5">
                                                         <span className="w-2 h-2 rounded-full bg-green-500"></span> {shift.start}
                                                         <span className="mx-1 text-secondary/50">→</span>
-                                                        <span className={`w-2 h-2 rounded-full ${shift.type === 'IN' ? 'bg-orange-500 animate-pulse' : 'bg-red-500'}`}></span> {shift.end}
+                                                        <span className="w-2 h-2 rounded-full bg-red-500"></span> {shift.end}
                                                     </p>
                                                 </div>
                                             </div>
