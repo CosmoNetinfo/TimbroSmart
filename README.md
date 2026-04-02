@@ -91,7 +91,7 @@ TimbroSmart offre flessibilità e trasparenza per ogni tipo di azienda. Tutti i 
 ### 💳 Metodi di Pagamento Supportati
 Supportiamo i circuiti più sicuri per garantirti la massima tranquillità:
 - **PayPal**: Pagamento istantaneo e sicuro.
-- **Carte di Credito/Debito**: (Visa, Mastercard, Maestro, AMEX) via Stripe.
+- **Carte di Credito/Debito**: (Visa, Mastercard, Maestro, AMEX) via Stripe — *Disponibile a breve*.
 - **Bonifico Bancario**: Disponibile per piani Enterprise o volumi elevati (contattare il supporto).
 
 ---

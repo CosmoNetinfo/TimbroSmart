@@ -168,14 +168,28 @@ export default function Home() {
              <span className="text-xs text-orange-800 font-bold ml-1">ogni 12 mesi</span>
              <p className="text-[10px] text-orange-800 mt-1 font-bold">Prezzo totale per un anno</p>
           </div>
-          <a
-            href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=stephenkingitaly@gmail.com&item_name=TimbroSmart%20PRO&amount=4.99&currency_code=EUR&return=https://timbrosmart.vercel.app/payment-success" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold hover:shadow-orange-500/30 hover:shadow-lg transition-all flex justify-center items-center gap-2"
-          >
-            <CreditCard size={18} /> Attiva Subito
-          </a>
+          <div className="grid grid-cols-1 gap-3">
+            <a
+              href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=stephenkingitaly@gmail.com&item_name=TimbroSmart%20PRO&amount=4.99&currency_code=EUR&return=https://timbrosmart.vercel.app/payment-success" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 rounded-xl bg-[#0070ba] text-white font-bold hover:bg-[#005ea6] transition-all flex justify-center items-center gap-2 shadow-sm"
+            >
+              <Image src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal" width={24} height={15} className="rounded-sm" /> 
+              Paga con PayPal
+            </a>
+            {/* Stripe Button (Hidden until link is provided) */}
+            {/* 
+            <a
+              href="#" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-black transition-all flex justify-center items-center gap-2 shadow-sm"
+            >
+              <CreditCard size={18} /> Paga con Carta
+            </a>
+            */}
+          </div>
         </div>
 
         {/* ENTERPRISE */}
@@ -190,14 +204,27 @@ export default function Home() {
              <span className="text-xs text-purple-800 font-bold ml-1">ogni 12 mesi</span>
              <p className="text-[10px] text-purple-800 mt-1 font-bold">Prezzo totale per un anno</p>
           </div>
-          <a  
-            href="https://wa.me/393517064080?text=Salve,%20vorrei%20informazioni%20per%20il%20piano%20ENTERPRISE." 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 rounded-xl border border-purple-300 text-purple-700 font-bold hover:bg-purple-100 transition-colors flex justify-center items-center"
-          >
-            Contattaci
-          </a>
+          <div className="grid grid-cols-1 gap-3">
+            <a  
+              href="https://wa.me/393517064080?text=Salve,%20vorrei%20informazioni%20per%20il%20piano%20ENTERPRISE." 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 rounded-xl border-2 border-purple-200 text-purple-700 font-bold hover:bg-purple-100 transition-colors flex justify-center items-center gap-2"
+            >
+              <Mail size={16} /> Contattaci
+            </a>
+            {/* Stripe Button (Hidden until link is provided) */}
+            {/* 
+            <a
+              href="#" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 transition-all flex justify-center items-center gap-2 shadow-sm"
+            >
+              <CreditCard size={18} /> Attiva con Carta
+            </a>
+            */}
+          </div>
         </div>
         
       </div>
