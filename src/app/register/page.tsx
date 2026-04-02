@@ -78,11 +78,11 @@ export default function Register() {
                         <div>
                             <label className="block text-sm font-bold text-secondary mb-1">Codice Personale</label>
                             <div className="relative">
-                                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none material-symbols-outlined text-[20px]">key</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none material-symbols-outlined text-[20px]">key</span>
                                 <input
                                     type="text"
                                     placeholder="Scegli un codice segreto"
-                                    className="w-full rounded-xl border-outline-variant p-4 pl-16 text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface-container-lowest"
+                                    className="w-full rounded-xl border-outline-variant py-4 !pl-20 pr-4 text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface-container-lowest"
                                     required
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
