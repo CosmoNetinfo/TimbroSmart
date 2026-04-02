@@ -18,24 +18,53 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Accesso negato' }, { status: 403 });
         }
 
-        // Recupera TUTTE le licenze senza orderBy (evita errori indice Firestore)
+        // Recupera TUTTE le licenze
         const snapshot = await adminDb.collection('master_keys').get();
-        
         console.log(`[SuperAdmin GET] Documenti trovati: ${snapshot.size}`);
 
-        const keys = snapshot.docs.map(doc => {
+        const keys = await Promise.all(snapshot.docs.map(async (doc) => {
             const data = doc.data();
+            const adminCode = data.adminCode;
+            let companyInfo = null;
+
+            if (adminCode) {
+                // Tenta di trovare il companyId associato a questo adminCode
+                const userSnapshot = await adminDb.collection('users')
+                    .where('code', '==', adminCode)
+                    .where('role', '==', 'ADMIN')
+                    .limit(1)
+                    .get();
+
+                if (!userSnapshot.empty) {
+                    const userData = userSnapshot.docs[0].data();
+                    const companyId = userData.companyId;
+
+                    if (companyId) {
+                        const companyDoc = await adminDb.collection('companies').doc(companyId).get();
+                        if (companyDoc.exists) {
+                            const cData = companyDoc.data();
+                            companyInfo = {
+                                id: companyId,
+                                name: cData?.name,
+                                licenseExpiry: cData?.licenseExpiry || null,
+                                licenseActivatedAt: cData?.licenseActivatedAt || null
+                            };
+                        }
+                    }
+                }
+            }
+
             return {
                 id: doc.id,
                 plan: data.plan || 'UNKNOWN',
                 isActive: data.isActive !== undefined ? data.isActive : true,
-                adminCode: data.adminCode || null,
+                adminCode: adminCode || null,
                 createdAt: data.createdAt || data.updatedAt || new Date().toISOString(),
-                updatedAt: data.updatedAt || '',
+                companyInfo
             };
-        });
+        }));
 
-        // Sort lato server (più recenti prima) - evita la necessità di indici Firestore
+        // Sort lato server (più recenti prima)
         keys.sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime() || 0;
             const dateB = new Date(b.createdAt).getTime() || 0;

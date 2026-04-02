@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { formatExpiryDate, getDaysUntilExpiry } from '@/lib/utils/license';
 
 export default function LicenseManagement() {
     const [serialKey, setSerialKey] = useState('');
@@ -107,13 +108,30 @@ export default function LicenseManagement() {
                             <p className="text-xs text-secondary font-medium mt-1">PLAN</p>
 
                             {status.status && status.status === 'ACTIVE' && (
-                                <div className="mt-4 inline-flex items-center gap-1.5 bg-tertiary/10 text-tertiary px-4 py-1.5 rounded-full text-xs font-bold">
-                                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                                    LICENZA ATTIVA
+                                <div className={`mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold ${
+                                    status.licenseExpiry && getDaysUntilExpiry(status.licenseExpiry) <= 0 
+                                    ? 'bg-red-100 text-red-600' 
+                                    : 'bg-tertiary/10 text-tertiary'
+                                }`}>
+                                    <span className="material-symbols-outlined text-[14px]">
+                                        {status.licenseExpiry && getDaysUntilExpiry(status.licenseExpiry) <= 0 ? 'error' : 'check_circle'}
+                                    </span>
+                                    {status.licenseExpiry && getDaysUntilExpiry(status.licenseExpiry) <= 0 ? 'LICENZA SCADUTA' : 'LICENZA ATTIVA'}
                                 </div>
                             )}
 
                             <div className="mt-6 w-full border-t border-outline-variant/20 pt-4 space-y-2">
+                                {status.licenseExpiry && (
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="text-secondary">Scadenza</span>
+                                        <span className={`font-bold ${getDaysUntilExpiry(status.licenseExpiry) <= 30 ? 'text-red-500' : 'text-on-surface'}`}>
+                                            {formatExpiryDate(status.licenseExpiry)}
+                                            {getDaysUntilExpiry(status.licenseExpiry) > 0 && getDaysUntilExpiry(status.licenseExpiry) <= 30 && (
+                                                <span className="block text-[9px] font-medium opacity-70">Scade tra {getDaysUntilExpiry(status.licenseExpiry)} giorni</span>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-xs">
                                     <span className="text-secondary">Dispositivi</span>
                                     <span className="font-bold text-on-surface">Illimitati</span>

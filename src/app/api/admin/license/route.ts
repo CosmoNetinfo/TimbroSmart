@@ -29,9 +29,20 @@ export async function POST(request: Request) {
         // 2. Perform Upgrade (Atomic)
         const batch = adminDb.batch();
         
-        // Update company plan
+        // Calculate Expiry Data (12 months from now)
+        const now = new Date();
+        const expiryDate = new Date(now);
+        expiryDate.setFullYear(now.getFullYear() + 1);
+        const expiryISO = expiryDate.toISOString();
+        const nowISO = now.toISOString();
+
+        // Update company plan and expiry
         const companyRef = adminDb.collection('companies').doc(companyId);
-        batch.update(companyRef, { plan: planToActivate });
+        batch.update(companyRef, { 
+            plan: planToActivate,
+            licenseExpiry: expiryISO,
+            licenseActivatedAt: nowISO
+        });
 
         // Register activation in license_keys
         const licenseRef = adminDb.collection('license_keys').doc();
@@ -41,7 +52,8 @@ export async function POST(request: Request) {
             status: 'ACTIVE',
             plan: planToActivate,
             activatedBy: session.uid,
-            timestamp: new Date().toISOString()
+            timestamp: nowISO,
+            expiryDate: expiryISO
         });
 
         // (Optional) Mark key as used if one-time use
@@ -75,7 +87,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Dati azienda non trovati' }, { status: 404 });
         }
         
-        const currentPlan = companyDoc.data()?.plan || 'FREE';
+        const companyData = companyDoc.data();
+        const currentPlan = companyData?.plan || 'FREE';
+        const licenseExpiry = companyData?.licenseExpiry || null;
+        const licenseActivatedAt = companyData?.licenseActivatedAt || null;
 
         // 2. Try to fetch license history (Fail gracefully if index is missing)
         let licenseStatus = 'NONE';
@@ -102,7 +117,9 @@ export async function GET(request: Request) {
         return NextResponse.json({
             status: licenseStatus, 
             serialKey: serialKey,
-            currentPlan: currentPlan 
+            currentPlan: currentPlan,
+            licenseExpiry: licenseExpiry,
+            licenseActivatedAt: licenseActivatedAt
         });
 
     } catch (error) {
