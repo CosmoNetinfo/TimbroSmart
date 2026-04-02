@@ -131,5 +131,67 @@ export default function LicenseManagement() {
                 )}
             </div>
         </div>
+
+            {/* Pricing Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                {/* FREE */}
+                <div className={`bg-surface-container-lowest border rounded-2xl p-6 shadow-sm text-center ${status?.currentPlan === 'FREE' ? 'border-primary/40 ring-2 ring-primary/10' : 'border-outline-variant/20'}`}>
+                    {status?.currentPlan === 'FREE' && (
+                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">Piano Attuale</span>
+                    )}
+                    <h3 className="font-headline text-xl font-extrabold text-on-surface">FREE</h3>
+                    <div className="mt-2 mb-4">
+                        <span className="font-headline text-3xl font-extrabold text-on-surface">€0</span>
+                    </div>
+                    <ul className="text-xs text-secondary space-y-2 text-left">
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Timbrature illimitate</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Fino a 5 dipendenti</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Export CSV</li>
+                        <li className="flex items-center gap-2 opacity-40"><span className="material-symbols-outlined text-[16px]">close</span> Gestione Pagamenti</li>
+                        <li className="flex items-center gap-2 opacity-40"><span className="material-symbols-outlined text-[16px]">close</span> Export PDF Busta Paga</li>
+                    </ul>
+                </div>
+
+                {/* PRO */}
+                <div className={`bg-surface-container-lowest border rounded-2xl p-6 shadow-sm text-center relative ${status?.currentPlan === 'PRO' ? 'border-primary/40 ring-2 ring-primary/10' : 'border-outline-variant/20'}`}>
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-md">Consigliato</span>
+                    {status?.currentPlan === 'PRO' && (
+                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 mt-2">Piano Attuale</span>
+                    )}
+                    <h3 className="font-headline text-xl font-extrabold text-primary mt-2">PRO</h3>
+                    <div className="mt-2 mb-1">
+                        <span className="font-headline text-3xl font-extrabold text-on-surface">€4,99</span>
+                        <span className="text-secondary text-xs font-medium">/mese</span>
+                    </div>
+                    <p className="text-[10px] text-secondary mb-4">Abbonamento 12 mesi</p>
+                    <ul className="text-xs text-secondary space-y-2 text-left">
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Tutto del piano FREE</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Dipendenti illimitati</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Gestione Pagamenti</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Export PDF Busta Paga</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Calendario Aziendale</li>
+                    </ul>
+                </div>
+
+                {/* ENTERPRISE */}
+                <div className={`bg-surface-container-lowest border rounded-2xl p-6 shadow-sm text-center ${status?.currentPlan === 'ENTERPRISE' ? 'border-amber-400/40 ring-2 ring-amber-400/10' : 'border-outline-variant/20'}`}>
+                    {status?.currentPlan === 'ENTERPRISE' && (
+                        <span className="inline-block bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">Piano Attuale</span>
+                    )}
+                    <h3 className="font-headline text-xl font-extrabold text-amber-600">ENTERPRISE</h3>
+                    <div className="mt-2 mb-1">
+                        <span className="font-headline text-3xl font-extrabold text-on-surface">€9,99</span>
+                        <span className="text-secondary text-xs font-medium">/mese</span>
+                    </div>
+                    <p className="text-[10px] text-secondary mb-4">Abbonamento 12 mesi</p>
+                    <ul className="text-xs text-secondary space-y-2 text-left">
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Tutto del piano PRO</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Supporto Prioritario 24/7</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Multi-sede</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Account Manager dedicato</li>
+                        <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> API Personalizzate</li>
+                    </ul>
+                </div>
+            </div>
     );
 }
