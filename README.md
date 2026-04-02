@@ -1,55 +1,101 @@
 <div align="center">
-  <img src="public/icons/app-icon-nobg.png" alt="TimbroSmart Logo" width="120" />
+  <img src="public/icons/app-icon-nobg.png" alt="TimbroSmart Logo" width="160" />
+  <h1>TimbroSmart</h1>
+  <p><strong>La Nuova Era della Gestione Presenze & Contabilità SaaS</strong></p>
+  
+  <div flex>
+    <img src="https://img.shields.io/badge/Next.js-16.0-black?logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19.2-blue?logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css" alt="Tailwind" />
+    <img src="https://img.shields.io/badge/Firebase-Admin-FFCA28?logo=firebase" alt="Firebase" />
+  </div>
 </div>
 
-<h1 align="center">TimbroSmart</h1>
-<p align="center"><strong>Elevate Time Management (SaaS Ready)</strong></p>
+---
+
+## 📖 Panoramica del Progetto
+
+**TimbroSmart** è una piattaforma SaaS (Software as a Service) multi-tenant all-in-one progettata per modernizzare la gestione delle presenze e la contabilità aziendale. Con un'estetica premium ispirata al design **Bento** e **Glassmorphism**, TimbroSmart offre un'esperienza utente senza precedenti sia per gli amministratori che per i dipendenti.
+
+Il sistema automatizza il monitoraggio del tempo, la generazione di prove fotografiche per la sicurezza e il calcolo istantaneo dei pagamenti, eliminando la burocrazia cartacea e gli errori manuali.
 
 ---
 
-## 📋 Descrizione
-**TimbroSmart** è una Progressive Web App (PWA) avanzata, progettata in stile *Glassmorphism* moderno, per la gestione delle presenze e della contabilità aziendale. 
-Ideata per operare come un SaaS (Software as a Service) multi-tenant, permette alle aziende di gestire i propri dipendenti, e a quest'ultimi di tracciare orari con prove fotografiche e calcolare i guadagni in tempo reale.
+## ✨ Funzionalità Innovative
 
-## 🚀 Funzionalità Principali
+### 🍱 Interfaccia "Bento-Style" di Nuova Generazione
+Abbiamo ridisegnato il pannello Admin e Super Admin utilizzando il layout **Bento**, organizzando le informazioni in card eleganti, intuitive e responsive.
+- **Visual Overview**: Statistiche in tempo reale con grafici interattivi.
+- **Responsive Design**: Ottimizzato per desktop, tablet e smartphone.
+- **Premium UI**: Utilizzo di variabili di colore HSL, ombre "soft" e micro-animazioni.
 
-### 🏢 Categorie di Utenti (Multi-Level)
-- **Super Amministratore (License Manager)**: Strumento segreto per la generazione e gestione delle licenze SaaS (FREE, PRO, ENTERPRISE).
-- **Amministratore Aziendale (Admin)**: Creazione dipendenti, monitoraggio timbrature in tempo reale, statistiche, esportazione PDF/Excel e gestione buste paga/versamenti.
-- **Dipendente**: Timbratura geolocalizzata rapida, visualizzazione calendario e storico pagamenti.
+### 🛡️ Sistema di Licenze Avanzato (SaaS Ready)
+TimbroSmart è pronto per la commercializzazione con un robusto motore di gestione licenze:
+- **Validità 12 Mesi**: Tutte le licenze PRO ed ENTERPRISE hanno una validità fissa di un anno dal momento dell'attivazione.
+- **Monitoraggio Scadenza**: Notifiche visive e badge di allerta (rosso/giallo) nel pannello Admin per prevenire interruzioni del servizio.
+- **Controllo Accessi**: Ogni azienda è isolata nel proprio tenant attraverso rigidi controlli Firestore.
 
-### 💎 Design Premium (UI/UX)
-- Interfaccia **Glassmorphism** moderna: sfondi sfocati, transizioni fluide ed estetica al neon (Tema Azure/Blue). 
-- Completamente vettoriale (Lucide Icons) e ottimizzato sia per schermi desktop che per il mobile (PWA).
+### ⏱️ Timbratura con Prova Fotografica (PWA)
+Una Progressive Web App (PWA) che trasforma qualsiasi smartphone in un terminale di timbratura sicuro:
+- **Zero Installazione**: "Aggiungi alla Home" e l'app è pronta senza passare dagli store.
+- **Photo-Proof**: Ogni entrata/uscita richiede una foto in tempo reale per garantire la presenza fisica.
+- **Offline Ready**: Gestione resiliente delle sessioni.
 
-### 🔐 Sicurezza e SaaS
-- **Firebase Auth + Firestore**: Gestione sicura delle sessioni (JWT storage via Cookie per prevenire colli di bottiglia e cold-boot lenti).
-- **Controllo Accessi Rigoroso**: Impossibile registrarsi senza una chiave di licenza valida generata dal Super Admin.
-- Timbrature bloccate e verificate fotograficamente.
-
-### 💻 Pannello Amministratore (Admin)
-- **Dashboard Statistica**: Grafici interattivi (Bar Charts) del carico di lavoro.
-- **Calendario Integrato**: Panoramica visiva mensile delle presenze del team.
-- **Esportazione**: Generazione istantanea di PDF professionali (Busta Paga) e CSV.
-
-### 📱 Portale Dipendenti
-- Auto-Login persistente (PWA).
-- Azioni veloci: "Entra" / "Esci" con fotocamera integrata.
-- Calcolo automatico del guadagno in base al monte ore settimanale/mensile.
-
-## 🛠️ Stack Tecnologico
-*   **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
-*   **Linguaggio**: TypeScript & JSX
-*   **Backend & DB**: [Firebase](https://firebase.google.com/) (Firestore, Storage, Admin SDK)
-*   **Styling**: CSS Modules & Variabili Native
-*   **Visualizzazione Dati**: [Recharts](https://recharts.org/)
-*   **Esportazioni**: JSPDF & AutoTable
-*   **Hosting**: [Vercel](https://vercel.com/) 
-
-## � Installazione PWA (Senza Store)
-Essendo una Web App Progressiva, non richiede l'App Store o Google Play:
-1. **iOS (Safari)**: Apri il link -> Condividi -> "Aggiungi alla schermata Home".
-2. **Android (Chrome)**: Apri il link -> Menu (3 puntini) -> "Aggiungi a schermata Home".
+### 💰 Contabilità & Pagamenti Automatizzati
+Dimentica i fogli Excel complessi:
+- **Calcolo Dinamico**: Il sistema calcola il guadagno dovuto in tempo reale in base alla paga oraria e alle ore effettive.
+- **Reportistica PDF/Excel**: Generazione istantanea di buste paga professionali e log storici per la gestione contabile.
+- **Tracking Versamenti**: Gestione centralizzata dei pagamenti effettuati ai dipendenti.
 
 ---
-*Sviluppato con passione per i team che vogliono semplificare la burocrazia aziendale.*
+
+## 🛠️ Stack Tecnologico Moderno
+
+| Tecnologia | Scopo |
+| :--- | :--- |
+| **Next.js 16 (App Router)** | Framework full-stack ad alte prestazioni. |
+| **React 19** | Gestione dello stato e componenti UI. |
+| **Tailwind CSS** | Design system e styling responsive. |
+| **Firebase (Admin SDK)** | Autenticazione, Database (NoSQL) e Storage. |
+| **Lucide React** | Iconografia moderna e leggera. |
+| **Recharts** | Visualizzazione dati e analisi statistiche. |
+| **jsPDF / AutoTable** | Motore di generazione documenti PDF. |
+
+---
+
+## 🏢 Livelli di Accesso
+
+1. **Super Amministratore**:
+   - Generazione Master Keys (Licenze).
+   - Gestione Ordini e Provisioning Aziendale.
+   - Monitoraggio dello stato di salute del sistema globale.
+2. **Amministratore Aziendale (Admin)**:
+   - Configurazione dipendenti e paghe orarie.
+   - Approvazione timbrature e monitoraggio log.
+   - Gestione finanziaria e reportistica.
+3. **Dipendente**:
+   - Timbratura rapida con interfaccia semplificata.
+   - Visibilità trasparente dello storico orari e guadagni.
+
+---
+
+## 📲 Guida all'Installazione (PWA)
+
+TimbroSmart è ottimizzato per essere utilizzato come app nativa sul cellulare:
+
+### Su iOS (Safari)
+1. Apri l'URL nel browser Safari.
+2. Tocca l'icona **Condividi** (il quadrato con la freccia in alto).
+3. Seleziona **"Aggiungi alla schermata Home"**.
+
+### Su Android (Chrome)
+1. Apri l'URL in Chrome.
+2. Tocca i **tre puntini** in alto a destra.
+3. Seleziona **"Installa app"** o **"Aggiungi a schermata Home"**.
+
+---
+
+<div align="center">
+  <p><em>TimbroSmart - Semplificare il lavoro, un timbro alla volta.</em></p>
+  <p>© 2026 TimbroSmart Inc. All rights reserved.</p>
+</div>
