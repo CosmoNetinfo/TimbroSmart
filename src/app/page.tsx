@@ -165,8 +165,8 @@ export default function Home() {
           <p className="text-sm text-orange-800 mb-2">Dipendenti illimitati, Export Avanzato, Gestione Pagamenti.</p>
           <div className="mb-4">
              <span className="text-2xl font-extrabold text-orange-600">€4,99</span>
-             <span className="text-xs text-orange-800 opacity-70 ml-1">/ mese</span>
-             <p className="text-[10px] text-orange-800 mt-1 font-bold">Abbonamento 12 mesi</p>
+             <span className="text-xs text-orange-800 font-bold ml-1">ogni 12 mesi</span>
+             <p className="text-[10px] text-orange-800 mt-1 font-bold">Prezzo totale per un anno</p>
           </div>
           <a
             href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=stephenkingitaly@gmail.com&item_name=TimbroSmart%20PRO&amount=4.99&currency_code=EUR&return=https://timbrosmart.vercel.app/payment-success" 
@@ -187,8 +187,8 @@ export default function Home() {
           <p className="text-sm text-purple-800 mb-2">White-label Logo & Assistenza 24/7.</p>
           <div className="mb-4">
              <span className="text-xl font-bold text-purple-600">€9,99</span>
-             <span className="text-xs text-purple-800 opacity-70 ml-1">/ mese</span>
-             <p className="text-[10px] text-purple-800 mt-1 font-bold">Abbonamento 12 mesi</p>
+             <span className="text-xs text-purple-800 font-bold ml-1">ogni 12 mesi</span>
+             <p className="text-[10px] text-purple-800 mt-1 font-bold">Prezzo totale per un anno</p>
           </div>
           <a  
             href="https://wa.me/393517064080?text=Salve,%20vorrei%20informazioni%20per%20il%20piano%20ENTERPRISE." 

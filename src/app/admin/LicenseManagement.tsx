@@ -162,9 +162,9 @@ export default function LicenseManagement() {
                     <h3 className="font-headline text-xl font-extrabold text-primary mt-2">PRO</h3>
                     <div className="mt-2 mb-1">
                         <span className="font-headline text-3xl font-extrabold text-on-surface">€4,99</span>
-                        <span className="text-secondary text-xs font-medium">/mese</span>
+                        <span className="text-secondary text-xs font-bold ml-1">ogni 12 mesi</span>
                     </div>
-                    <p className="text-[10px] text-secondary mb-4">Abbonamento 12 mesi</p>
+                    <p className="text-[10px] text-secondary mb-4 font-bold">Prezzo totale per un anno</p>
                     <ul className="text-xs text-secondary space-y-2 text-left">
                         <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Tutto del piano FREE</li>
                         <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Dipendenti illimitati</li>
@@ -182,9 +182,9 @@ export default function LicenseManagement() {
                     <h3 className="font-headline text-xl font-extrabold text-amber-600">ENTERPRISE</h3>
                     <div className="mt-2 mb-1">
                         <span className="font-headline text-3xl font-extrabold text-on-surface">€9,99</span>
-                        <span className="text-secondary text-xs font-medium">/mese</span>
+                        <span className="text-secondary text-xs font-bold ml-1">ogni 12 mesi</span>
                     </div>
-                    <p className="text-[10px] text-secondary mb-4">Abbonamento 12 mesi</p>
+                    <p className="text-[10px] text-secondary mb-4 font-bold">Prezzo totale per un anno</p>
                     <ul className="text-xs text-secondary space-y-2 text-left">
                         <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Tutto del piano PRO</li>
                         <li className="flex items-center gap-2"><span className="material-symbols-outlined text-tertiary text-[16px]">check</span> Supporto Prioritario 24/7</li>
