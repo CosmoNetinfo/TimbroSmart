@@ -86,7 +86,8 @@ TimbroSmart offre flessibilità e trasparenza per ogni tipo di azienda. Tutti i 
 ### 💰 Piani di Abbonamento
 - **FREE (Omaggio)**: Per piccole realtà o periodi di prova. Tutte le funzioni base incluse.
 - **PRO (€4.99 / 12 Mesi)**: Ideale per startup e team in crescita. Include tutte le funzioni di gestione e reportistica.
-- **ENTERPRISE (€9.99 / 12 Mesi)**: Supporto prioritario, export illimitati e funzionalità avanzate di analisi contabile.
+- **ENTERPRISE (€9.99 / 12 Mesi)**: Il massimo livello di controllo e analisi. Include il nuovo **BI Hub (Grafici Avanzati)**, centro esportazioni compatibile con **Zucchetti/TeamSystem**, personalizzazione del **Branding** (Logo/Colore) e controlli di sicurezza via **Geofencing**.
+  *   Consulta la [Guida Completa Enterprise (ENTERPRISE_GUIDE.md)](./ENTERPRISE_GUIDE.md) per i dettagli.
 
 ### 💳 Metodi di Pagamento Supportati
 Supportiamo i circuiti più sicuri per garantirti la massima tranquillità:

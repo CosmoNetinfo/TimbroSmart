@@ -9,7 +9,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { companyName } = await request.json();
+        const body = await request.json();
         let companyId = session.companyId;
 
         // Fallback: if admin has no companyId, we generate one based on their UID
@@ -19,15 +19,22 @@ export async function POST(request: Request) {
             await adminDb.collection('users').doc(session.uid).update({ companyId });
         }
 
-        const companyRef = adminDb.collection('companies').doc(companyId);
-        await companyRef.set({ 
-            name: companyName.trim(),
+        const updateData: any = {
             updatedAt: new Date().toISOString()
-        }, { merge: true });
+        };
+
+        if (body.companyName) updateData.name = body.companyName.trim();
+        if (body.logoUrl !== undefined) updateData.logoUrl = body.logoUrl;
+        if (body.primaryColor !== undefined) updateData.primaryColor = body.primaryColor;
+        if (body.gpsGeofencing !== undefined) updateData.gpsGeofencing = body.gpsGeofencing;
+        if (body.faceValidation !== undefined) updateData.faceValidation = body.faceValidation;
+
+        const companyRef = adminDb.collection('companies').doc(companyId);
+        await companyRef.set(updateData, { merge: true });
 
         return NextResponse.json({ 
             success: true, 
-            message: 'Nome azienda aggiornato con successo!' 
+            message: 'Impostazioni azienda aggiornate con successo!' 
         });
     } catch (error) {
         console.error('Update company name error:', error);

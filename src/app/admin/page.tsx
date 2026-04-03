@@ -7,6 +7,8 @@ import autoTable from 'jspdf-autotable';
 import PaymentsManagement from './PaymentsManagement';
 import AdminCalendar from './AdminCalendar';
 import LicenseManagement from './LicenseManagement';
+import BIHub from './BIHub';
+import ExportCenter from './ExportCenter';
 
 
 interface AdminUser {
@@ -26,7 +28,7 @@ interface AdminEntry {
     user: AdminUser;
 }
 
-type AdminView = 'dashboard' | 'users' | 'payments' | 'calendar' | 'license' | 'settings';
+type AdminView = 'dashboard' | 'users' | 'payments' | 'calendar' | 'license' | 'settings' | 'bi' | 'exports';
 
 export default function Admin() {
     const router = useRouter();
@@ -42,9 +44,15 @@ export default function Admin() {
     const [activeView, setActiveView] = useState<AdminView>('dashboard');
     const [companyPlan, setCompanyPlan] = useState<string>('FREE');
     const [companyName, setCompanyName] = useState<string>('TimbroSmart');
+    const [companyLogo, setCompanyLogo] = useState<string>('');
+    const [companyColor, setCompanyColor] = useState<string>('');
     const [newCompanyName, setNewCompanyName] = useState('');
     const [needsCompanyName, setNeedsCompanyName] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Enterprise Security States
+    const [gpsGeofencing, setGpsGeofencing] = useState(false);
+    const [faceValidation, setFaceValidation] = useState(false);
 
     // New User State
     const [showAddUser, setShowAddUser] = useState(false);
@@ -69,6 +77,10 @@ export default function Admin() {
                 if (data.name) {
                     setCompanyName(data.name);
                     setNewCompanyName(data.name);
+                    if (data.logoUrl) setCompanyLogo(data.logoUrl);
+                    if (data.primaryColor) setCompanyColor(data.primaryColor);
+                    if (data.gpsGeofencing) setGpsGeofencing(data.gpsGeofencing);
+                    if (data.faceValidation) setFaceValidation(data.faceValidation);
                     if (data.name === 'TimbroSmart') {
                         setNeedsCompanyName(true);
                     }
@@ -244,21 +256,23 @@ export default function Admin() {
         }
     };
 
-    const handleUpdateCompanyName = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newCompanyName) return;
-
+    const handleUpdateCompanyMeta = async (meta: any) => {
         try {
             const res = await fetch('/api/admin/company', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ companyName: newCompanyName }),
+                body: JSON.stringify(meta),
             });
 
             if (res.ok) {
-                setCompanyName(newCompanyName);
-                setNeedsCompanyName(false);
-                alert('Nome azienda aggiornato con successo!');
+                if (meta.companyName) setCompanyName(meta.companyName);
+                if (meta.logoUrl !== undefined) setCompanyLogo(meta.logoUrl);
+                if (meta.primaryColor !== undefined) setCompanyColor(meta.primaryColor);
+                if (meta.gpsGeofencing !== undefined) setGpsGeofencing(meta.gpsGeofencing);
+                if (meta.faceValidation !== undefined) setFaceValidation(meta.faceValidation);
+                
+                if (meta.companyName) setNeedsCompanyName(false);
+                alert('Impostazioni salvate con successo!');
             } else {
                 const data = await res.json();
                 alert(`Errore: ${data.error || 'Impossibile aggiornare'}`);
@@ -266,6 +280,11 @@ export default function Admin() {
         } catch {
             alert('Errore di connessione');
         }
+    };
+
+    const handleUpdateCompanyName = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleUpdateCompanyMeta({ companyName: newCompanyName });
     };
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -554,11 +573,13 @@ export default function Admin() {
         router.push('/');
     };
 
-    const navItems: { id: AdminView; icon: string; label: string }[] = [
+    const navItems: { id: AdminView; icon: string; label: string; premium?: boolean }[] = [
         { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+        { id: 'bi', icon: 'analytics', label: 'Business Intelligence', premium: true },
         { id: 'users', icon: 'group', label: 'Dipendenti' },
         { id: 'payments', icon: 'payments', label: 'Pagamenti' },
         { id: 'calendar', icon: 'event_note', label: 'Calendario' },
+        { id: 'exports', icon: 'file_download', label: 'Esportazioni Pro', premium: true },
         { id: 'license', icon: 'workspace_premium', label: 'Licenza' },
         { id: 'settings', icon: 'settings', label: 'Impostazioni' },
     ];
@@ -610,11 +631,15 @@ export default function Admin() {
                 {/* Sidebar Header */}
                 <div className="p-6 border-b border-outline-variant/20">
                     <div className="flex items-center gap-3">
-                        <div className="bg-primary-container p-2 rounded-xl text-on-primary-container">
-                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>fingerprint</span>
+                        <div className="bg-primary-container p-2 rounded-xl text-on-primary-container relative overflow-hidden flex items-center justify-center">
+                            {companyLogo ? (
+                                <img src={companyLogo} alt="Logo" className="w-10 h-10 object-contain" />
+                            ) : (
+                                <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1", color: companyColor || 'inherit' }}>fingerprint</span>
+                            )}
                         </div>
-                        <div>
-                            <h2 className="font-headline font-extrabold text-on-surface text-lg leading-none">{companyName}</h2>
+                        <div className="flex-1 min-w-0">
+                            <h2 className="font-headline font-extrabold text-on-surface text-sm truncate uppercase tracking-tight">{companyName}</h2>
                             <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${
                                 companyPlan === 'FREE' ? 'bg-slate-100 text-slate-600' : 
                                 companyPlan === 'PRO' ? 'bg-blue-100 text-blue-700' : 
@@ -632,14 +657,19 @@ export default function Admin() {
                         <button
                             key={item.id}
                             onClick={() => { setActiveView(item.id); setSidebarOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                                 activeView === item.id
                                     ? 'bg-primary/10 text-primary font-bold shadow-sm'
                                     : 'text-secondary hover:bg-surface-container-low hover:text-on-surface'
                             }`}
                         >
-                            <span className="material-symbols-outlined text-[20px]" style={activeView === item.id ? { fontVariationSettings: "'FILL' 1" } : {}}>{item.icon}</span>
-                            {item.label}
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-[20px]" style={activeView === item.id ? { fontVariationSettings: "'FILL' 1" } : {}}>{item.icon}</span>
+                                {item.label}
+                            </div>
+                            {item.premium && companyPlan !== 'ENTERPRISE' && (
+                                <span className="material-symbols-outlined text-[16px] text-amber-500" title="Funzione Enterprise">lock</span>
+                            )}
                         </button>
                     ))}
                 </nav>
@@ -951,33 +981,148 @@ export default function Admin() {
                         </div>
                     )}
 
+                    {/* ═══════════════════ BI HUB VIEW ═══════════════════ */}
+                    {activeView === 'bi' && (
+                        <div className="animate-slide-up">
+                            <div className="mb-8">
+                                <h1 className="font-headline text-3xl font-extrabold text-on-surface">Business Intelligence</h1>
+                                <p className="text-secondary">Analisi avanzata delle performance e dei costi.</p>
+                            </div>
+                            <BIHub entries={entries} users={users} companyPlan={companyPlan} />
+                        </div>
+                    )}
+
+                    {/* ═══════════════════ EXPORTS VIEW ═══════════════════ */}
+                    {activeView === 'exports' && (
+                        <div className="animate-slide-up">
+                            <div className="mb-8">
+                                <h1 className="font-headline text-3xl font-extrabold text-on-surface">Export Center</h1>
+                                <p className="text-secondary">Esportazioni premium per paghe e contabilità.</p>
+                            </div>
+                            <ExportCenter entries={entries} users={users} companyPlan={companyPlan} />
+                        </div>
+                    )}
+
                     {/* ═══════════════════ SETTINGS VIEW ═══════════════════ */}
                     {activeView === 'settings' && (
                         <div className="animate-slide-up">
                             <div className="mb-8">
                                 <h1 className="font-headline text-3xl font-extrabold text-on-surface">Impostazioni</h1>
-                                <p className="text-secondary">Configura il pannello di amministrazione.</p>
+                                <p className="text-secondary">Configura il tuo profilo aziendale e le opzioni avanzate.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
-                                    <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary">apartment</span> Nome Azienda
-                                    </h4>
-                                    <form onSubmit={handleUpdateCompanyName} className="space-y-3">
-                                        <input type="text" placeholder="Nome Azienda" value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
-                                        <button type="submit" className="w-full py-2.5 rounded-lg bg-primary text-white font-bold text-sm">Aggiorna</button>
-                                    </form>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Profilo Base */}
+                                <div className="space-y-6">
+                                    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
+                                        <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-primary">apartment</span> Profilo Aziendale
+                                        </h4>
+                                        <form onSubmit={handleUpdateCompanyName} className="space-y-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-secondary mb-1">Nome Azienda</label>
+                                                <input type="text" placeholder="Nome Azienda" value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
+                                            </div>
+                                            <button type="submit" className="w-full py-2.5 rounded-lg bg-primary text-white font-bold text-sm shadow-sm active:scale-95 transition-all">Aggiorna</button>
+                                        </form>
+                                    </div>
+
+                                    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
+                                        <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-primary">key</span> Sicurezza Account
+                                        </h4>
+                                        <form onSubmit={handleUpdatePassword} className="space-y-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-secondary mb-1">Nuovo Codice Admin</label>
+                                                <input type="text" placeholder="Nuovo Codice Admin" value={newAdminCode} onChange={(e) => setNewAdminCode(e.target.value)} className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
+                                            </div>
+                                            <button type="submit" className="w-full py-2.5 rounded-lg bg-secondary text-white font-bold text-sm shadow-sm active:scale-95 transition-all">Salva Password</button>
+                                        </form>
+                                    </div>
                                 </div>
 
-                                <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
-                                    <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary">key</span> Cambia Password Admin
-                                    </h4>
-                                    <form onSubmit={handleUpdatePassword} className="space-y-3">
-                                        <input type="text" placeholder="Nuovo Codice Admin" value={newAdminCode} onChange={(e) => setNewAdminCode(e.target.value)} className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
-                                        <button type="submit" className="w-full py-2.5 rounded-lg bg-primary text-white font-bold text-sm">Salva</button>
-                                    </form>
+                                {/* Enterprise Branding & Security */}
+                                <div className="space-y-6">
+                                    <div className={`bg-surface-container-lowest border rounded-2xl p-6 shadow-sm transition-all ${companyPlan !== 'ENTERPRISE' ? 'opacity-70 border-dashed border-outline-variant/40' : 'border-outline-variant/20'}`}>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h4 className="font-bold text-on-surface flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-amber-500">palette</span> Branding (Enterprise)
+                                            </h4>
+                                            {companyPlan !== 'ENTERPRISE' && (
+                                                <span className="material-symbols-outlined text-amber-500 animate-pulse">lock</span>
+                                            )}
+                                        </div>
+                                        
+                                        <div className={`space-y-4 ${companyPlan !== 'ENTERPRISE' ? 'pointer-events-none grayscale' : ''}`}>
+                                            <div>
+                                                <label className="block text-xs font-bold text-secondary mb-1">URL Logo Azienda</label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="https://esempio.it/logo.png" 
+                                                    value={companyLogo}
+                                                    onChange={(e) => setCompanyLogo(e.target.value)}
+                                                    onBlur={() => handleUpdateCompanyMeta({ logoUrl: companyLogo })}
+                                                    className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" 
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-secondary mb-1">Colore Tema Primario</label>
+                                                <div className="flex gap-2">
+                                                    {['#0056d2', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'].map(color => (
+                                                        <button 
+                                                            key={color} 
+                                                            onClick={() => { setCompanyColor(color); handleUpdateCompanyMeta({ primaryColor: color }); }}
+                                                            className={`w-10 h-10 rounded-full border-2 transition-all ${companyColor === color ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-transparent'}`}
+                                                            style={{ backgroundColor: color }}
+                                                            title={color}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {companyPlan !== 'ENTERPRISE' && (
+                                            <p className="mt-4 text-[10px] text-amber-700 font-bold bg-amber-50 p-2 rounded-lg text-center">PASS AL PIANO PLATINUM PER PERSONALIZZARE L&apos;ID</p>
+                                        )}
+                                    </div>
+
+                                    <div className={`bg-surface-container-lowest border rounded-2xl p-6 shadow-sm transition-all ${companyPlan !== 'ENTERPRISE' ? 'opacity-70 border-dashed border-outline-variant/40' : 'border-outline-variant/20'}`}>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h4 className="font-bold text-on-surface flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-primary">security</span> Controlli Avanzati (Enterprise)
+                                            </h4>
+                                            {companyPlan !== 'ENTERPRISE' && (
+                                                <span className="material-symbols-outlined text-amber-500">lock</span>
+                                            )}
+                                        </div>
+
+                                        <div className={`space-y-3 ${companyPlan !== 'ENTERPRISE' ? 'pointer-events-none grayscale' : ''}`}>
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+                                                <div>
+                                                    <p className="text-xs font-bold text-on-surface">Geofencing GPS attivo</p>
+                                                    <p className="text-[10px] text-secondary">Richiede posizione entro 500m</p>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleUpdateCompanyMeta({ gpsGeofencing: !gpsGeofencing })}
+                                                    className={`w-12 h-6 rounded-full transition-colors relative ${gpsGeofencing ? 'bg-primary' : 'bg-outline-variant'}`}
+                                                >
+                                                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${gpsGeofencing ? 'left-7' : 'left-1'}`} />
+                                                </button>
+                                            </div>
+
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+                                                <div>
+                                                    <p className="text-xs font-bold text-on-surface">Validazione Facciale AI</p>
+                                                    <p className="text-[10px] text-secondary">Riconoscimento durante timbratura</p>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleUpdateCompanyMeta({ faceValidation: !faceValidation })}
+                                                    className={`w-12 h-6 rounded-full transition-colors relative ${faceValidation ? 'bg-primary' : 'bg-outline-variant'}`}
+                                                >
+                                                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${faceValidation ? 'left-7' : 'left-1'}`} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
