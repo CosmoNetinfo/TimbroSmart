@@ -213,7 +213,7 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                                     paddingAngle={5}
                                     dataKey="value"
                                     nameKey="name"
-                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                                 >
                                     {saturationData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
