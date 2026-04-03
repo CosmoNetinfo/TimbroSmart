@@ -16,6 +16,7 @@ export default function Dashboard() {
     const [status, setStatus] = useState('LOADING'); // IN, OUT, LOADING
     const [lastEntry, setLastEntry] = useState<{ timestamp: string } | null>(null);
     const [loading, setLoading] = useState(false);
+    const [companySettings, setCompanySettings] = useState<any>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -27,7 +28,24 @@ export default function Dashboard() {
         const parsedUser = JSON.parse(stored);
         setUser(parsedUser);
         fetchStatus(parsedUser.id);
+        fetchCompanySettings();
     }, []);
+
+    const fetchCompanySettings = async () => {
+        try {
+            const res = await fetch('/api/company/public-settings');
+            if (res.ok) {
+                const data = await res.json();
+                setCompanySettings(data);
+                // Apply branding
+                if (data.primaryColor) {
+                    document.documentElement.style.setProperty('--primary', data.primaryColor);
+                }
+            }
+        } catch (e) {
+            console.error('Fetch company settings error:', e);
+        }
+    };
 
     const fetchStatus = async (userId: number) => {
         try {
@@ -76,6 +94,27 @@ export default function Dashboard() {
             });
 
             const formData = new FormData();
+            
+            // GPS Geofencing Check
+            if (companySettings?.gpsGeofencing) {
+                try {
+                    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        });
+                    });
+                    formData.append('latitude', position.coords.latitude.toString());
+                    formData.append('longitude', position.coords.longitude.toString());
+                } catch (gpsError: any) {
+                    console.error("GPS Error:", gpsError);
+                    alert("Errore: Il GPS è obbligatorio per timbrare. Assicurati di aver attivato la posizione e concesso i permessi.");
+                    setLoading(false);
+                    return;
+                }
+            }
+
             formData.append('userId', user.id.toString());
             formData.append('type', type);
             formData.append('image', compressedFile);

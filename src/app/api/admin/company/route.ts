@@ -28,6 +28,9 @@ export async function POST(request: Request) {
         if (body.primaryColor !== undefined) updateData.primaryColor = body.primaryColor;
         if (body.gpsGeofencing !== undefined) updateData.gpsGeofencing = body.gpsGeofencing;
         if (body.faceValidation !== undefined) updateData.faceValidation = body.faceValidation;
+        if (body.latitude !== undefined) updateData.latitude = body.latitude;
+        if (body.longitude !== undefined) updateData.longitude = body.longitude;
+        if (body.address !== undefined) updateData.address = body.address;
 
         const companyRef = adminDb.collection('companies').doc(companyId);
         await companyRef.set(updateData, { merge: true });

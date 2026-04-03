@@ -53,6 +53,9 @@ export default function Admin() {
     // Enterprise Security States
     const [gpsGeofencing, setGpsGeofencing] = useState(false);
     const [faceValidation, setFaceValidation] = useState(false);
+    const [companyLat, setCompanyLat] = useState<number | string>('');
+    const [companyLng, setCompanyLng] = useState<number | string>('');
+    const [companyAddress, setCompanyAddress] = useState<string>('');
 
     // New User State
     const [showAddUser, setShowAddUser] = useState(false);
@@ -81,6 +84,9 @@ export default function Admin() {
                     if (data.primaryColor) setCompanyColor(data.primaryColor);
                     if (data.gpsGeofencing) setGpsGeofencing(data.gpsGeofencing);
                     if (data.faceValidation) setFaceValidation(data.faceValidation);
+                    if (data.latitude) setCompanyLat(data.latitude);
+                    if (data.longitude) setCompanyLng(data.longitude);
+                    if (data.address) setCompanyAddress(data.address);
                     if (data.name === 'TimbroSmart') {
                         setNeedsCompanyName(true);
                     }
@@ -270,6 +276,9 @@ export default function Admin() {
                 if (meta.primaryColor !== undefined) setCompanyColor(meta.primaryColor);
                 if (meta.gpsGeofencing !== undefined) setGpsGeofencing(meta.gpsGeofencing);
                 if (meta.faceValidation !== undefined) setFaceValidation(meta.faceValidation);
+                if (meta.latitude !== undefined) setCompanyLat(meta.latitude);
+                if (meta.longitude !== undefined) setCompanyLng(meta.longitude);
+                if (meta.address !== undefined) setCompanyAddress(meta.address);
                 
                 if (meta.companyName) setNeedsCompanyName(false);
                 alert('Impostazioni salvate con successo!');
@@ -280,6 +289,27 @@ export default function Admin() {
         } catch {
             alert('Errore di connessione');
         }
+    };
+
+    const handleRequestCompanyLocation = () => {
+        if (!navigator.geolocation) {
+            alert("La geolocalizzazione non è supportata dal tuo browser.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setCompanyLat(latitude);
+                setCompanyLng(longitude);
+                handleUpdateCompanyMeta({ latitude, longitude });
+                alert("Posizione rilevata con successo!");
+            },
+            (error) => {
+                console.error("Error getting location:", error);
+                alert("Errore nel rilevamento della posizione. Assicurati di aver dato i permessi.");
+            }
+        );
     };
 
     const handleUpdateCompanyName = (e: React.FormEvent) => {
@@ -1095,8 +1125,8 @@ export default function Admin() {
                                             )}
                                         </div>
 
-                                        <div className={`space-y-3 ${companyPlan !== 'ENTERPRISE' ? 'pointer-events-none grayscale' : ''}`}>
-                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+                                        <div className={`space-y-4 ${companyPlan !== 'ENTERPRISE' ? 'pointer-events-none grayscale' : ''}`}>
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-outline-variant/10">
                                                 <div>
                                                     <p className="text-xs font-bold text-on-surface">Geofencing GPS attivo</p>
                                                     <p className="text-[10px] text-secondary">Richiede posizione entro 500m</p>
@@ -1104,12 +1134,46 @@ export default function Admin() {
                                                 <button 
                                                     onClick={() => handleUpdateCompanyMeta({ gpsGeofencing: !gpsGeofencing })}
                                                     className={`w-12 h-6 rounded-full transition-colors relative ${gpsGeofencing ? 'bg-primary' : 'bg-outline-variant'}`}
+                                                    title={gpsGeofencing ? "Disattiva GPS" : "Attiva GPS"}
                                                 >
                                                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${gpsGeofencing ? 'left-7' : 'left-1'}`} />
                                                 </button>
                                             </div>
 
-                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+                                            {gpsGeofencing && (
+                                                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-3 animate-slide-up">
+                                                    <div>
+                                                        <label className="block text-[10px] font-bold text-primary uppercase mb-1">Indirizzo Sede / Cantiere</label>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Via Roma 1, Milano" 
+                                                            value={companyAddress}
+                                                            onChange={(e) => setCompanyAddress(e.target.value)}
+                                                            onBlur={() => handleUpdateCompanyMeta({ address: companyAddress })}
+                                                            className="w-full rounded-lg border-outline-variant px-3 py-2 text-sm bg-white" 
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="block text-[10px] font-bold text-secondary uppercase mb-1">Latitudine</label>
+                                                            <input type="text" value={companyLat} readOnly className="w-full rounded-lg border-outline-variant px-3 py-2 text-xs bg-surface-container-low text-secondary" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[10px] font-bold text-secondary uppercase mb-1">Longitudine</label>
+                                                            <input type="text" value={companyLng} readOnly className="w-full rounded-lg border-outline-variant px-3 py-2 text-xs bg-surface-container-low text-secondary" />
+                                                        </div>
+                                                    </div>
+                                                    <button 
+                                                        onClick={handleRequestCompanyLocation}
+                                                        className="w-full py-2 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary/20 transition-all border border-primary/20"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">my_location</span>
+                                                        Rileva Posizione Sede Attuale
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-outline-variant/10">
                                                 <div>
                                                     <p className="text-xs font-bold text-on-surface">Validazione Facciale AI</p>
                                                     <p className="text-[10px] text-secondary">Riconoscimento durante timbratura</p>
@@ -1117,6 +1181,7 @@ export default function Admin() {
                                                 <button 
                                                     onClick={() => handleUpdateCompanyMeta({ faceValidation: !faceValidation })}
                                                     className={`w-12 h-6 rounded-full transition-colors relative ${faceValidation ? 'bg-primary' : 'bg-outline-variant'}`}
+                                                    title={faceValidation ? "Disattiva Face ID" : "Attiva Face ID"}
                                                 >
                                                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${faceValidation ? 'left-7' : 'left-1'}`} />
                                                 </button>

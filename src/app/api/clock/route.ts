@@ -3,6 +3,17 @@ import { adminDb } from '@/lib/firebase/admin';
 import { getAuthSession } from '@/lib/firebase/auth-helper';
 
 export async function POST(request: Request) {
+    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const R = 6371e3; // Raggio Terra in metri
+        const p1 = lat1 * Math.PI / 180;
+        const p2 = lat2 * Math.PI / 180;
+        const dp = (lat2 - lat1) * Math.PI / 180;
+        const dl = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dp/2) * Math.sin(dp/2) +
+                  Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    };
+
     try {
         const session = await getAuthSession();
         if (!session) {
@@ -13,6 +24,8 @@ export async function POST(request: Request) {
         const userId = formData.get('userId') as string;
         const type = formData.get('type') as string;
         const image = formData.get('image') as File | null;
+        const lat = parseFloat(formData.get('latitude') as string || '0');
+        const lng = parseFloat(formData.get('longitude') as string || '0');
         
         const companyId = session.companyId;
 
@@ -28,6 +41,27 @@ export async function POST(request: Request) {
             }
         }
 
+        // Enterprise Validation
+        const companyDoc = await adminDb.collection('companies').doc(companyId).get();
+        const companyData = companyDoc.data() || {};
+
+        // GPS Check
+        if (companyData.gpsGeofencing && companyData.latitude && companyData.longitude) {
+            if (!lat || !lng) {
+                return NextResponse.json({ error: 'Posizione GPS mancante e obbligatoria' }, { status: 403 });
+            }
+            const distance = calculateDistance(lat, lng, companyData.latitude, companyData.longitude);
+            if (distance > 500) {
+                return NextResponse.json({ 
+                    error: `Sei fuori dal raggio aziendale (${Math.round(distance)}m). Distanza massima consentita: 500m.` 
+                }, { status: 403 });
+            }
+        }
+
+        // Face Validation Placeholder (Check if image exists if face validation is on)
+        if (companyData.faceValidation && !image) {
+            return NextResponse.json({ error: 'La foto è obbligatoria per la validazione facciale' }, { status: 403 });
+        }
 
         let photoUrl = null;
 
