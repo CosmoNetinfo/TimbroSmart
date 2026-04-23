@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const session = request.cookies.get('session');
     
     // Define protected routes
@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Role-based protection would ideally happen here, but requires verifying the session token.
-    // For now, we'll let the client-side/API handle deep roles, but middleware handles the existence of session.
+    // For now, we'll let the client-side/API handle deep roles, but proxy handles the existence of session.
     
     return NextResponse.next();
 }

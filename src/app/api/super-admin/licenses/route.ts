@@ -194,7 +194,7 @@ export async function DELETE(request: Request) {
                     // Limite Firestore: gli array `in` supportano max 30 elementi per query. 
                     // Li chucnko se necessario. Per semplicità, facciamo query singole se molti.
                     for (const uId of userIds) {
-                        const records = await adminDb.collection('timer_records').where('userId', '==', uId).get();
+                        const records = await adminDb.collection('entries').where('userId', '==', uId).get();
                         records.docs.forEach(rDoc => batch.delete(rDoc.ref));
                     }
                     console.log(`[SuperAdmin CASCADE] In coda eliminazione timbrature storiche.`);

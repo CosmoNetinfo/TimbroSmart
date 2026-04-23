@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
+import { ArrowLeft, Clock, Calendar, Wallet, LogOut, Home } from 'lucide-react';
+import { applyBranding } from '@/lib/utils/branding';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -19,6 +21,7 @@ export default function HistoryPage() {
     const [entries, setEntries] = useState<HistoryEntry[]>([]);
     const [hourlyWage, setHourlyWage] = useState<number>(7.0);
     const [loading, setLoading] = useState(true);
+    const [companySettings, setCompanySettings] = useState<any>(null);
     const router = useRouter();
     const [user, setUser] = useState<DashboardUser | null>(null);
 
@@ -32,10 +35,24 @@ export default function HistoryPage() {
             const parsedUser = JSON.parse(stored);
             setUser(parsedUser);
             fetchHistory(parsedUser.id);
+            fetchCompanySettings();
         } catch {
             router.push('/');
         }
     }, [router]);
+
+    const fetchCompanySettings = async () => {
+        try {
+            const res = await fetch('/api/company/public-settings');
+            if (res.ok) {
+                const data = await res.json();
+                setCompanySettings(data);
+                applyBranding(data.primaryColor);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const fetchHistory = async (userId: number) => {
         try {
@@ -164,11 +181,13 @@ export default function HistoryPage() {
             <header className="w-full top-0 sticky z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6 h-16 shadow-sm">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard" className="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors">
-                        <span className="material-symbols-outlined">arrow_back</span>
+                        <ArrowLeft size={20} />
                     </Link>
                     <div className="flex flex-col">
-                        <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">TimbroSmart</span>
-                        <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Storico Timbrature</h1>
+                        <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">
+                            {companySettings?.name || 'TimbroSmart'}
+                        </span>
+                        <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Storico Attività</h1>
                     </div>
                 </div>
             </header>
@@ -267,23 +286,23 @@ export default function HistoryPage() {
             {/* Bottom Nav */}
             <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-6 pt-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-[#c3c6d6]/20 shadow-[0_-12px_32px_rgba(23,28,31,0.06)] z-50 rounded-t-2xl">
                 <Link href="/dashboard" className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
-                    <span className="material-symbols-outlined">home</span>
+                    <Home size={22} />
                     <span className="font-label text-[10px] sm:text-[11px] font-medium">Home</span>
                 </Link>
                 <Link href="/dashboard/calendar" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
-                    <span className="material-symbols-outlined">event_note</span>
+                    <Calendar size={22} />
                     <span className="font-label text-[10px] sm:text-[11px] font-medium">Ferie</span>
                 </Link>
-                <div className="flex flex-col items-center justify-center bg-[#e4e9ed] text-primary rounded-xl px-3 py-1 transition-transform duration-300 active:scale-95">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+                <div className="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-xl px-4 py-1 transition-transform duration-300 active:scale-95">
+                    <Clock size={22} />
                     <span className="font-label text-[10px] sm:text-[11px] font-bold">Storico</span>
                 </div>
                 <Link href="/dashboard/payments" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
-                    <span className="material-symbols-outlined">account_balance_wallet</span>
+                    <Wallet size={22} />
                     <span className="font-label text-[10px] sm:text-[11px] font-medium">Paga</span>
                 </Link>
                 <div onClick={handleLogout} className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
-                    <span className="material-symbols-outlined">logout</span>
+                    <LogOut size={22} />
                     <span className="font-label text-[10px] sm:text-[11px] font-medium">Esci</span>
                 </div>
             </nav>

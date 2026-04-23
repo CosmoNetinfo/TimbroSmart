@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Payment {
     id: string | number;
@@ -171,6 +173,92 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
         }
     };
 
+    const handleDownloadPDF = (payment: Payment) => {
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(18);
+        doc.setTextColor(0, 86, 210);
+        doc.setFont("helvetica", "bold");
+        doc.text("CEDOLINO PAGAMENTO", 105, 20, { align: "center" });
+        
+        doc.setDrawColor(200);
+        doc.line(20, 25, 190, 25);
+        
+        // Info Box
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.setFont("helvetica", "normal");
+        doc.text("Dipendente:", 20, 35);
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.setFont("helvetica", "bold");
+        doc.text(String(payment.user.name), 20, 42);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Matricola: ${payment.user.code}`, 20, 48);
+        
+        doc.text("Data Emissione:", 140, 35);
+        doc.setFont("helvetica", "bold");
+        doc.text(formatDate(payment.paymentDate), 140, 42);
+        
+        // Table of Details
+        autoTable(doc, {
+            startY: 60,
+            head: [['Descrizione', 'Dettagli']],
+            body: [
+                ['Periodo di Riferimento', `${formatDate(payment.periodStart)} - ${formatDate(payment.periodEnd)}`],
+                ['Metodo', 'Bonifico Bancario'],
+                ['Note', payment.notes || 'Nessuna nota'],
+                ['Stato', 'SALDATO']
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [0, 86, 210] }
+        });
+        
+        // Final Amount
+        const finalY = (doc as any).lastAutoTable.finalY + 15;
+        doc.setFontSize(14);
+        doc.setTextColor(0);
+        doc.text("TOTALE NETTO", 140, finalY);
+        doc.setFontSize(22);
+        doc.setTextColor(20, 150, 80);
+        doc.text(formatCurrency(payment.amount), 140, finalY + 10);
+        
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text("TimbroSmart - Generato automaticamente", 105, 280, { align: "center" });
+        
+        doc.save(`cedolino_${payment.user.code}_${payment.paymentDate}.pdf`);
+    };
+
+    const handleExportExcel = () => {
+        if (payments.length === 0) return;
+        
+        const headers = ['Data Pagamento', 'Dipendente', 'Matricola', 'Importo', 'Periodo Inizio', 'Periodo Fine', 'Note'];
+        const csvContent = [
+            headers.join(';'),
+            ...payments.map(p => [
+                p.paymentDate,
+                `"${p.user.name}"`,
+                p.user.code,
+                p.amount.toString().replace('.', ','),
+                p.periodStart,
+                p.periodEnd,
+                `"${p.notes || ''}"`
+            ].join(';'))
+        ].join('\n');
+        
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `report_pagamenti_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('it-IT', {
             day: '2-digit',
@@ -201,13 +289,23 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                         <h2 className="font-headline text-2xl font-extrabold text-tertiary">{formatCurrency(totalPaid)}</h2>
                     </div>
                 </div>
-                <button 
-                    onClick={() => setShowAddForm(!showAddForm)} 
-                    className="px-5 py-3 rounded-xl bg-primary text-white font-bold active:scale-95 transition-all shadow-md shadow-primary/20 flex items-center gap-2"
-                >
-                    <span className="material-symbols-outlined text-[20px]">{showAddForm ? 'close' : 'add'}</span>
-                    {showAddForm ? 'Annulla' : 'Nuovo Pagamento'}
-                </button>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={handleExportExcel}
+                        disabled={payments.length === 0}
+                        className="px-5 py-3 rounded-xl border border-outline-variant text-secondary font-bold active:scale-95 transition-all flex items-center gap-2 hover:bg-surface-container-low disabled:opacity-40"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">table_view</span>
+                        Esporta Excel
+                    </button>
+                    <button 
+                        onClick={() => setShowAddForm(!showAddForm)} 
+                        className="px-5 py-3 rounded-xl bg-primary text-white font-bold active:scale-95 transition-all shadow-md shadow-primary/20 flex items-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">{showAddForm ? 'close' : 'add'}</span>
+                        {showAddForm ? 'Annulla' : 'Nuovo Pagamento'}
+                    </button>
+                </div>
             </div>
 
             {/* Add Payment Form */}
@@ -310,13 +408,22 @@ export default function PaymentsManagement({ users }: PaymentsManagementProps) {
                                             {payment.notes || <span className="opacity-40">—</span>}
                                         </td>
                                         <td className="px-5 py-3">
-                                            <button
-                                                onClick={() => handleDeletePayment(payment.id)}
-                                                className="p-1.5 rounded-lg hover:bg-error/10 text-error transition-colors"
-                                                title="Elimina"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
+                                            <div className="flex gap-1">
+                                               <button
+                                                   onClick={() => handleDownloadPDF(payment)}
+                                                   className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+                                                   title="Scarica Cedolino PDF"
+                                               >
+                                                   <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                                               </button>
+                                               <button
+                                                   onClick={() => handleDeletePayment(payment.id)}
+                                                   className="p-1.5 rounded-lg hover:bg-error/10 text-error transition-colors"
+                                                   title="Elimina"
+                                               >
+                                                   <span className="material-symbols-outlined text-[18px]">delete</span>
+                                               </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

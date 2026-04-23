@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Trash2, Sun, Heart, Clock, Sparkles } from 'lucide-react';
+import { Trash2, Sun, Heart, Clock, Sparkles, Home, Wallet, LogOut, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
+import { applyBranding } from '@/lib/utils/branding';
 
 interface CalendarEvent {
     id: string;
@@ -24,12 +25,27 @@ export default function CalendarPage() {
         type: 'FERIE' as const,
         description: ''
     });
+    const [companySettings, setCompanySettings] = useState<any>(null);
 
     const router = useRouter();
 
     useEffect(() => {
         fetchEvents();
+        fetchCompanySettings();
     }, [currentDate]);
+
+    const fetchCompanySettings = async () => {
+        try {
+            const res = await fetch('/api/company/public-settings');
+            if (res.ok) {
+                const data = await res.json();
+                setCompanySettings(data);
+                applyBranding(data.primaryColor);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const fetchEvents = async () => {
         setLoading(true);
@@ -118,9 +134,14 @@ export default function CalendarPage() {
             <header className="w-full top-0 sticky z-40 bg-[#f6fafe] dark:bg-slate-950 flex items-center justify-between px-6 h-16 shadow-sm">
                 <div className="flex items-center gap-4">
                     <button onClick={() => router.push('/dashboard')} className="transition-all duration-200 active:scale-95 text-slate-500 dark:text-slate-400">
-                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>arrow_back</span>
+                        <ArrowLeft size={20} />
                     </button>
-                    <h1 className="font-headline font-bold tracking-tight text-xl text-[#171c1f] dark:text-slate-100">Calendario</h1>
+                    <div className="flex flex-col">
+                        <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">
+                            {companySettings?.name || 'TimbroSmart'}
+                        </span>
+                        <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Calendario</h1>
+                    </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <button onClick={() => setShowModal(true)} className="flex items-center justify-center p-2 rounded-full bg-primary-container text-on-primary-container active:scale-95 transition-all">
@@ -133,9 +154,11 @@ export default function CalendarPage() {
                 {/* Month Selector Hero Area */}
                 <section className="py-8 flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="font-label text-xs uppercase tracking-widest text-secondary font-semibold">TimbroSmart Ecosystem</span>
+                        <span className="font-label text-xs uppercase tracking-widest text-secondary font-semibold">
+                            {companySettings?.name || 'TimbroSmart'} Ecosystem
+                        </span>
                         <h2 className="font-headline text-3xl font-extrabold text-on-surface mt-1">
-                            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                            { monthNames[currentDate.getMonth()] } {currentDate.getFullYear()}
                         </h2>
                     </div>
                     <div className="flex gap-2">
@@ -312,22 +335,26 @@ export default function CalendarPage() {
             )}
 
             {/* Bottom Nav */}
-            <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-[#c3c6d6]/20 shadow-[0_-12px_32px_rgba(23,28,31,0.06)] z-50 rounded-t-2xl">
-                <Link href="/dashboard" className="flex flex-col items-center justify-center text-slate-500 px-4 py-1 transition-transform duration-300 active:scale-90 hover:text-primary">
-                    <span className="material-symbols-outlined">dashboard</span>
-                    <span className="font-label text-[11px] font-medium">Dashboard</span>
+            <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-6 pt-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-[#c3c6d6]/20 shadow-[0_-12px_32px_rgba(23,28,31,0.06)] z-50 rounded-t-2xl">
+                <Link href="/dashboard" className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <Home size={22} />
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Home</span>
                 </Link>
-                <Link href="/dashboard/history" className="flex flex-col items-center justify-center text-slate-500 px-4 py-1 transition-transform duration-300 active:scale-90 hover:text-primary">
-                    <span className="material-symbols-outlined">history</span>
-                    <span className="font-label text-[11px] font-medium">Storico</span>
-                </Link>
-                <div className="flex flex-col items-center justify-center bg-[#e4e9ed] text-primary rounded-xl px-4 py-1 transition-transform duration-300 active:scale-90">
-                    <span className="material-symbols-outlined">calendar_month</span>
-                    <span className="font-label text-[11px] font-medium">Richieste</span>
+                <div className="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-xl px-4 py-1 transition-transform duration-300 active:scale-95">
+                    <CalendarIcon size={22} />
+                    <span className="font-label text-[10px] sm:text-[11px] font-bold">Ferie</span>
                 </div>
-                <div onClick={handleLogout} className="cursor-pointer flex flex-col items-center justify-center text-slate-500 px-4 py-1 transition-transform duration-300 active:scale-90 hover:text-primary">
-                    <span className="material-symbols-outlined">logout</span>
-                    <span className="font-label text-[11px] font-medium">Esci</span>
+                <Link href="/dashboard/history" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <Clock size={22} />
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Storico</span>
+                </Link>
+                <Link href="/dashboard/payments" className="flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <Wallet size={22} />
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Paga</span>
+                </Link>
+                <div onClick={handleLogout} className="cursor-pointer flex flex-col items-center justify-center text-slate-500 hover:text-primary px-2 py-1 transition-transform duration-300 active:scale-95">
+                    <LogOut size={22} />
+                    <span className="font-label text-[10px] sm:text-[11px] font-medium">Esci</span>
                 </div>
             </nav>
         </div>

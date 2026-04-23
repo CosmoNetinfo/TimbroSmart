@@ -178,7 +178,7 @@ export default function SuperAdminPage() {
 
     if (!isAuthenticated) {
         return (
-            <main className="min-h-screen bg-surface-container-lowest flex items-center justify-center p-4 font-inter">
+            <main className="min-h-screen bg-surface-container-lowest flex items-center justify-center p-4 font-body">
                 <div className="w-full max-w-md animate-fade-in">
                     <div className="bg-white border border-outline-variant/20 rounded-[32px] p-8 shadow-2xl shadow-primary/5">
                         <div className="flex flex-col items-center mb-8">

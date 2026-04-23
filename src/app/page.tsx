@@ -47,7 +47,9 @@ export default function Home() {
         localStorage.setItem('user_meta', JSON.stringify({ 
           name: user.name, 
           role: user.role,
-          id: user.id,
+          id: String(user.id),
+          code: user.code,
+          companyId: user.companyId,
           profileImage: user.profileImage || ''
         }));
         router.push(user.role === 'ADMIN' ? '/admin' : '/dashboard');

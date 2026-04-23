@@ -2,10 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Camera, Calendar, Wallet } from 'lucide-react';
+import { Camera, Calendar, Wallet, CheckCircle2 } from 'lucide-react';
+import { applyBranding } from '@/lib/utils/branding';
 
 interface DashboardUser {
-    id: number;
+    id: string;
     name: string;
     code: string;
     profileImage?: string;
@@ -37,17 +38,14 @@ export default function Dashboard() {
             if (res.ok) {
                 const data = await res.json();
                 setCompanySettings(data);
-                // Apply branding
-                if (data.primaryColor) {
-                    document.documentElement.style.setProperty('--primary', data.primaryColor);
-                }
+                applyBranding(data.primaryColor);
             }
         } catch (e) {
             console.error('Fetch company settings error:', e);
         }
     };
 
-    const fetchStatus = async (userId: number) => {
+    const fetchStatus = async (userId: string) => {
         try {
             const res = await fetch(`/api/status?userId=${userId}`);
             if (res.ok) {
@@ -208,7 +206,9 @@ export default function Dashboard() {
             {/* TopAppBar */}
             <header className="w-full top-0 sticky z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6 h-16 shadow-sm">
                 <div className="flex flex-col">
-                    <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">TimbroSmart</span>
+                    <span className="font-label text-[10px] uppercase tracking-widest text-secondary font-bold">
+                        {companySettings?.name || 'TimbroSmart'}
+                    </span>
                     <h1 className="font-headline font-bold text-lg text-on-surface leading-none">Dashboard</h1>
                 </div>
                 <div className="flex items-center gap-3">

@@ -12,12 +12,76 @@ export default function ExportCenter({ entries, users, companyPlan }: ExportCent
     const [exporting, setExporting] = useState(false);
 
     const handleExport = (format: 'EXCEL' | 'ZUCCHETTI' | 'TEAM_SYSTEM' | 'CSV_FULL') => {
+        if (!entries || entries.length === 0) {
+            alert('Nessun dato da esportare');
+            return;
+        }
+
         setExporting(true);
-        // Simulazione caricamento premium
-        setTimeout(() => {
-            alert(`Esportazione in formato ${format} avviata. Il file sarà scaricato a breve.`);
-            setExporting(false);
-        }, 1500);
+        
+        try {
+            let content = '';
+            let filename = `export_${format.toLowerCase()}_${new Date().toISOString().split('T')[0]}`;
+            let type = 'text/csv;charset=utf-8;';
+
+            if (format === 'EXCEL' || format === 'CSV_FULL') {
+                const headers = ['Data', 'Ora', 'Dipendente', 'Matricola', 'Azione', 'Foto'];
+                if (format === 'CSV_FULL') headers.push('ID Entry', 'User ID');
+                
+                content = [
+                    headers.join(';'),
+                    ...entries.map(e => {
+                        const d = new Date(e.timestamp);
+                        const row = [
+                            d.toLocaleDateString(),
+                            d.toLocaleTimeString(),
+                            `"${e.user?.name || '---'}"`,
+                            e.user?.code || '---',
+                            e.type === 'IN' ? 'ENTRATA' : 'USCITA',
+                            e.hasPhoto ? 'SI' : 'NO'
+                        ];
+                        if (format === 'CSV_FULL') {
+                            row.push(String(e.id), String(e.userId));
+                        }
+                        return row.join(';');
+                    })
+                ].join('\n');
+                
+                filename += format === 'EXCEL' ? '.csv' : '.csv';
+            } else if (format === 'ZUCCHETTI') {
+                // Mock tracciato Zucchetti
+                content = entries.map(e => {
+                    const d = new Date(e.timestamp);
+                    return `ZUC|${e.user?.code}|${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}|${e.type}|${d.getHours()}${d.getMinutes()}`;
+                }).join('\n');
+                filename += '.txt';
+                type = 'text/plain;charset=utf-8;';
+            } else if (format === 'TEAM_SYSTEM') {
+                // Mock tracciato TeamSystem
+                content = entries.map(e => {
+                    const d = new Date(e.timestamp);
+                    return `TS|${e.user?.code}|${d.toISOString()}|${e.type}`;
+                }).join('\n');
+                filename += '.txt';
+                type = 'text/plain;charset=utf-8;';
+            }
+
+            // Aggiungi BOM per Excel (UTF-8)
+            const blob = new Blob(['\uFEFF' + content], { type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        } catch (error) {
+            console.error(error);
+            alert('Errore durante l\'esportazione');
+        } finally {
+            setTimeout(() => setExporting(false), 800);
+        }
     };
 
     if (!isEnterprise) {
