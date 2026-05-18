@@ -116,7 +116,7 @@ export default function Register() {
                     </form>
 
                     <div className="mt-6 text-center">
-                        <Link href="/" className="text-sm font-medium text-secondary hover:text-primary transition-colors flex items-center justify-center gap-1">
+                        <Link href="/login" className="text-sm font-medium text-secondary hover:text-primary transition-colors flex items-center justify-center gap-1">
                             <span className="material-symbols-outlined text-[16px]">arrow_back</span> Torna al Login
                         </Link>
                     </div>

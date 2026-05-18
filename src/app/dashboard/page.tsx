@@ -23,7 +23,7 @@ export default function Dashboard() {
     useEffect(() => {
         const stored = localStorage.getItem('user_meta');
         if (!stored) {
-            router.push('/');
+            router.push('/login');
             return;
         }
         const parsedUser = JSON.parse(stored);
@@ -196,7 +196,7 @@ export default function Dashboard() {
 
     const handleLogout = () => {
         localStorage.removeItem('user_meta');
-        router.push('/');
+        router.push('/login');
     };
 
     if (!user) return null;

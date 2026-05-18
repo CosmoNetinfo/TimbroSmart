@@ -28,7 +28,7 @@ export default function HistoryPage() {
     useEffect(() => {
         const stored = localStorage.getItem('user_meta');
         if (!stored) {
-            router.push('/');
+            router.push('/login');
             return;
         }
         try {
@@ -37,7 +37,7 @@ export default function HistoryPage() {
             fetchHistory(parsedUser.id);
             fetchCompanySettings();
         } catch {
-            router.push('/');
+            router.push('/login');
         }
     }, [router]);
 
@@ -169,7 +169,7 @@ export default function HistoryPage() {
 
     const handleLogout = () => {
         localStorage.removeItem('user_meta');
-        router.push('/');
+        router.push('/login');
     };
 
     if (!user) return null;

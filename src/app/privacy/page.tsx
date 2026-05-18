@@ -5,8 +5,8 @@ export default function PrivacyPage() {
     return (
         <main className="container animate-fade-in" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
             <div className="glass card" style={{ padding: '2rem' }}>
-                <Link href="/" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-primary)', marginBottom: '1.5rem', textDecoration: 'none', gap: '8px' }}>
-                    <ArrowLeft size={20} /> Torna alla Home
+                <Link href="/login" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-primary)', marginBottom: '1.5rem', textDecoration: 'none', gap: '8px' }}>
+                    <ArrowLeft size={20} /> Torna al Login
                 </Link>
                 
                 <h1 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Privacy Policy - TimbroSmart</h1>

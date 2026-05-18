@@ -153,7 +153,7 @@ export default function Admin() {
     useEffect(() => {
         const stored = localStorage.getItem('user_meta');
         if (!stored) {
-            router.push('/');
+            router.push('/login');
             return;
         }
         const user = JSON.parse(stored);
@@ -600,7 +600,7 @@ export default function Admin() {
 
     const handleLogout = () => {
         localStorage.removeItem('user_meta');
-        router.push('/');
+        router.push('/login');
     };
 
     const navItems: { id: AdminView; icon: string; label: string; premium?: boolean }[] = [

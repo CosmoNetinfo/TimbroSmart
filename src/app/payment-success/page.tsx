@@ -47,8 +47,8 @@ export default function PaymentSuccessPage() {
                         Grazie! Abbiamo ricevuto i dati della tua azienda. 
                         Ti invieremo il **Serial Key** e l'**Admin Code** via email/WhatsApp entro breve.
                     </p>
-                    <Link href="/" className="btn-glass-primary" style={{ textDecoration: 'none' }}>
-                        Torna alla Home
+                    <Link href="/login" className="btn-glass-primary" style={{ textDecoration: 'none' }}>
+                        Torna al Login
                     </Link>
                 </div>
             </main>
@@ -104,8 +104,8 @@ export default function PaymentSuccessPage() {
                     </button>
                 </form>
 
-                <Link href="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '1.5rem', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem', opacity: 0.6 }}>
-                    <ArrowLeft size={16} /> Torna alla Home
+                <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '1.5rem', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem', opacity: 0.6 }}>
+                    <ArrowLeft size={16} /> Torna al Login
                 </Link>
             </div>
         </main>

@@ -18,7 +18,7 @@ const auth = getAuth(app);
 
 // Enable Offline Persistence
 if (typeof window !== "undefined") {
-  enableIndexedDbPersistence(db).catch((err) => {
+  enableIndexedDbPersistence(db).catch((err: any) => {
     if (err.code === 'failed-precondition') {
       console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
     } else if (err.code === 'unimplemented') {

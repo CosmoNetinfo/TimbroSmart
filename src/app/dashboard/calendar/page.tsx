@@ -93,7 +93,7 @@ export default function CalendarPage() {
 
     const handleLogout = () => {
         localStorage.removeItem('user_meta');
-        router.push('/');
+        router.push('/login');
     };
 
     // Calendar logic
