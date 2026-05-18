@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   MapPin, 
@@ -20,6 +20,37 @@ import {
 
 export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState('08:30:00');
+  const [mockStatus, setMockStatus] = useState<'OUT' | 'IN'>('OUT');
+  const [isScanning, setIsScanning] = useState(false);
+  const [logs, setLogs] = useState([
+    { name: "Luigi Bianchi", time: "08:45:12", type: "IN", location: "Milano Centro" },
+    { name: "Sofia Neri", time: "08:30:45", type: "IN", location: "Milano Centro" },
+  ]);
+
+  useEffect(() => {
+    setCurrentTime(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleMockTimbratura = () => {
+    if (isScanning) return;
+    setIsScanning(true);
+    setTimeout(() => {
+      setIsScanning(false);
+      const newType = mockStatus === 'OUT' ? 'IN' : 'OUT';
+      setMockStatus(newType);
+      
+      const now = new Date().toLocaleTimeString('it-IT');
+      setLogs(prev => [
+        { name: "Mario Rossi", time: now, type: newType, location: "Milano Centro (12m)" },
+        ...prev.slice(0, 2)
+      ]);
+    }, 1500);
+  };
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -205,18 +236,154 @@ export default function LandingPage() {
           </div>
 
           {/* App Preview Mockup */}
-          <div className="mt-16 bg-white rounded-3xl p-3 shadow-2xl border border-slate-200 max-w-4xl mx-auto relative group overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 via-transparent to-transparent pointer-events-none z-10"></div>
-            <div className="bg-slate-950 rounded-2xl overflow-hidden aspect-[16/9] flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-slate-950 to-slate-950 z-0"></div>
-              {/* Virtual Mockup content */}
-              <div className="z-10 text-white max-w-lg p-6 text-center animate-pulse">
-                <div className="inline-flex p-4 rounded-3xl bg-blue-500/20 border border-blue-500/30 mb-4 text-blue-400">
-                  <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>fingerprint</span>
+          <div className="mt-16 bg-white rounded-3xl p-4 md:p-6 shadow-2xl border border-slate-200 max-w-5xl mx-auto relative group overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-950 rounded-2xl p-6 md:p-10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-950/40 via-slate-950 to-slate-950 z-0 pointer-events-none"></div>
+              
+              {/* Left Side: Simulated Admin Dashboard */}
+              <div className="lg:col-span-7 z-10 text-left space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-3.5 w-3.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span className="font-headline font-bold text-slate-200 text-sm tracking-wide">Pannello Amministratore (Live)</span>
+                  </div>
+                  <span className="text-[10px] font-extrabold uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                    Piano Enterprise
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold font-headline mb-1">TimbroSmart Live Client Portal</h3>
-                <p className="text-sm text-slate-400">Dimostrazione del terminale di timbratura con GPS Geofencing attivo.</p>
+
+                <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-3 shadow-inner">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>Ultimi ingressi del team</span>
+                    <span className="font-semibold text-slate-300">Tempo Reale</span>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {logs.map((log, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-slate-950/60 border border-slate-850 p-2.5 rounded-xl text-xs hover:border-slate-800 transition-colors">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-full bg-primary-container/20 border border-primary/20 flex items-center justify-center font-bold text-primary uppercase">
+                            {log.name.substring(0, 2)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-200">{log.name}</p>
+                            <p className="text-[10px] text-slate-500">GPS: {log.location}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`inline-block text-[9px] font-extrabold px-2 py-0.5 rounded-full ${
+                            log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          }`}>
+                            {log.type === 'IN' ? 'ENTRATA' : 'USCITA'}
+                          </span>
+                          <p className="text-[10px] text-slate-400 mt-1 font-semibold">{log.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-slate-900/60 border border-slate-800/60 p-3 rounded-xl">
+                    <p className="text-slate-500">Copertura GPS</p>
+                    <p className="text-base font-extrabold text-slate-200 mt-0.5">100% Validata</p>
+                  </div>
+                  <div className="bg-slate-900/60 border border-slate-800/60 p-3 rounded-xl">
+                    <p className="text-slate-500">Tasso di Presenza</p>
+                    <p className="text-base font-extrabold text-slate-200 mt-0.5">98.4% Ottimo</p>
+                  </div>
+                </div>
               </div>
+
+              {/* Right Side: Simulated Interactive Smartphone Terminal */}
+              <div className="lg:col-span-5 flex justify-center z-10">
+                <div className="w-full max-w-[280px] bg-slate-900 rounded-[40px] p-3 border-[6px] border-slate-800 shadow-2xl relative overflow-hidden group/phone transition-transform duration-300 hover:scale-[1.02]">
+                  {/* Top Speaker Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-28 bg-slate-800 rounded-b-2xl z-20 flex items-center justify-center">
+                    <div className="w-12 h-1 bg-slate-900 rounded-full"></div>
+                  </div>
+
+                  {/* Phone screen inner content */}
+                  <div className="bg-slate-950 rounded-[32px] p-4 text-center text-white relative min-h-[420px] flex flex-col justify-between pt-6">
+                    {/* Status Bar */}
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 px-1 mb-2 font-semibold">
+                      <span>{currentTime.substring(0, 5)}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[12px] opacity-75">signal_cellular_alt</span>
+                        <span className="material-symbols-outlined text-[12px] opacity-75">wifi</span>
+                        <span className="material-symbols-outlined text-[12px] opacity-75">battery_5_bar</span>
+                      </div>
+                    </div>
+
+                    {/* App Header inside Phone */}
+                    <div className="flex items-center justify-between mb-4 border-b border-slate-900 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-primary text-base font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>fingerprint</span>
+                        <span className="text-[10px] font-black tracking-wider text-slate-200 uppercase">TimbroSmart</span>
+                      </div>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    </div>
+
+                    {/* Employee Profile inside Phone */}
+                    <div className="bg-slate-900/60 border border-slate-850 p-2.5 rounded-2xl flex items-center gap-2 text-left mb-3">
+                      <div className="h-9 w-9 rounded-full bg-primary-container/20 border border-primary/20 flex items-center justify-center font-bold text-primary uppercase text-sm">
+                        MR
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-200 leading-tight">Mario Rossi</p>
+                        <p className="text-[9px] text-slate-555">Operaio Specializzato</p>
+                      </div>
+                    </div>
+
+                    {/* Simulated Camera View / Scanning Area */}
+                    <div className="relative aspect-square w-full max-w-[140px] mx-auto rounded-2xl overflow-hidden border border-slate-850 bg-slate-900/40 flex flex-col items-center justify-center mb-4">
+                      {isScanning ? (
+                        <>
+                          <div className="absolute inset-x-0 h-0.5 bg-primary shadow-lg shadow-primary/80 animate-bounce z-20"></div>
+                          <span className="material-symbols-outlined text-primary text-4xl animate-pulse z-10" style={{ fontVariationSettings: "'FILL' 1" }}>face</span>
+                          <span className="text-[8px] font-bold text-primary uppercase tracking-widest mt-2 z-10">Scansione AI...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-slate-600 text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>face</span>
+                          <span className="text-[8px] font-semibold text-slate-500 uppercase mt-2">Pronto per la Foto</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Geofence Check Indicator */}
+                    <div className="bg-slate-900/60 border border-slate-850 p-2 rounded-xl mb-4 text-left flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-emerald-400 text-[14px]">my_location</span>
+                        <span className="text-[9px] font-bold text-slate-300">Cantiere Milano</span>
+                      </div>
+                      <span className="text-[8px] font-extrabold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 uppercase">
+                        Dentro Raggio
+                      </span>
+                    </div>
+
+                    {/* Big Action Button inside Phone */}
+                    <button 
+                      onClick={handleMockTimbratura}
+                      disabled={isScanning}
+                      className={`w-full py-3 rounded-2xl font-black text-[11px] uppercase tracking-wider transition-all duration-300 active:scale-95 flex items-center justify-center gap-1.5 ${
+                        isScanning ? 'bg-slate-800 text-slate-500 cursor-not-allowed' :
+                        mockStatus === 'OUT' ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' : 
+                        'bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/20'
+                      }`}
+                    >
+                      {isScanning ? (
+                        <>In corso...</>
+                      ) : mockStatus === 'OUT' ? (
+                        <>Timbra Entrata</>
+                      ) : (
+                        <>Timbra Uscita</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
