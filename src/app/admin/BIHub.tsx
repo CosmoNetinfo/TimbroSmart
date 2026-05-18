@@ -139,7 +139,7 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                         <span className="bg-primary/10 text-primary text-[10px] font-extrabold px-2 py-1 rounded-md uppercase">Live</span>
                     </div>
                     <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <AreaChart data={weeklyTrendData}>
                                 <defs>
                                     <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
@@ -163,7 +163,7 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                         <span className="material-symbols-outlined text-tertiary">monetization_on</span> Proiezione Costo Lavoro
                     </h3>
                     <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <ComposedChart data={costData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
@@ -184,7 +184,7 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                         <span className="material-symbols-outlined text-secondary">update</span> Affluenza per Orario
                     </h3>
                     <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <BarChart data={hourlyDistribution}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="hour" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(h) => `${h}:00`} />
@@ -202,7 +202,7 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                         <span className="material-symbols-outlined text-amber-500">pie_chart</span> Saturazione Dipendenti
                     </h3>
                     <div className="h-[250px] w-full flex items-center">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie
                                     data={saturationData}

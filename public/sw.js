@@ -45,6 +45,15 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
             .then(response => response || fetch(event.request))
+            .catch(error => {
+                console.warn('Fetch event failed inside PWA ServiceWorker:', error);
+                // Return a basic fallback response instead of failing
+                return new Response('Network error occurred', {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                    headers: new Headers({ 'Content-Type': 'text/plain' })
+                });
+            })
     );
 });
 
