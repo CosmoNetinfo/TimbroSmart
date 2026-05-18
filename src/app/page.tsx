@@ -15,7 +15,13 @@ import {
   Star,
   Users,
   Award,
-  Lock
+  Lock,
+  Camera,
+  Calendar,
+  Wallet,
+  Bell,
+  LogOut,
+  RefreshCw
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -238,7 +244,7 @@ export default function LandingPage() {
           {/* App Preview Mockup */}
           <div className="mt-16 bg-white rounded-3xl p-4 md:p-6 shadow-2xl border border-slate-200 max-w-5xl mx-auto relative group overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-950 rounded-2xl p-6 md:p-10 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-950/40 via-slate-950 to-slate-950 z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-955/40 via-slate-950 to-slate-950 z-0 pointer-events-none"></div>
               
               {/* Left Side: Simulated Admin Dashboard */}
               <div className="lg:col-span-7 z-10 text-left space-y-4">
@@ -295,91 +301,179 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right Side: Simulated Interactive Smartphone Terminal */}
+              {/* Right Side: Simulated Interactive Smartphone Terminal (100% Faithful Replica) */}
               <div className="lg:col-span-5 flex justify-center z-10">
-                <div className="w-full max-w-[280px] bg-slate-900 rounded-[40px] p-3 border-[6px] border-slate-800 shadow-2xl relative overflow-hidden group/phone transition-transform duration-300 hover:scale-[1.02]">
-                  {/* Top Speaker Notch */}
+                <div className="w-full max-w-[310px] bg-slate-900 rounded-[45px] p-3 border-[6px] border-slate-800 shadow-2xl relative overflow-hidden group/phone transition-transform duration-300 hover:scale-[1.02]">
+                  
+                  {/* Speaker Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-28 bg-slate-800 rounded-b-2xl z-20 flex items-center justify-center">
                     <div className="w-12 h-1 bg-slate-900 rounded-full"></div>
                   </div>
 
                   {/* Phone screen inner content */}
-                  <div className="bg-slate-950 rounded-[32px] p-4 text-center text-white relative min-h-[420px] flex flex-col justify-between pt-6">
-                    {/* Status Bar */}
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 px-1 mb-2 font-semibold">
-                      <span>{currentTime.substring(0, 5)}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-[12px] opacity-75">signal_cellular_alt</span>
-                        <span className="material-symbols-outlined text-[12px] opacity-75">wifi</span>
-                        <span className="material-symbols-outlined text-[12px] opacity-75">battery_5_bar</span>
+                  <div className="bg-[#f8f9fa] rounded-[34px] text-slate-950 relative min-h-[460px] flex flex-col justify-between overflow-hidden shadow-inner pt-5 select-none">
+                    
+                    {/* Active Scanning Overlay */}
+                    {isScanning && (
+                      <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 animate-fade-in text-white rounded-[32px]">
+                        <div className="absolute inset-x-4 h-0.5 bg-primary shadow-lg shadow-primary/80 animate-bounce top-1/3"></div>
+                        <div className="h-16 w-16 rounded-full border border-primary bg-primary/20 flex items-center justify-center text-primary mb-4 animate-pulse">
+                          <Camera className="w-8 h-8" />
+                        </div>
+                        <h4 className="text-xs font-black tracking-widest text-primary uppercase animate-pulse">Scansione AI e GPS...</h4>
+                        <p className="text-[9px] text-slate-400 mt-1.5 text-center font-medium max-w-[160px]">Validazione posizione in corso, attendere</p>
+                      </div>
+                    )}
+
+                    {/* Header bar */}
+                    <div>
+                      {/* Status Bar */}
+                      <div className="flex justify-between items-center text-[9px] text-slate-500 px-4 mb-2 font-bold">
+                        <span>{currentTime.substring(0, 5)}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[10px]">signal_cellular_alt</span>
+                          <span className="material-symbols-outlined text-[10px]">wifi</span>
+                          <span className="material-symbols-outlined text-[10px]">battery_5_bar</span>
+                        </div>
+                      </div>
+
+                      {/* TopAppBar */}
+                      <header className="bg-white border-b border-slate-200/60 px-4 py-2.5 flex items-center justify-between shadow-sm">
+                        <div className="flex flex-col text-left">
+                          <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-400">
+                            TimbroSmart
+                          </span>
+                          <h1 className="font-bold text-sm text-slate-800 leading-none">Dashboard</h1>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button className="relative text-slate-400">
+                            <Bell className="w-4 h-4 text-slate-500" />
+                            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                          </button>
+                          {/* Profile image avatar mockup */}
+                          <div className="w-7 h-7 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center font-black text-slate-650 text-xs overflow-hidden shadow-sm">
+                            M
+                          </div>
+                        </div>
+                      </header>
+                    </div>
+
+                    {/* Phone Body Scrollable Content */}
+                    <div className="px-3.5 pt-3.5 pb-20 flex-1 overflow-y-auto space-y-4 max-h-[340px]">
+                      {/* Greeting */}
+                      <div className="text-left animate-slide-up">
+                        <h2 className="text-xl font-black text-slate-900">
+                          Ciao, <span className="text-primary">Mario</span>
+                        </h2>
+                        <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Ecco il tuo stato lavorativo attuale.</p>
+                      </div>
+
+                      {/* Status Hero Card */}
+                      <div className="animate-slide-up">
+                        {mockStatus === 'IN' ? (
+                          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-4 text-left relative overflow-hidden shadow-[0_8px_20px_rgba(16,185,129,0.15)]">
+                            <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                            <p className="text-[9px] uppercase tracking-widest font-extrabold text-white/80 mb-0.5">Stato Attuale</p>
+                            <h3 className="text-xl font-black tracking-tight flex items-center gap-1.5">
+                              <span className="material-symbols-outlined text-xl">work</span> Al Lavoro
+                            </h3>
+                            <p className="text-[9px] text-white/90 font-bold mt-1.5">Entrato alle {currentTime.substring(0, 5)}</p>
+                          </div>
+                        ) : (
+                          <div className="bg-white border border-slate-200 rounded-2xl p-4 text-left shadow-sm flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center flex-shrink-0">
+                              <span className="material-symbols-outlined text-lg">bed</span>
+                            </div>
+                            <div>
+                              <p className="text-[9px] uppercase tracking-widest font-extrabold text-slate-400 mb-0.5">Stato Attuale</p>
+                              <h3 className="text-sm font-black text-slate-800 leading-none">Non al Lavoro</h3>
+                              <p className="text-[9px] text-slate-500 font-semibold mt-1">Sei in pausa o hai terminato il turno.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Main Actions Bento Grid */}
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {/* Big Timbra Camera Button */}
+                        <div className="col-span-2">
+                          {mockStatus === 'OUT' ? (
+                            <button
+                              onClick={handleMockTimbratura}
+                              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3.5 px-4 rounded-xl shadow-md active:scale-[0.97] transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <Camera className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-wider">Timbra ENTRATA</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleMockTimbratura}
+                              className="w-full bg-gradient-to-r from-rose-500 to-red-650 hover:from-rose-600 hover:to-red-700 text-white py-3.5 px-4 rounded-xl shadow-md active:scale-[0.97] transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <Camera className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-wider">Timbra USCITA</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Secondary Actions */}
+                        <div className="bg-white border border-slate-200/80 p-3 rounded-xl flex flex-col items-start gap-2.5 shadow-sm text-left">
+                          <div className="p-1.5 bg-blue-50 text-blue-500 rounded-lg">
+                            <Calendar className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-800 text-[10px] leading-none">Calendario</h4>
+                            <p className="text-[8px] text-slate-400 mt-1 font-medium">Ferie e permessi</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-white border border-slate-200/80 p-3 rounded-xl flex flex-col items-start gap-2.5 shadow-sm text-left">
+                          <div className="p-1.5 bg-slate-50 text-slate-600 rounded-lg">
+                            <span className="material-symbols-outlined text-sm font-bold">history</span>
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-800 text-[10px] leading-none">Storico</h4>
+                            <p className="text-[8px] text-slate-400 mt-1 font-medium">Timbrature passate</p>
+                          </div>
+                        </div>
+
+                        {/* Payments block */}
+                        <div className="col-span-2 bg-gradient-to-r from-white to-slate-50 border border-slate-200 p-3 rounded-xl flex items-center gap-3 shadow-sm text-left">
+                          <div className="p-1.5 bg-amber-50 text-amber-600 rounded-lg flex-shrink-0">
+                            <Wallet className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-800 text-[10px] leading-none">Buste Paga & Pagamenti</h4>
+                            <p className="text-[8px] text-slate-450 mt-1 font-medium">Visualizza lo storico dei compensi</p>
+                          </div>
+                          <span className="material-symbols-outlined text-[12px] text-slate-400">arrow_forward</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* App Header inside Phone */}
-                    <div className="flex items-center justify-between mb-4 border-b border-slate-900 pb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-primary text-base font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>fingerprint</span>
-                        <span className="text-[10px] font-black tracking-wider text-slate-200 uppercase">TimbroSmart</span>
+                    {/* Bottom Nav Bar Replica */}
+                    <nav className="absolute bottom-0 left-0 w-full flex justify-around items-center px-1 pb-3 pt-2 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_16px_rgba(0,0,0,0.03)] z-20 rounded-b-[32px]">
+                      <div className="flex flex-col items-center justify-center text-primary cursor-pointer px-2">
+                        <span className="material-symbols-outlined text-base font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
+                        <span className="text-[8px] font-extrabold leading-none mt-0.5">Home</span>
                       </div>
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    </div>
-
-                    {/* Employee Profile inside Phone */}
-                    <div className="bg-slate-900/60 border border-slate-850 p-2.5 rounded-2xl flex items-center gap-2 text-left mb-3">
-                      <div className="h-9 w-9 rounded-full bg-primary-container/20 border border-primary/20 flex items-center justify-center font-bold text-primary uppercase text-sm">
-                        MR
+                      <div className="flex flex-col items-center justify-center text-slate-400 cursor-pointer px-2">
+                        <span className="material-symbols-outlined text-base">event_note</span>
+                        <span className="text-[8px] font-semibold leading-none mt-0.5">Ferie</span>
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-200 leading-tight">Mario Rossi</p>
-                        <p className="text-[9px] text-slate-555">Operaio Specializzato</p>
+                      <div className="flex flex-col items-center justify-center text-slate-400 cursor-pointer px-2">
+                        <span className="material-symbols-outlined text-base">history</span>
+                        <span className="text-[8px] font-semibold leading-none mt-0.5">Storico</span>
                       </div>
-                    </div>
-
-                    {/* Simulated Camera View / Scanning Area */}
-                    <div className="relative aspect-square w-full max-w-[140px] mx-auto rounded-2xl overflow-hidden border border-slate-850 bg-slate-900/40 flex flex-col items-center justify-center mb-4">
-                      {isScanning ? (
-                        <>
-                          <div className="absolute inset-x-0 h-0.5 bg-primary shadow-lg shadow-primary/80 animate-bounce z-20"></div>
-                          <span className="material-symbols-outlined text-primary text-4xl animate-pulse z-10" style={{ fontVariationSettings: "'FILL' 1" }}>face</span>
-                          <span className="text-[8px] font-bold text-primary uppercase tracking-widest mt-2 z-10">Scansione AI...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined text-slate-600 text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>face</span>
-                          <span className="text-[8px] font-semibold text-slate-500 uppercase mt-2">Pronto per la Foto</span>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Geofence Check Indicator */}
-                    <div className="bg-slate-900/60 border border-slate-850 p-2 rounded-xl mb-4 text-left flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-emerald-400 text-[14px]">my_location</span>
-                        <span className="text-[9px] font-bold text-slate-300">Cantiere Milano</span>
+                      <div className="flex flex-col items-center justify-center text-slate-400 cursor-pointer px-2">
+                        <span className="material-symbols-outlined text-base">account_balance_wallet</span>
+                        <span className="text-[8px] font-semibold leading-none mt-0.5">Paga</span>
                       </div>
-                      <span className="text-[8px] font-extrabold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20 uppercase">
-                        Dentro Raggio
-                      </span>
-                    </div>
-
-                    {/* Big Action Button inside Phone */}
-                    <button 
-                      onClick={handleMockTimbratura}
-                      disabled={isScanning}
-                      className={`w-full py-3 rounded-2xl font-black text-[11px] uppercase tracking-wider transition-all duration-300 active:scale-95 flex items-center justify-center gap-1.5 ${
-                        isScanning ? 'bg-slate-800 text-slate-500 cursor-not-allowed' :
-                        mockStatus === 'OUT' ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' : 
-                        'bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/20'
-                      }`}
-                    >
-                      {isScanning ? (
-                        <>In corso...</>
-                      ) : mockStatus === 'OUT' ? (
-                        <>Timbra Entrata</>
-                      ) : (
-                        <>Timbra Uscita</>
-                      )}
-                    </button>
+                      <div className="flex flex-col items-center justify-center text-slate-400 cursor-pointer px-2">
+                        <span className="material-symbols-outlined text-base">logout</span>
+                        <span className="text-[8px] font-semibold leading-none mt-0.5">Esci</span>
+                      </div>
+                    </nav>
                   </div>
                 </div>
               </div>
