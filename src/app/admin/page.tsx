@@ -32,18 +32,30 @@ interface AdminEntry {
 type AdminView = 'dashboard' | 'users' | 'payments' | 'calendar' | 'license' | 'settings' | 'bi' | 'exports';
 
 const PALETTE_COLORS = [
-    '#3b82f6', // Blue
-    '#10b981', // Emerald
-    '#f59e0b', // Amber
-    '#8b5cf6', // Purple
-    '#ec4899', // Pink
-    '#f43f5e', // Rose
-    '#06b6d4', // Cyan
-    '#14b8a6', // Teal
-    '#84cc16', // Lime
-    '#eab308', // Yellow
-    '#f97316', // Orange
-    '#64748b'  // Slate
+    // Blue & Indigo
+    '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a',
+    // Cyan & Teal
+    '#06b6d4', '#0891b2', '#0e7490', '#155e75', '#164e63',
+    '#14b8a6', '#0d9488', '#115e59', '#134e4a', '#022c22',
+    // Emerald & Green
+    '#10b981', '#059669', '#047857', '#065f46', '#064e3b',
+    '#22c55e', '#16a34a', '#15803d', '#166534', '#14532d',
+    // Lime & Yellow
+    '#84cc16', '#65a30d', '#4d7c0f', '#3f6212', '#365314',
+    '#eab308', '#ca8a04', '#a16207', '#854d0e', '#713f12',
+    // Amber & Orange
+    '#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f',
+    '#f97316', '#ea580c', '#c2410c', '#9a3412', '#7c2d12',
+    // Red & Rose
+    '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d',
+    '#f43f5e', '#e11d48', '#be123c', '#9f1239', '#881337',
+    // Pink & Purple
+    '#ec4899', '#db2777', '#c11574', '#9d174d', '#831843',
+    '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95',
+    '#a855f7', '#9333ea', '#7e22ce', '#6b21a8', '#581c87',
+    // Extra accents & Slate
+    '#d946ef', '#c084fc', '#e879f9', '#f472b6', '#475569',
+    '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9'
 ];
 
 export default function Admin() {
@@ -962,7 +974,7 @@ export default function Admin() {
                                         <div>
                                             <label className="block text-xs font-bold text-secondary mb-1">Colore Dipendente</label>
                                             <div className="flex gap-1.5 flex-wrap p-1.5 border border-outline-variant rounded-lg bg-white h-[42px] items-center px-2">
-                                                {PALETTE_COLORS.slice(0, 6).map(color => (
+                                                {PALETTE_COLORS.slice(0, 10).map(color => (
                                                     <button
                                                         key={color}
                                                         type="button"
@@ -1000,7 +1012,7 @@ export default function Admin() {
                                                     title="Cambia colore"
                                                 />
                                                 {activeColorPickerUserId === u.id && (
-                                                    <div className="absolute right-0 top-8 z-20 bg-white border border-outline-variant/20 rounded-xl p-3 shadow-xl grid grid-cols-4 gap-2 w-36 animate-fade-in">
+                                                    <div className="absolute right-0 top-8 z-20 bg-white border border-outline-variant/20 rounded-xl p-3 shadow-xl grid grid-cols-10 gap-1.5 w-[240px] animate-fade-in">
                                                         {PALETTE_COLORS.map(color => (
                                                             <button
                                                                 key={color}
@@ -1008,7 +1020,7 @@ export default function Admin() {
                                                                     handleUpdateColor(u.id, color);
                                                                     setActiveColorPickerUserId(null);
                                                                 }}
-                                                                className={`w-5 h-5 rounded-full border transition-all ${u.color === color ? 'border-on-surface scale-110 shadow-sm' : 'border-transparent hover:scale-110'}`}
+                                                                className={`w-4 h-4 rounded-full border transition-all ${u.color === color ? 'border-on-surface scale-110 shadow-sm' : 'border-transparent hover:scale-125'}`}
                                                                 style={{ backgroundColor: color }}
                                                                 title={color}
                                                             />
