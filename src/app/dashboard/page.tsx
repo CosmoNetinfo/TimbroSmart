@@ -255,7 +255,7 @@ export default function Dashboard() {
                             
                             <div className="relative z-10">
                                 <p className="font-label text-xs uppercase tracking-widest font-bold opacity-80 mb-1">Stato Attuale</p>
-                                <h3 className="font-headline text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-2">
+                                <h3 className="font-headline text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-2" style={{ color: '#22c55e' }}>
                                     <span className="material-symbols-outlined text-4xl">work</span> Al Lavoro
                                 </h3>
                                 {lastEntry && (
@@ -271,7 +271,7 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                     <p className="font-label text-xs uppercase tracking-widest font-bold text-secondary mb-1">Stato Attuale</p>
-                                    <h3 className="font-headline text-3xl font-extrabold text-on-surface">Non al Lavoro</h3>
+                                    <h3 className="font-headline text-3xl font-extrabold" style={{ color: '#ef4444' }}>Non al Lavoro</h3>
                                 </div>
                             </div>
                             <p className="text-secondary font-medium ml-16">Sei in pausa o hai terminato il turno.</p>

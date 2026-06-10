@@ -373,8 +373,7 @@ export default function LandingPage() {
                         {mockStatus === 'IN' ? (
                           <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-4 text-left relative overflow-hidden shadow-[0_8px_20px_rgba(16,185,129,0.15)]">
                             <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-                            <p className="text-[9px] uppercase tracking-widest font-extrabold text-white/80 mb-0.5">Stato Attuale</p>
-                            <h3 className="text-xl font-black tracking-tight flex items-center gap-1.5">
+                            <h3 className="text-xl font-black tracking-tight flex items-center gap-1.5" style={{ color: '#22c55e' }}>
                               <span className="material-symbols-outlined text-xl">work</span> Al Lavoro
                             </h3>
                             <p className="text-[9px] text-white/90 font-bold mt-1.5">Entrato alle {currentTime.substring(0, 5)}</p>
@@ -386,7 +385,7 @@ export default function LandingPage() {
                             </div>
                             <div>
                               <p className="text-[9px] uppercase tracking-widest font-extrabold text-slate-400 mb-0.5">Stato Attuale</p>
-                              <h3 className="text-sm font-black text-slate-800 leading-none">Non al Lavoro</h3>
+                              <h3 className="text-sm font-black leading-none" style={{ color: '#ef4444' }}>Non al Lavoro</h3>
                               <p className="text-[9px] text-slate-500 font-semibold mt-1">Sei in pausa o hai terminato il turno.</p>
                             </div>
                           </div>
