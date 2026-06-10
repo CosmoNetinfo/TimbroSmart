@@ -379,6 +379,12 @@ export default function Admin() {
     };
 
     const handleUpdateWage = async (userId: string | number, wage: string) => {
+        const numWage = parseFloat(wage);
+        if (isNaN(numWage)) return;
+
+        // Optimistic update for instant responsiveness
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, hourlyWage: numWage } : u));
+
         try {
             const res = await fetch('/api/admin/update-wage', {
                 method: 'POST',
@@ -390,13 +396,18 @@ export default function Admin() {
                 fetchEntries();
             } else {
                 alert('Errore aggiornamento stipendio');
+                fetchUsers();
             }
         } catch {
             alert('Errore di connessione');
+            fetchUsers();
         }
     };
 
     const handleUpdateColor = async (userId: string | number, color: string) => {
+        // Optimistic update for instant responsiveness
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, color } : u));
+
         try {
             const res = await fetch('/api/admin/users', {
                 method: 'PATCH',
@@ -408,9 +419,11 @@ export default function Admin() {
                 fetchEntries();
             } else {
                 alert('Errore aggiornamento colore');
+                fetchUsers();
             }
         } catch {
             alert('Errore di connessione');
+            fetchUsers();
         }
     };
 
@@ -1401,7 +1414,9 @@ export default function Admin() {
                         <div className="bg-white p-5 rounded-[28px] shadow-sm w-[240px] h-[240px] flex items-center justify-center">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${selectedBadgeUser.code}`}
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                                    typeof window !== 'undefined' ? `${window.location.origin}/login?code=${selectedBadgeUser.code}` : ''
+                                )}`}
                                 alt="QR Code Badge"
                                 className="w-44 h-44 object-contain"
                             />

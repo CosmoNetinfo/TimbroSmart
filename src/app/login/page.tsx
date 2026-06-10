@@ -26,6 +26,17 @@ export default function Login() {
     }
   }, [router]);
 
+  // Prefill code from URL query parameter
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlCode = params.get('code');
+      if (urlCode) {
+        setCode(urlCode.toUpperCase());
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
