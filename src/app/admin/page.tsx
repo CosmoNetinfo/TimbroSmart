@@ -16,6 +16,7 @@ interface AdminUser {
     name: string;
     code: string;
     hourlyWage?: number;
+    color?: string;
 }
 
 interface AdminEntry {
@@ -29,6 +30,21 @@ interface AdminEntry {
 }
 
 type AdminView = 'dashboard' | 'users' | 'payments' | 'calendar' | 'license' | 'settings' | 'bi' | 'exports';
+
+const PALETTE_COLORS = [
+    '#3b82f6', // Blue
+    '#10b981', // Emerald
+    '#f59e0b', // Amber
+    '#8b5cf6', // Purple
+    '#ec4899', // Pink
+    '#f43f5e', // Rose
+    '#06b6d4', // Cyan
+    '#14b8a6', // Teal
+    '#84cc16', // Lime
+    '#eab308', // Yellow
+    '#f97316', // Orange
+    '#64748b'  // Slate
+];
 
 export default function Admin() {
     const router = useRouter();
@@ -62,7 +78,12 @@ export default function Admin() {
     const [newUserName, setNewUserName] = useState('');
     const [newUserCode, setNewUserCode] = useState('');
     const [newUserWage, setNewUserWage] = useState('7');
+    const [newUserColor, setNewUserColor] = useState('#3b82f6');
     const [creatingUser, setCreatingUser] = useState(false);
+
+    // Dynamic UI states
+    const [activeColorPickerUserId, setActiveColorPickerUserId] = useState<string | number | null>(null);
+    const [selectedBadgeUser, setSelectedBadgeUser] = useState<AdminUser | null>(null);
 
     // Edit Feature State
     const [editingEntry, setEditingEntry] = useState<AdminEntry | null>(null);
@@ -227,7 +248,8 @@ export default function Admin() {
                 body: JSON.stringify({ 
                     name: newUserName, 
                     code: newUserCode, 
-                    hourlyWage: newUserWage 
+                    hourlyWage: newUserWage,
+                    color: newUserColor
                 }),
             });
 
@@ -235,6 +257,7 @@ export default function Admin() {
                 alert('Dipendente creato con successo!');
                 setNewUserName('');
                 setNewUserCode('');
+                setNewUserColor('#3b82f6');
                 setShowAddUser(false);
                 fetchUsers();
             } else {
@@ -355,6 +378,24 @@ export default function Admin() {
                 fetchEntries();
             } else {
                 alert('Errore aggiornamento stipendio');
+            }
+        } catch {
+            alert('Errore di connessione');
+        }
+    };
+
+    const handleUpdateColor = async (userId: string | number, color: string) => {
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: userId, color }),
+            });
+            if (res.ok) {
+                fetchUsers();
+                fetchEntries();
+            } else {
+                alert('Errore aggiornamento colore');
             }
         } catch {
             alert('Errore di connessione');
@@ -905,7 +946,7 @@ export default function Admin() {
                                     <h4 className="font-bold text-on-surface mb-4 flex items-center gap-2">
                                         <span className="material-symbols-outlined text-primary">person_add</span> Nuovo Dipendente
                                     </h4>
-                                    <form onSubmit={handleCreateUser} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                                    <form onSubmit={handleCreateUser} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                                         <div>
                                             <label className="block text-xs font-bold text-secondary mb-1">Nome Completo</label>
                                             <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Mario Rossi" required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
@@ -918,34 +959,69 @@ export default function Admin() {
                                             <label className="block text-xs font-bold text-secondary mb-1">Paga Oraria (€/h)</label>
                                             <input type="number" value={newUserWage} onChange={e => setNewUserWage(e.target.value)} required className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white" />
                                         </div>
-                                        <button type="submit" disabled={creatingUser} className="px-5 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 disabled:opacity-50">
+                                        <div>
+                                            <label className="block text-xs font-bold text-secondary mb-1">Colore Dipendente</label>
+                                            <div className="flex gap-1.5 flex-wrap p-1.5 border border-outline-variant rounded-lg bg-white h-[42px] items-center px-2">
+                                                {PALETTE_COLORS.slice(0, 6).map(color => (
+                                                    <button
+                                                        key={color}
+                                                        type="button"
+                                                        onClick={() => setNewUserColor(color)}
+                                                        className={`w-5 h-5 rounded-full border transition-all ${newUserColor === color ? 'border-on-surface scale-110 shadow-sm' : 'border-transparent'}`}
+                                                        style={{ backgroundColor: color }}
+                                                        title={`Seleziona ${color}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <button type="submit" disabled={creatingUser} className="px-5 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 disabled:opacity-50 h-[42px]">
                                             {creatingUser ? 'Salvataggio...' : 'Salva'}
                                         </button>
                                     </form>
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {users.map(u => (
-                                    <div key={u.id} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow group">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-11 h-11 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                                                    {u.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-on-surface">{u.name}</p>
-                                                    <p className="text-xs text-secondary">Matricola: <span className="font-mono text-primary font-bold">{u.code}</span></p>
-                                                </div>
+                                    <div key={u.id} className="bg-white border border-outline-variant/10 rounded-[28px] p-6 shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between min-h-[220px]">
+                                        {/* Top Section */}
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-on-surface text-lg leading-tight">{u.name}</h3>
+                                                <p className="text-xs text-secondary mt-1 font-mono">Matricola: {u.code}</p>
                                             </div>
-                                            <button onClick={() => handleDeleteUser(u.id)} className="p-1.5 rounded-lg hover:bg-error/10 text-error opacity-0 group-hover:opacity-100 transition-all" title="Elimina">
-                                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
+                                            
+                                            {/* Color Box & Dropdown */}
+                                            <div className="relative">
+                                                <button 
+                                                    onClick={() => setActiveColorPickerUserId(activeColorPickerUserId === u.id ? null : u.id)}
+                                                    className="w-6 h-6 rounded-md shadow-sm border border-black/10 cursor-pointer hover:scale-110 active:scale-95 transition-all"
+                                                    style={{ backgroundColor: u.color || '#3b82f6' }}
+                                                    title="Cambia colore"
+                                                />
+                                                {activeColorPickerUserId === u.id && (
+                                                    <div className="absolute right-0 top-8 z-20 bg-white border border-outline-variant/20 rounded-xl p-3 shadow-xl grid grid-cols-4 gap-2 w-36 animate-fade-in">
+                                                        {PALETTE_COLORS.map(color => (
+                                                            <button
+                                                                key={color}
+                                                                onClick={() => {
+                                                                    handleUpdateColor(u.id, color);
+                                                                    setActiveColorPickerUserId(null);
+                                                                }}
+                                                                className={`w-5 h-5 rounded-full border transition-all ${u.color === color ? 'border-on-surface scale-110 shadow-sm' : 'border-transparent hover:scale-110'}`}
+                                                                style={{ backgroundColor: color }}
+                                                                title={color}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between">
-                                            <span className="text-xs text-secondary">Paga Oraria</span>
-                                            <div className="flex items-center gap-1">
-                                                <span className="text-xs text-secondary">€</span>
+
+                                        {/* Middle Section: Hourly wage */}
+                                        <div className="flex items-center justify-between mt-4">
+                                            <span className="text-xs font-medium text-secondary">Paga Oraria (€/h):</span>
+                                            <div className="shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center px-4 py-2">
                                                 <input
                                                     type="number"
                                                     defaultValue={u.hourlyWage || 7}
@@ -955,11 +1031,28 @@ export default function Admin() {
                                                             handleUpdateWage(u.id, val);
                                                         }
                                                     }}
-                                                    className="w-16 text-right font-bold rounded-lg border-outline-variant px-2 py-1 text-sm bg-white"
+                                                    className="w-12 text-center font-bold bg-transparent border-none p-0 text-sm focus:ring-0"
                                                     title="Paga oraria"
                                                 />
-                                                <span className="text-xs text-secondary">/h</span>
                                             </div>
+                                        </div>
+
+                                        {/* Bottom Section: Badge & Delete */}
+                                        <div className="flex items-center gap-3 mt-5">
+                                            <button 
+                                                onClick={() => setSelectedBadgeUser(u)}
+                                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:scale-95 transition-all text-sm font-bold text-slate-700 shadow-sm"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">qr_code_2</span>
+                                                Badge
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteUser(u.id)} 
+                                                className="p-2.5 rounded-xl border border-error/10 hover:bg-error/10 text-error active:scale-95 transition-all flex items-center justify-center"
+                                                title="Elimina dipendente"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -1203,7 +1296,8 @@ export default function Admin() {
             {/* Photo Modal */}
             {selectedPhoto && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex justify-center items-center p-4" onClick={() => setSelectedPhoto(null)}>
-                    <div className="relative max-w-3xl w-full animate-slide-up">
+                    <div className="relative max-w-3xl w-full animate-slide-up" onClick={(e) => e.stopPropagation()}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={selectedPhoto} alt="Prova lavoro" className="w-full h-auto rounded-2xl shadow-2xl border border-white/20" />
                         <button onClick={() => setSelectedPhoto(null)} className="absolute -top-12 right-0 text-white text-sm font-bold flex items-center gap-1 hover:opacity-70 transition-opacity">
                             <span className="material-symbols-outlined">close</span> Chiudi
@@ -1239,6 +1333,64 @@ export default function Admin() {
                             </button>
                             <button onClick={handleSaveEdit} className="px-5 py-2.5 rounded-lg bg-primary text-white font-bold text-sm shadow-sm">
                                 Salva
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Badge */}
+            {selectedBadgeUser && (
+                <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+                    <div className="bg-white border border-outline-variant/10 rounded-[32px] max-w-sm w-full p-6 shadow-2xl relative animate-slide-up flex flex-col items-center">
+                        <button 
+                            onClick={() => setSelectedBadgeUser(null)}
+                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-secondary transition-colors"
+                        >
+                            <span className="material-symbols-outlined">close</span>
+                        </button>
+                        
+                        {/* Colored card top stripe */}
+                        <div 
+                            className="w-full h-3 rounded-t-xl mb-6"
+                            style={{ backgroundColor: selectedBadgeUser.color || '#3b82f6' }}
+                        />
+
+                        {/* Fingerprint / Badge header */}
+                        <div className="flex flex-col items-center gap-1 mb-4">
+                            <span className="material-symbols-outlined text-4xl text-primary" style={{ color: selectedBadgeUser.color }}>fingerprint</span>
+                            <span className="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase">TimbroSmart Badge</span>
+                        </div>
+
+                        {/* Name & Matricola */}
+                        <h3 className="font-bold text-slate-800 text-xl text-center px-4 leading-tight mb-1">{selectedBadgeUser.name}</h3>
+                        <p className="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-600 mb-6">Matricola: {selectedBadgeUser.code}</p>
+
+                        {/* QR Code */}
+                        <div className="bg-slate-50 border border-slate-100 p-4 rounded-3xl shadow-inner mb-6">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${selectedBadgeUser.code}`}
+                                alt="QR Code Badge"
+                                className="w-40 h-40 object-contain"
+                            />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="w-full flex gap-3">
+                            <button 
+                                onClick={() => window.print()}
+                                className="flex-1 py-3 bg-primary text-white text-sm font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2"
+                                style={{ backgroundColor: selectedBadgeUser.color }}
+                            >
+                                <span className="material-symbols-outlined text-[18px]">print</span>
+                                Stampa
+                            </button>
+                            <button 
+                                onClick={() => setSelectedBadgeUser(null)}
+                                className="px-5 py-3 border border-outline-variant text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 active:scale-95 transition-all"
+                            >
+                                Chiudi
                             </button>
                         </div>
                     </div>

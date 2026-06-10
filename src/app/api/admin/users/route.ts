@@ -23,6 +23,7 @@ export async function GET(request: Request) {
                 code: data.code,
                 role: data.role,
                 hourlyWage: data.hourlyWage,
+                color: data.color || '#3b82f6',
             };
         });
 
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { name, code, hourlyWage } = await request.json();
+        const { name, code, hourlyWage, color } = await request.json();
         const companyId = session.companyId;
 
         if (!name || !code) {
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
             role: 'USER',
             companyId: companyId,
             hourlyWage: parseFloat(hourlyWage) || 0,
+            color: color || '#3b82f6',
             createdAt: new Date().toISOString()
         };
 
@@ -74,6 +76,49 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Create user error:', error);
         return NextResponse.json({ error: 'Errore durante la creazione' }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        const session = await getAuthSession();
+        if (!session || session.role !== 'ADMIN') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { id, color, hourlyWage } = await request.json();
+        const companyId = session.companyId;
+
+        if (!id) {
+            return NextResponse.json({ error: 'ID utente mancante' }, { status: 400 });
+        }
+
+        const userRef = adminDb.collection('users').doc(id);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists || userDoc.data()?.companyId !== companyId) {
+            return NextResponse.json({ error: 'Accesso negato o utente non trovato' }, { status: 403 });
+        }
+
+        const updateData: any = {};
+        if (color !== undefined) {
+            updateData.color = color;
+        }
+        if (hourlyWage !== undefined) {
+            const wage = parseFloat(hourlyWage);
+            if (!isNaN(wage)) {
+                updateData.hourlyWage = wage;
+            }
+        }
+
+        if (Object.keys(updateData).length > 0) {
+            await userRef.update(updateData);
+        }
+
+        return NextResponse.json({ success: true, message: 'Dipendente aggiornato con successo!' });
+    } catch (error) {
+        console.error('Update user error:', error);
+        return NextResponse.json({ error: 'Errore durante l\'aggiornamento' }, { status: 500 });
     }
 }
 

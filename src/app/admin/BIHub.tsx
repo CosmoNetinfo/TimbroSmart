@@ -215,9 +215,11 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                                     nameKey="name"
                                     label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                                 >
-                                    {saturationData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
+                                    {saturationData.map((entry, index) => {
+                                        const userObj = users.find(u => u.name.split(' ')[0] === entry.name || u.name === entry.name);
+                                        const userColor = userObj?.color || COLORS[index % COLORS.length];
+                                        return <Cell key={`cell-${index}`} fill={userColor} />;
+                                    })}
                                 </Pie>
                                 <Tooltip />
                             </PieChart>

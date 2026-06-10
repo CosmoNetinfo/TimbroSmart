@@ -7,11 +7,13 @@ interface CalendarEvent {
     title: string;
     type: 'FERIE' | 'MALATTIA' | 'TURNO' | 'ALTRO';
     userName?: string;
+    userColor?: string;
 }
 
 interface User {
     id: string | number;
     name: string;
+    color?: string;
 }
 
 export default function AdminCalendar({ users }: { users: User[] }) {
@@ -33,7 +35,11 @@ export default function AdminCalendar({ users }: { users: User[] }) {
                 const data = await res.json();
                 const enriched = data.map((e: CalendarEvent) => {
                     const u = users.find(user => String(user.id) === String(e.userId));
-                    return { ...e, userName: u ? u.name : 'Sconosciuto' };
+                    return { 
+                        ...e, 
+                        userName: u ? u.name : 'Sconosciuto', 
+                        userColor: u?.color || '#3b82f6' 
+                    };
                 });
                 setEvents(enriched);
             }
@@ -149,7 +155,15 @@ export default function AdminCalendar({ users }: { users: User[] }) {
                                                 ore {new Date(e.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </td>
-                                        <td className="px-5 py-3 font-bold text-on-surface">{e.userName}</td>
+                                        <td className="px-5 py-3 font-bold text-on-surface">
+                                            <div className="flex items-center gap-2">
+                                                <span 
+                                                    className="w-2.5 h-2.5 rounded-full inline-block shadow-sm"
+                                                    style={{ backgroundColor: e.userColor || '#3b82f6' }}
+                                                />
+                                                {e.userName}
+                                            </div>
+                                        </td>
                                         <td className="px-5 py-3">
                                             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${getTypeBadge(e.type)}`}>
                                                 <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
