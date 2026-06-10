@@ -47,11 +47,17 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
 
     // 2. Dati per Proiezione Costi vs Ore
     const costData = useMemo(() => {
-        const userStats: Record<string, { hours: number, cost: number, name: string }> = {};
+        const userStats: Record<string, { hours: number; cost: number; name: string; color: string }> = {};
         
         entries.forEach(e => {
             if (!userStats[e.userId]) {
-                userStats[e.userId] = { hours: 0, cost: 0, name: e.user?.name || 'Dipendente' };
+                const userObj = users.find(u => String(u.id) === String(e.userId));
+                userStats[e.userId] = { 
+                    hours: 0, 
+                    cost: 0, 
+                    name: e.user?.name || 'Dipendente',
+                    color: userObj?.color || '#3b82f6'
+                };
             }
         });
 
@@ -65,7 +71,8 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                     i++;
                 }
             }
-            const wage = users.find(u => u.id === uid)?.hourlyWage || 7;
+            const userObj = users.find(u => String(u.id) === String(uid));
+            const wage = userObj?.hourlyWage || 7;
             userStats[uid].hours = hours;
             userStats[uid].cost = hours * wage;
         });
@@ -73,7 +80,8 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
         return Object.values(userStats).map(s => ({
             name: s.name.split(' ')[0],
             ore: parseFloat(s.hours.toFixed(1)),
-            costo: parseFloat(s.cost.toFixed(2))
+            costo: parseFloat(s.cost.toFixed(2)),
+            color: s.color
         })).slice(0, 6); // Top 6 per leggibilità
     }, [entries, users]);
 
@@ -171,7 +179,11 @@ export default function BIHub({ entries, users, companyPlan }: BIHubProps) {
                                 <YAxis yAxisId="right" orientation="right" stroke="#10b981" fontSize={10} tickLine={false} axisLine={false} unit="€" />
                                 <Tooltip />
                                 <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
-                                <Bar yAxisId="left" dataKey="ore" fill="#0056d2" radius={[4, 4, 0, 0]} barSize={30} name="Ore Totali" />
+                                <Bar yAxisId="left" dataKey="ore" radius={[4, 4, 0, 0]} barSize={30} name="Ore Totali">
+                                    {costData.map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color || '#0056d2'} />
+                                    ))}
+                                </Bar>
                                 <Line yAxisId="right" type="monotone" dataKey="costo" stroke="#10b981" strokeWidth={3} name="Costo (€)" dot={{ r: 4, fill: '#10b981' }} />
                             </ComposedChart>
                         </ResponsiveContainer>

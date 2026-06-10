@@ -470,12 +470,15 @@ export default function Admin() {
             totalHours += hours;
             const wage = logs[0].user?.hourlyWage || 7;
             const salary = hours * wage;
+            const userObj = users.find(u => String(u.id) === String(logs[0].userId));
+            const color = userObj?.color || '#3b82f6';
             return {
                 userId: logs[0].userId,
                 name: logs[0].user?.name || 'Dipendente',
                 hours: hours,
                 salary: salary,
-                wage: wage
+                wage: wage,
+                color: color
             };
         });
 
@@ -486,7 +489,7 @@ export default function Admin() {
             totalSalary,
             userSummaries
         };
-    }, [entries]);
+    }, [entries, users]);
 
     const handleExport = () => {
         if (entries.length === 0) return;
@@ -831,8 +834,8 @@ export default function Admin() {
                                                 <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} unit="h" />
                                                 <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }} />
                                                 <Bar dataKey="hours" radius={[8, 8, 0, 0]}>
-                                                    {summary.userSummaries.map((_entry, index: number) => (
-                                                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#0056d2' : '#3b82f6'} />
+                                                    {summary.userSummaries.map((entry, index: number) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color || '#3b82f6'} />
                                                     ))}
                                                 </Bar>
                                             </BarChart>
@@ -1380,57 +1383,46 @@ export default function Admin() {
             {/* Modal Badge */}
             {selectedBadgeUser && (
                 <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-                    <div className="bg-white border border-outline-variant/10 rounded-[32px] max-w-sm w-full p-6 shadow-2xl relative animate-slide-up flex flex-col items-center">
+                    <div className="bg-[#e2e8f0] border-none rounded-[36px] p-6 max-w-[340px] w-full text-center flex flex-col items-center gap-4 shadow-2xl relative animate-slide-up">
+                        {/* Print Button */}
                         <button 
-                            onClick={() => setSelectedBadgeUser(null)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-secondary transition-colors"
+                            onClick={() => window.print()}
+                            className="absolute top-4 left-4 p-2 rounded-full hover:bg-slate-300/50 text-slate-700 transition-colors"
+                            title="Stampa Badge"
                         >
-                            <span className="material-symbols-outlined">close</span>
+                            <span className="material-symbols-outlined text-[20px]">print</span>
                         </button>
-                        
-                        {/* Colored card top stripe */}
-                        <div 
-                            className="w-full h-3 rounded-t-xl mb-6"
-                            style={{ backgroundColor: selectedBadgeUser.color || '#3b82f6' }}
-                        />
 
-                        {/* Fingerprint / Badge header */}
-                        <div className="flex flex-col items-center gap-1 mb-4">
-                            <span className="material-symbols-outlined text-4xl text-primary" style={{ color: selectedBadgeUser.color }}>fingerprint</span>
-                            <span className="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase">TimbroSmart Badge</span>
-                        </div>
+                        <h3 className="font-bold text-slate-800 text-lg text-center leading-tight mt-2 px-6">
+                            Badge: {selectedBadgeUser.name}
+                        </h3>
 
-                        {/* Name & Matricola */}
-                        <h3 className="font-bold text-slate-800 text-xl text-center px-4 leading-tight mb-1">{selectedBadgeUser.name}</h3>
-                        <p className="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-600 mb-6">Matricola: {selectedBadgeUser.code}</p>
-
-                        {/* QR Code */}
-                        <div className="bg-slate-50 border border-slate-100 p-4 rounded-3xl shadow-inner mb-6">
+                        {/* QR Code Container */}
+                        <div className="bg-white p-5 rounded-[28px] shadow-sm w-[240px] h-[240px] flex items-center justify-center">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${selectedBadgeUser.code}`}
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${selectedBadgeUser.code}`}
                                 alt="QR Code Badge"
-                                className="w-40 h-40 object-contain"
+                                className="w-44 h-44 object-contain"
                             />
                         </div>
 
-                        {/* Actions */}
-                        <div className="w-full flex gap-3">
-                            <button 
-                                onClick={() => window.print()}
-                                className="flex-1 py-3 bg-primary text-white text-sm font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2"
-                                style={{ backgroundColor: selectedBadgeUser.color }}
-                            >
-                                <span className="material-symbols-outlined text-[18px]">print</span>
-                                Stampa
-                            </button>
-                            <button 
-                                onClick={() => setSelectedBadgeUser(null)}
-                                className="px-5 py-3 border border-outline-variant text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 active:scale-95 transition-all"
-                            >
-                                Chiudi
-                            </button>
-                        </div>
+                        {/* Description Text */}
+                        <p className="text-slate-600 text-xs text-center px-1 leading-relaxed">
+                            Il dipendente può scansionare questo QR Code dal proprio telefono per fare il login, oppure puoi stamparlo come badge fisico.
+                        </p>
+
+                        {/* Close Button */}
+                        <button 
+                            onClick={() => setSelectedBadgeUser(null)}
+                            className="w-full py-3.5 rounded-2xl text-white font-bold text-sm shadow-md active:scale-95 transition-all text-center"
+                            style={{ 
+                                backgroundColor: selectedBadgeUser.color || '#3b82f6',
+                                boxShadow: `0 4px 12px ${(selectedBadgeUser.color || '#3b82f6')}40`
+                            }}
+                        >
+                            Chiudi
+                        </button>
                     </div>
                 </div>
             )}
