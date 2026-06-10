@@ -1033,8 +1033,21 @@ export default function Admin() {
                                         {/* Middle Section: Hourly wage */}
                                         <div className="flex items-center justify-between mt-4">
                                             <span className="text-xs font-medium text-secondary">Paga Oraria (€/h):</span>
-                                            <div className="shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center px-4 py-2">
+                                            <div className="flex items-center gap-1 bg-slate-100/80 border border-slate-200/40 rounded-full p-1 shadow-inner">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const current = parseFloat(String(u.hourlyWage || 7));
+                                                        const next = Math.max(0, current - 0.5);
+                                                        handleUpdateWage(u.id, String(next));
+                                                    }}
+                                                    className="w-6 h-6 rounded-full bg-white hover:bg-slate-200/80 text-slate-700 font-bold flex items-center justify-center shadow-sm text-xs transition-all active:scale-90"
+                                                    title="Diminuisci"
+                                                >
+                                                    -
+                                                </button>
                                                 <input
+                                                    key={`${u.id}-${u.hourlyWage || 7}`}
                                                     type="number"
                                                     defaultValue={u.hourlyWage || 7}
                                                     onBlur={(e) => {
@@ -1043,9 +1056,22 @@ export default function Admin() {
                                                             handleUpdateWage(u.id, val);
                                                         }
                                                     }}
-                                                    className="w-12 text-center font-bold bg-transparent border-none p-0 text-sm focus:ring-0"
+                                                    className="w-10 text-center font-bold bg-transparent border-none p-0 text-xs text-slate-800 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                     title="Paga oraria"
                                                 />
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const current = parseFloat(String(u.hourlyWage || 7));
+                                                        const next = current + 0.5;
+                                                        handleUpdateWage(u.id, String(next));
+                                                    }}
+                                                    className="w-6 h-6 rounded-full bg-white hover:bg-slate-200/80 text-slate-700 font-bold flex items-center justify-center shadow-sm text-xs transition-all active:scale-90"
+                                                    title="Aumenta"
+                                                    aria-label="Aumenta"
+                                                >
+                                                    +
+                                                </button>
                                             </div>
                                         </div>
 
