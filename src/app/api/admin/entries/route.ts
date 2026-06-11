@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
         allEntries.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-        const limitedEntries = (!startDate && !userId) ? allEntries.slice(0, 50) : allEntries;
+        const limitedEntries = allEntries;
 
         // Fetch all users for this company to simulate JOIN
         const usersSnapshot = await adminDb.collection('users')

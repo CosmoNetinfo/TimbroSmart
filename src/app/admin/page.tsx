@@ -99,7 +99,8 @@ export default function Admin() {
 
     // Edit Feature State
     const [editingEntry, setEditingEntry] = useState<AdminEntry | null>(null);
-    const [editTimestamp, setEditTimestamp] = useState('');
+    const [editDate, setEditDate] = useState('');
+    const [editTime, setEditTime] = useState('');
 
     useEffect(() => {
         setIsMounted(true);
@@ -431,19 +432,22 @@ export default function Admin() {
         setEditingEntry(entry);
         const date = new Date(entry.timestamp);
         const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-        setEditTimestamp(localDate.toISOString().slice(0, 16));
+        const isoString = localDate.toISOString();
+        setEditDate(isoString.slice(0, 10));
+        setEditTime(isoString.slice(11, 16));
     };
 
     const handleSaveEdit = async () => {
-        if (!editingEntry || !editTimestamp) return;
+        if (!editingEntry || !editDate || !editTime) return;
 
         try {
+            const combinedTimestamp = `${editDate}T${editTime}`;
             const res = await fetch('/api/admin/update-entry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     id: editingEntry.id,
-                    timestamp: new Date(editTimestamp).toISOString()
+                    timestamp: new Date(combinedTimestamp).toISOString()
                 })
             });
 
@@ -1371,14 +1375,25 @@ export default function Admin() {
                             Stai modificando l&apos;orario per <strong className="text-on-surface">{editingEntry.user.name}</strong>
                         </p>
 
-                        <div className="mb-4">
-                            <label className="block text-xs font-bold text-secondary mb-1">Nuova Data e Ora</label>
-                            <input
-                                type="datetime-local"
-                                className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white"
-                                value={editTimestamp}
-                                onChange={(e) => setEditTimestamp(e.target.value)}
-                            />
+                        <div className="mb-4 grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-bold text-secondary mb-1">Nuova Data</label>
+                                <input
+                                    type="date"
+                                    className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white"
+                                    value={editDate}
+                                    onChange={(e) => setEditDate(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-secondary mb-1">Nuova Ora</label>
+                                <input
+                                    type="time"
+                                    className="w-full rounded-lg border-outline-variant px-3 py-2.5 text-sm bg-white"
+                                    value={editTime}
+                                    onChange={(e) => setEditTime(e.target.value)}
+                                />
+                            </div>
                         </div>
 
                         <div className="flex gap-3 justify-end">
